@@ -1,27 +1,31 @@
 # MyEngineer
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.
+Personal site at https://dtvu94.github.io/ — an Angular 21 SPA served by GitHub Pages from this repo's `docs/` directory.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+`npm start` — runs the dev server at http://localhost:4200/ with live reload.
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+`npm run build` — production build straight into `docs/` with the correct GitHub Pages base href. Commit the resulting `docs/` changes and push to deploy.
 
-## Running unit tests
+Output path and base href are configured in `angular.json` (`build.options.outputPath` and `build.options.baseHref`), not as CLI flags.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Tests
 
-## Running end-to-end tests
+`npm test` — runs Jest (with `jest-preset-angular`, jsdom environment).
+`npm run test:cov` — same with coverage.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Run a single spec: `npx jest src/app/app.component.spec.ts`.
 
-## Further help
+## Scaffolding
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+`ng generate component component-name` (also `directive|pipe|service|class|guard|interface|enum|module`).
+
+## Stack
+
+- Angular 21 (NgModule-based, not standalone)
+- `@angular/build:application` builder (esbuild)
+- Jest 30 for unit tests
+- TypeScript 5.9

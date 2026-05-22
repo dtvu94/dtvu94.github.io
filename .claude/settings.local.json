@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm view *)",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npx ng *)",
+      "Bash(npm run *)",
+      "Bash(npm uninstall *)",
+      "WebFetch(domain:thymikee.github.io)",
+      "Bash(npx jest *)"
+    ]
+  }
+}
