@@ -1,3 +1,98 @@
-<div>
-  {{title}}
-</div>
+<main class="cv">
+  <header class="hero">
+    <div class="hero__identity">
+      <h1 class="hero__name">{{ name }}</h1>
+      <p class="hero__role">{{ role }}</p>
+      <p class="hero__tagline">{{ tagline }}</p>
+    </div>
+    <ul class="hero__contact">
+      <li>
+        <span class="contact__icon" aria-hidden="true">📍</span>
+        <span>{{ location }}</span>
+      </li>
+      <li>
+        <span class="contact__icon" aria-hidden="true">📞</span>
+        <a [href]="'tel:' + phone">{{ phone }}</a>
+      </li>
+      <li>
+        <span class="contact__icon" aria-hidden="true">✉️</span>
+        <a [href]="'mailto:' + email">{{ email }}</a>
+      </li>
+      <li>
+        <span class="contact__icon" aria-hidden="true">🔗</span>
+        <a [href]="linkedin" target="_blank" rel="noopener">LinkedIn</a>
+      </li>
+    </ul>
+  </header>
+
+  <section class="card card--full" aria-labelledby="summary-heading">
+    <h2 id="summary-heading" class="card__title">Summary</h2>
+    <p class="card__body">{{ summary }}</p>
+  </section>
+
+  <div class="grid">
+    <section class="card grid__skills" aria-labelledby="skills-heading">
+      <h2 id="skills-heading" class="card__title">Technical Skills</h2>
+      <dl class="skills">
+        @for (group of skills; track group.category) {
+          <div class="skills__group">
+            <dt class="skills__category">{{ group.category }}</dt>
+            <dd class="skills__items">
+              @for (item of group.items; track item) {
+                <span class="chip">{{ item }}</span>
+              }
+            </dd>
+          </div>
+        }
+      </dl>
+    </section>
+
+    <section class="card grid__experience" aria-labelledby="experience-heading">
+      <h2 id="experience-heading" class="card__title">Professional Experience</h2>
+      <ol class="timeline">
+        @for (job of experience; track job.company) {
+          <li class="timeline__item">
+            <div class="timeline__header">
+              <div>
+                <h3 class="timeline__title">{{ job.title }}</h3>
+                <p class="timeline__company">{{ job.company }}</p>
+              </div>
+              <p class="timeline__period">{{ job.period }}</p>
+            </div>
+            <p class="timeline__summary">{{ job.summary }}</p>
+            <ul class="timeline__bullets">
+              @for (bullet of job.bullets; track bullet) {
+                <li [innerHTML]="bullet"></li>
+              }
+            </ul>
+          </li>
+        }
+      </ol>
+    </section>
+  </div>
+
+  <div class="grid grid--footer">
+    <section class="card" aria-labelledby="education-heading">
+      <h2 id="education-heading" class="card__title">Education</h2>
+      <p class="edu__degree">{{ education.degree }}</p>
+      <p class="edu__school">{{ education.school }}</p>
+      <p class="edu__meta">{{ education.period }} · GPA {{ education.gpa }}</p>
+    </section>
+
+    <section class="card" aria-labelledby="languages-heading">
+      <h2 id="languages-heading" class="card__title">Languages</h2>
+      <ul class="languages">
+        @for (lang of languages; track lang.name) {
+          <li>
+            <span class="languages__name">{{ lang.name }}</span>
+            <span class="languages__level">{{ lang.level }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+  </div>
+
+  <footer class="footer">
+    <p>© {{ name }} · Built with Angular</p>
+  </footer>
+</main>

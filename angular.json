@@ -17,7 +17,7 @@
               "base": "docs",
               "browser": ""
             },
-            "baseHref": "/dtvu94.github.io/",
+            "baseHref": "/",
             "index": "src/index.html",
             "polyfills": [
               "zone.js"
@@ -43,8 +43,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "8kb",
+                  "maximumError": "12kb"
                 }
               ],
               "outputHashing": "all"

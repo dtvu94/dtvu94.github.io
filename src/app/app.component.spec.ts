@@ -6,15 +6,30 @@ describe('AppComponent', () => {
     declarations: [AppComponent]
   }));
 
-  it('should create the app', () => {
+  it('should create the component', () => {
     const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it(`should have as title 'myEngineer'`, () => {
+  it('renders the CV hero with name and role', () => {
     const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('myEngineer');
+    fixture.detectChanges();
+    const root: HTMLElement = fixture.nativeElement;
+    expect(root.querySelector('.hero__name')?.textContent).toContain('Vu Dang');
+    expect(root.querySelector('.hero__role')?.textContent).toContain('Senior Software Engineer');
+  });
+
+  it('renders every experience entry', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const items = fixture.nativeElement.querySelectorAll('.timeline__item');
+    expect(items.length).toBe(fixture.componentInstance.experience.length);
+  });
+
+  it('exposes a LinkedIn URL on the contact row', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const link = fixture.nativeElement.querySelector('a[href*="linkedin.com"]');
+    expect(link).toBeTruthy();
   });
 });

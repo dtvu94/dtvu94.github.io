@@ -8,9 +8,9 @@ Personal site at https://dtvu94.github.io/ — an Angular 21 SPA served by GitHu
 
 ## Build
 
-`npm run build` — production build straight into `docs/` with the correct GitHub Pages base href. Commit the resulting `docs/` changes and push to deploy.
+`npm run build` — production build straight into `docs/`. Commit the resulting `docs/` changes and push to `master`; the GitHub Actions workflow (`.github/workflows/static.yml`) uploads `docs/` as the Pages artifact and deploys it.
 
-Output path and base href are configured in `angular.json` (`build.options.outputPath` and `build.options.baseHref`), not as CLI flags.
+Output path and base href (`/`) are configured in `angular.json` (`build.options.outputPath` and `build.options.baseHref`), not as CLI flags.
 
 ## Tests
 
