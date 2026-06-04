@@ -1,0 +1,52 @@
+<app-language-toggle />
+
+<main class="gallery" [attr.lang]="lang()">
+  <header class="gallery__hero">
+    <p class="gallery__script">{{ copy().coupleLine }}</p>
+    <h1 class="gallery__title">{{ ui().heroTitle }}</h1>
+    <p class="gallery__sub">{{ ui().heroSub }}</p>
+    <p class="gallery__meta">{{ dateBadge() }} · Riverside Palace</p>
+  </header>
+
+  <nav class="gallery__filters" [attr.aria-label]="ui().langGroupLabel">
+    <button
+      type="button"
+      class="chip"
+      [class.chip--active]="activeCategory() === 'all'"
+      (click)="setCategory('all')"
+    >
+      {{ ui().allLabel }} ({{ designs.length }})
+    </button>
+    @for (category of categories; track category.id) {
+      <button
+        type="button"
+        class="chip"
+        [class.chip--active]="activeCategory() === category.id"
+        (click)="setCategory(category.id)"
+      >
+        {{ labelFor(category.id) }}
+      </button>
+    }
+  </nav>
+
+  <ul class="gallery__grid">
+    @for (design of filteredDesigns(); track design.id) {
+      <li class="gallery__item" [style.--enter-delay]="staggerDelay($index)">
+        <a class="gallery__link" [routerLink]="['/wedding', design.id]">
+          <div class="card-frame gallery__frame">
+            <app-invitation-card [design]="design" [copy]="copy()" />
+          </div>
+          <div class="gallery__caption">
+            <p class="gallery__name">{{ design.nameVi }}</p>
+            <p class="gallery__desc">{{ design.description[lang()] }}</p>
+            <span class="gallery__tag">{{ labelFor(design.category) }}</span>
+          </div>
+        </a>
+      </li>
+    }
+  </ul>
+
+  <footer class="gallery__footer">
+    <a routerLink="/">{{ ui().backHome }}</a>
+  </footer>
+</main>

@@ -1,0 +1,42 @@
+<section class="guide">
+  <header class="guide__head">
+    <p class="guide__kicker">{{ directions().kicker }}</p>
+    <h2 class="guide__title">{{ directions().title }}</h2>
+    <p class="guide__from">{{ directions().fromLabel }}</p>
+  </header>
+
+  <div class="guide__venue">
+    <p class="guide__venue-name">{{ directions().venueName }}</p>
+    <p class="guide__venue-addr">{{ directions().venueAddress }}</p>
+    <div class="guide__links">
+      <a [href]="directions().openMapsUrl" target="_blank" rel="noopener">{{ directions().openMapsLabel }}</a>
+      <a [href]="directions().directionsUrl" target="_blank" rel="noopener">{{ directions().directionsLabel }}</a>
+    </div>
+  </div>
+
+  <div class="guide__map">
+    <iframe [src]="embedUrl" title="Riverside Palace — Google Maps" loading="lazy" allowfullscreen></iframe>
+    <p class="guide__map-print">{{ directions().mapOnlineLabel }} {{ directions().openMapsUrl }}</p>
+  </div>
+
+  <div class="guide__routes">
+    @for (route of directions().routes; track route.id) {
+      <article class="guide__route">
+        <h3 class="guide__route-title">{{ route.title }}</h3>
+        <p class="guide__route-meta">{{ route.approxKm }} · {{ route.approxTime }}</p>
+        <ol class="guide__steps">
+          @for (step of route.steps; track $index) {
+            <li>{{ step }}</li>
+          }
+        </ol>
+      </article>
+    }
+  </div>
+
+  <ul class="guide__notes">
+    <li><span class="guide__note-icon" aria-hidden="true">🚕</span>{{ directions().rideHailNote }}</li>
+    <li><span class="guide__note-icon" aria-hidden="true">🚇</span>{{ directions().metroNote }}</li>
+    <li><span class="guide__note-icon" aria-hidden="true">🚌</span>{{ directions().busNote }}</li>
+    <li><span class="guide__note-icon" aria-hidden="true">🅿️</span>{{ directions().parkingNote }}</li>
+  </ul>
+</section>

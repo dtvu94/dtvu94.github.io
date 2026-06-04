@@ -1,0 +1,25 @@
+<app-language-toggle />
+
+@if (design(); as d) {
+  <main class="detail" [attr.lang]="lang()" [class.detail--dark]="isDark" [style.background]="d.palette.bg">
+    <nav class="detail__bar">
+      <a class="detail__pill" routerLink="/wedding">{{ ui().backToGallery }}</a>
+      <button type="button" class="detail__pill detail__pill--button" (click)="print()">
+        {{ ui().printLabel }}
+      </button>
+    </nav>
+
+    <header class="detail__head">
+      <h1 class="detail__name">{{ d.nameVi }}</h1>
+      <p class="detail__desc">{{ d.description[lang()] }} · {{ categoryLabel(d) }}</p>
+      <p class="detail__hint">{{ ui().detailHint }}</p>
+    </header>
+
+    <section class="detail__suite">
+      <div class="card-frame detail__card">
+        <app-invitation-card [design]="d" [copy]="copy()" />
+      </div>
+      <app-directions-guide class="detail__guide" [design]="d" />
+    </section>
+  </main>
+}

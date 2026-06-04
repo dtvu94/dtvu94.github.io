@@ -17,7 +17,8 @@
       "Bash(mkdir -p /tmp/cv-shots)",
       "Bash(\"/c/Program Files \\(x86\\)/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --hide-scrollbars --window-size=1280,2400 --screenshot=/tmp/cv-shots/desktop.png http://localhost:4200/)",
       "Bash(\"/c/Program Files \\(x86\\)/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --hide-scrollbars --window-size=1280,3400 --screenshot=/tmp/cv-shots/desktop-full.png http://localhost:4200/)",
-      "Bash(\"/c/Program Files \\(x86\\)/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --hide-scrollbars --window-size=420,1200 --screenshot=/tmp/cv-shots/mobile.png http://localhost:4200/)"
+      "Bash(\"/c/Program Files \\(x86\\)/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --hide-scrollbars --window-size=420,1200 --screenshot=/tmp/cv-shots/mobile.png http://localhost:4200/)",
+      "Bash(git -C /home/vu/Projects/dtvu94.github.io ls-files)"
     ]
   }
 }

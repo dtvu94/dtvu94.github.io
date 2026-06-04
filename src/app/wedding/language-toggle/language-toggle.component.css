@@ -1,0 +1,63 @@
+:host {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 60;
+}
+
+.lang {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.88);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.lang__btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  padding: 7px 11px;
+  font-family: var(--ff-beVietnamPro);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #5a4f3c;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.lang__btn:hover {
+  background: rgba(182, 146, 86, 0.14);
+}
+.lang__btn--active {
+  background: #b69256;
+  color: #ffffff;
+}
+
+.lang__flag {
+  font-size: 13px;
+  line-height: 1;
+}
+
+@media (max-width: 560px) {
+  :host {
+    top: 10px;
+    right: 10px;
+  }
+  .lang__btn {
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+}
+
+@media print {
+  :host {
+    display: none;
+  }
+}

@@ -1,0 +1,436 @@
+/* Structural styles only — every color/font comes from the --inv-* variables
+   set by the host style binding (anyComponentStyle budget: keep this lean). */
+
+:host {
+  display: block;
+}
+
+.inv {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--inv-surface);
+  color: var(--inv-ink);
+  font-family: var(--inv-font-body);
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(20, 16, 10, 0.12), 0 14px 36px rgba(20, 16, 10, 0.18);
+}
+
+/* ── ornament slots ─────────────────────────────────────────────────── */
+.inv__backdrop {
+  position: absolute;
+  top: -4%;
+  left: -12%;
+  width: 124%;
+  height: 54%;
+  pointer-events: none;
+}
+
+.inv__corner {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  pointer-events: none;
+}
+.inv__corner--tl { top: 12px; left: 12px; }
+.inv__corner--tr { top: 12px; right: 12px; transform: scaleX(-1); }
+.inv__corner--bl { bottom: 12px; left: 12px; transform: scaleY(-1); }
+.inv__corner--br { bottom: 12px; right: 12px; transform: scale(-1, -1); }
+
+.inv__crest {
+  position: relative;
+  width: 100px;
+  height: 72px;
+  margin: 0 auto 2px;
+}
+.inv__crest--monogram {
+  width: 104px;
+  height: 104px;
+}
+.inv__crest-art {
+  position: absolute;
+  inset: 0;
+}
+
+.inv__divider {
+  width: 150px;
+  height: 15px;
+  margin: 6px auto;
+  flex-shrink: 0;
+}
+
+.inv__rule {
+  width: 64px;
+  height: 1px;
+  margin: 10px auto;
+  background: var(--inv-accent);
+  flex-shrink: 0;
+}
+
+/* ── content stack ──────────────────────────────────────────────────── */
+.inv__content {
+  position: relative;
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  padding: 36px 32px;
+}
+
+.inv__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+}
+.inv__main > p {
+  margin: 0;
+}
+
+/* ── typography ─────────────────────────────────────────────────────── */
+.inv__title {
+  font-family: var(--inv-font-accent);
+  color: var(--inv-accent);
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.inv__headline {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  margin-top: 6px;
+}
+
+/* "Ông / Bà: ……… cùng gia đình" — the guest's line. Larger than the body
+   copy and with clear space below it, out of respect for the invitee. */
+.inv__guest {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--inv-primary);
+  margin: 2px 0 12px;
+}
+.inv__guest-dots {
+  flex: 0 1 120px;
+  border-bottom: 1.5px dotted currentColor;
+  opacity: 0.45;
+}
+
+.inv__couple {
+  font-family: var(--inv-font-display);
+  color: var(--inv-primary);
+  font-size: 40px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.inv__event {
+  font-size: 13px;
+  font-style: italic;
+}
+
+.inv__date {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--inv-primary);
+}
+
+.inv__lunar {
+  font-size: 11.5px;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.inv__venue {
+  display: grid;
+  gap: 2px;
+  margin-top: 2px;
+}
+.inv__venue-line {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.inv__venue-line:first-child {
+  font-weight: 600;
+}
+
+.inv__closing {
+  font-size: 10.5px;
+  font-style: italic;
+  opacity: 0.8;
+  margin-top: 7px;
+}
+
+.inv__rsvp {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--inv-accent);
+}
+
+.inv__monogram {
+  font-family: var(--inv-font-accent);
+  color: var(--inv-accent);
+  font-size: 24px;
+  line-height: 1;
+  margin: 0;
+}
+.inv__monogram--crest {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27px;
+}
+.inv__monogram--band {
+  font-size: 20px;
+}
+
+/* ── layout: centeredClassic ────────────────────────────────────────── */
+.inv--centeredClassic .inv__content {
+  padding: 42px 36px;
+}
+
+/* ── layout: minimalLine ────────────────────────────────────────────── */
+.inv--minimalLine .inv__content {
+  padding: 44px 38px;
+}
+.inv--minimalLine .inv__title {
+  font-family: var(--inv-font-body);
+  color: var(--inv-ink);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ── layout: framedBorder ───────────────────────────────────────────── */
+.inv--framedBorder .inv__content {
+  margin: 18px;
+  padding: 26px 24px;
+  border: 1.5px solid var(--inv-accent);
+  outline: 1px solid color-mix(in srgb, var(--inv-accent) 55%, transparent);
+  outline-offset: 5px;
+}
+
+/* ── layout: crestTop ───────────────────────────────────────────────── */
+.inv--crestTop .inv__main {
+  justify-content: flex-start;
+  padding-top: 2px;
+}
+.inv--crestTop .inv__crest {
+  width: 120px;
+  height: 84px;
+  margin-bottom: 6px;
+}
+.inv--crestTop .inv__crest--monogram {
+  width: 110px;
+  height: 110px;
+}
+
+/* ── layout: bandedHeader ───────────────────────────────────────────── */
+.inv__band {
+  position: relative;
+  background: var(--inv-accent);
+  color: var(--inv-surface);
+  padding: 20px 16px 16px;
+  flex-shrink: 0;
+}
+.inv__band-title {
+  margin: 0;
+  font-family: var(--inv-font-accent);
+  font-size: 27px;
+  line-height: 1.15;
+}
+.inv--bandedHeader .inv__content {
+  padding-top: 22px;
+}
+
+/* ── layout: splitVertical ──────────────────────────────────────────── */
+.inv--splitVertical .inv__content {
+  padding: 0;
+}
+.inv__side {
+  width: 112px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px 10px;
+  border-right: 1px solid var(--inv-accent);
+  background: color-mix(in srgb, var(--inv-accent) 8%, transparent);
+}
+.inv__side > p {
+  margin: 0;
+}
+.inv__side-ornament {
+  width: 62px;
+  height: 62px;
+}
+.inv__side-title {
+  font-family: var(--inv-font-accent);
+  color: var(--inv-accent);
+  font-size: 19px;
+  line-height: 1.3;
+}
+.inv--splitVertical .inv__main {
+  padding: 30px 24px;
+}
+
+/* ── layout: archFrame (arch silhouette — 2026 signature shape) ─────── */
+.inv--archFrame .inv__content {
+  margin: 18px 24px 22px;
+  padding: 64px 26px 26px;
+  border: 1.5px solid var(--inv-accent);
+  border-radius: 170px 170px 14px 14px;
+}
+.inv--archFrame .inv__crest {
+  width: 84px;
+  height: 60px;
+  margin-bottom: 0;
+}
+.inv--archFrame .inv__crest--monogram {
+  width: 88px;
+  height: 88px;
+}
+.inv--archFrame .inv__couple {
+  font-size: 37px;
+}
+
+/* ── layout: editorialAsym (left-aligned, oversized names) ──────────── */
+.inv--editorialAsym {
+  text-align: left;
+}
+.inv--editorialAsym .inv__content {
+  padding: 42px 34px 36px;
+}
+.inv--editorialAsym .inv__main {
+  gap: 8px;
+}
+.inv--editorialAsym .inv__title {
+  font-family: var(--inv-font-body);
+  color: var(--inv-ink);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+.inv--editorialAsym .inv__couple {
+  font-size: 47px;
+  line-height: 1.05;
+  margin: 4px 0 2px;
+}
+.inv--editorialAsym .inv__guest {
+  justify-content: flex-start;
+}
+.inv--editorialAsym .inv__rule {
+  margin-left: 0;
+  width: 86px;
+}
+.inv--editorialAsym .inv__divider {
+  margin-left: 0;
+}
+.inv--editorialAsym .inv__date {
+  margin-top: 12px;
+}
+.inv--editorialAsym .inv__crest {
+  width: 64px;
+  height: 64px;
+  margin: 0 0 6px;
+}
+.inv--editorialAsym .inv__monogram--crest {
+  font-size: 18px;
+}
+
+/* ── watermark: giant "&" (typography as decoration) ────────────────── */
+.inv__watermark {
+  position: absolute;
+  right: -26px;
+  bottom: -64px;
+  margin: 0;
+  font-family: var(--inv-font-display);
+  font-size: 300px;
+  line-height: 1;
+  color: var(--inv-primary);
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+}
+.inv--editorialAsym .inv__watermark {
+  right: auto;
+  bottom: auto;
+  left: -22px;
+  top: -66px;
+  opacity: 0.045;
+}
+
+/* ── scalloped band edge ────────────────────────────────────────────── */
+.inv__band::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  height: 8px;
+  background: radial-gradient(circle at 7px -1px, var(--inv-accent) 6.5px, transparent 7.5px) repeat-x;
+  background-size: 14px 8px;
+}
+
+/* ── gold sheen ─────────────────────────────────────────────────────── */
+.inv--gold .inv__title,
+.inv--gold .inv__monogram,
+.inv--gold .inv__band-title {
+  background: linear-gradient(105deg, #8a6a1f 0%, #d4af37 35%, #f3dc8a 50%, #c9a227 65%, #8a6a1f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ── Thai readability (taller glyphs, no fake italics, no wide tracking) ── */
+.inv:lang(th) .inv__headline {
+  letter-spacing: 0.12em;
+  font-size: 12px;
+}
+.inv:lang(th) .inv__event,
+.inv:lang(th) .inv__closing {
+  font-style: normal;
+}
+.inv:lang(th) .inv__event,
+.inv:lang(th) .inv__venue-line,
+.inv:lang(th) .inv__closing {
+  line-height: 1.65;
+}
+.inv:lang(th) .inv__venue-line {
+  font-size: 13px;
+}
+.inv:lang(th) .inv__date {
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.inv:lang(th) .inv__title {
+  font-size: 24px;
+}
+.inv--minimalLine:lang(th) .inv__title {
+  letter-spacing: 0.18em;
+  font-size: 13.5px;
+}
+
+@media print {
+  .inv {
+    box-shadow: none;
+  }
+}

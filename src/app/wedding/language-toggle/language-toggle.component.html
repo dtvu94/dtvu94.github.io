@@ -1,0 +1,15 @@
+<div class="lang" role="group" [attr.aria-label]="groupLabel()">
+  @for (option of options; track option.code) {
+    <button
+      type="button"
+      class="lang__btn"
+      [class.lang__btn--active]="language.lang() === option.code"
+      [attr.aria-pressed]="language.lang() === option.code"
+      [attr.data-lang]="option.code"
+      [title]="option.name"
+      (click)="language.setLang(option.code)"
+    >
+      <span class="lang__flag" aria-hidden="true">{{ option.flag }}</span>{{ option.label }}
+    </button>
+  }
+</div>

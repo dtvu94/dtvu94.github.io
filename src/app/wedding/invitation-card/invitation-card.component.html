@@ -1,0 +1,75 @@
+<article class="inv inv--{{ design.layout }}" [class.inv--gold]="design.accentStyle === 'gold'">
+  @if (hasWatermark) {
+    <p class="inv__watermark" aria-hidden="true">&amp;</p>
+  }
+  @if (backdropOrnament; as backdrop) {
+    <app-ornament class="inv__backdrop" [ornament]="backdrop" aria-hidden="true" />
+  }
+  @if (cornerOrnament; as corner) {
+    <app-ornament class="inv__corner inv__corner--tl" [ornament]="corner" aria-hidden="true" />
+    <app-ornament class="inv__corner inv__corner--tr" [ornament]="corner" aria-hidden="true" />
+    <app-ornament class="inv__corner inv__corner--bl" [ornament]="corner" aria-hidden="true" />
+    <app-ornament class="inv__corner inv__corner--br" [ornament]="corner" aria-hidden="true" />
+  }
+
+  @if (design.layout === 'bandedHeader') {
+    <header class="inv__band">
+      <p class="inv__band-title">{{ copy.titleWord }}</p>
+    </header>
+  }
+
+  <div class="inv__content">
+    @if (design.layout === 'splitVertical') {
+      <aside class="inv__side">
+        <p class="inv__monogram">{{ copy.monogram }}</p>
+        @if (crestOrnament; as crest) {
+          <app-ornament class="inv__side-ornament" [ornament]="crest" aria-hidden="true" />
+        }
+        <p class="inv__side-title">{{ copy.titleWord }}</p>
+      </aside>
+    }
+
+    <div class="inv__main">
+      @if (design.layout !== 'splitVertical' && design.layout !== 'bandedHeader') {
+        @if (crestOrnament; as crest) {
+          <div class="inv__crest" [class.inv__crest--monogram]="crestHoldsMonogram">
+            <app-ornament class="inv__crest-art" [ornament]="crest" aria-hidden="true" />
+            @if (crestHoldsMonogram) {
+              <p class="inv__monogram inv__monogram--crest">{{ copy.monogram }}</p>
+            }
+          </div>
+        }
+        <p class="inv__title">{{ copy.titleWord }}</p>
+      } @else if (design.layout === 'bandedHeader') {
+        <p class="inv__monogram inv__monogram--band">{{ copy.monogram }}</p>
+      }
+
+      <p class="inv__headline">{{ copy.inviteHeadline }}</p>
+      <p class="inv__guest">
+        <span>{{ copy.guestPrefix }}</span>
+        <span class="inv__guest-dots" aria-hidden="true"></span>
+        <span>{{ copy.guestSuffix }}</span>
+      </p>
+      <p class="inv__event">{{ copy.eventLine }}</p>
+      <p class="inv__couple">{{ copy.coupleLine }}</p>
+
+      @if (dividerOrnament; as divider) {
+        <app-ornament class="inv__divider" [ornament]="divider" aria-hidden="true" />
+      } @else {
+        <div class="inv__rule" aria-hidden="true"></div>
+      }
+
+      <p class="inv__date">{{ copy.dateLine }}</p>
+      @if (copy.lunarLine) {
+        <p class="inv__lunar">{{ copy.lunarLine }}</p>
+      }
+      <div class="inv__venue">
+        @for (line of copy.venueLines; track line) {
+          <p class="inv__venue-line">{{ line }}</p>
+        }
+      </div>
+      <p class="inv__closing">{{ copy.closing }}</p>
+      <p class="inv__rsvp">{{ copy.rsvp }}</p>
+    </div>
+  </div>
+</article>

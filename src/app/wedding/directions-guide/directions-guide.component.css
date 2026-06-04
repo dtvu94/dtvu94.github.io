@@ -1,0 +1,188 @@
+/* Structural styles only — colors/fonts come from the --inv-* variables. */
+
+:host {
+  display: block;
+}
+
+.guide {
+  background: var(--inv-surface);
+  color: var(--inv-ink);
+  font-family: var(--inv-font-body);
+  border: 1px solid color-mix(in srgb, var(--inv-accent) 45%, transparent);
+  box-shadow: 0 1px 3px rgba(20, 16, 10, 0.1), 0 12px 30px rgba(20, 16, 10, 0.12);
+  padding: 30px clamp(18px, 4vw, 38px) 32px;
+  display: grid;
+  gap: 22px;
+  text-align: left;
+}
+
+.guide__head {
+  display: grid;
+  gap: 6px;
+  text-align: center;
+}
+.guide__kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--inv-accent);
+}
+.guide__title {
+  margin: 0;
+  font-family: var(--inv-font-display);
+  font-weight: 500;
+  color: var(--inv-primary);
+  font-size: clamp(24px, 4vw, 32px);
+  line-height: 1.2;
+}
+.guide__from {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  opacity: 0.9;
+  max-width: 58ch;
+  justify-self: center;
+}
+
+.guide__venue {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+.guide__venue-name {
+  margin: 0;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--inv-primary);
+}
+.guide__venue-addr {
+  margin: 0;
+  font-size: 13.5px;
+}
+.guide__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.guide__links a {
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--inv-primary);
+  border: 1px solid color-mix(in srgb, var(--inv-accent) 60%, transparent);
+  border-radius: 999px;
+  padding: 7px 14px;
+  transition: background-color 0.15s ease;
+}
+.guide__links a:hover {
+  background: color-mix(in srgb, var(--inv-accent) 12%, transparent);
+}
+
+.guide__map iframe {
+  display: block;
+  width: 100%;
+  height: 280px;
+  border: 0;
+  border-radius: 10px;
+}
+.guide__map-print {
+  display: none;
+}
+
+.guide__routes {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+}
+.guide__route {
+  border: 1px solid color-mix(in srgb, var(--inv-accent) 35%, transparent);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.guide__route-title {
+  margin: 0;
+  font-size: 14px;
+  color: var(--inv-primary);
+}
+.guide__route-meta {
+  margin: 2px 0 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--inv-accent);
+}
+.guide__steps {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 5px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.guide__notes {
+  list-style: none;
+  margin: 0;
+  padding: 14px 16px;
+  display: grid;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--inv-accent) 8%, transparent);
+}
+.guide__notes li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.guide__note-icon {
+  flex-shrink: 0;
+}
+
+/* ── Thai readability ───────────────────────────────────────────────── */
+.guide:lang(th) .guide__from {
+  line-height: 1.7;
+}
+.guide:lang(th) .guide__steps,
+.guide:lang(th) .guide__notes {
+  line-height: 1.75;
+}
+
+/* ── 2K / large desktop ─────────────────────────────────────────────── */
+@media (min-width: 1600px) {
+  .guide__from,
+  .guide__venue-addr {
+    font-size: 14.5px;
+  }
+  .guide__steps,
+  .guide__notes {
+    font-size: 13.5px;
+  }
+  .guide__links a {
+    font-size: 13.5px;
+  }
+  .guide__map iframe {
+    height: 320px;
+  }
+}
+
+@media print {
+  .guide {
+    box-shadow: none;
+  }
+  .guide__links,
+  .guide__map iframe {
+    display: none;
+  }
+  .guide__map-print {
+    display: block;
+    font-size: 11px;
+    text-align: center;
+    margin: 0;
+  }
+}

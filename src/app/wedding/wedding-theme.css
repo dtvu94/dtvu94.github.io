@@ -1,0 +1,126 @@
+/* Global theme tokens for the wedding feature.
+   Lives in angular.json `styles[]` (NOT a component stylesheet), so it is
+   exempt from the anyComponentStyle budget — shared rules belong here.
+
+   Every script face chains 'Be Vietnam Pro' so Vietnamese diacritics can
+   never render as tofu, even if a Google Fonts subset ever regresses. */
+
+/* Thai glyphs are absent from the Latin display faces, so every chain also
+   carries a Thai-capable family (Sarabun sans / Noto Serif Thai serif /
+   Charm hand-writing): Latin text keeps its design face, Thai text falls
+   through to the matching Thai face — per-glyph, automatically. */
+:root {
+  --ff-inter: 'Inter', 'Be Vietnam Pro', 'Sarabun', sans-serif;
+  --ff-beVietnamPro: 'Be Vietnam Pro', 'Sarabun', 'Inter', sans-serif;
+  --ff-montserrat: 'Montserrat', 'Be Vietnam Pro', 'Sarabun', sans-serif;
+  --ff-playfair: 'Playfair Display', 'Noto Serif Thai', 'Lora', serif;
+  --ff-cormorant: 'Cormorant Garamond', 'Noto Serif Thai', 'Lora', serif;
+  --ff-lora: 'Lora', 'Noto Serif Thai', serif;
+  --ff-dancingScript: 'Dancing Script', 'Charm', 'Be Vietnam Pro', cursive;
+  --ff-greatVibes: 'Great Vibes', 'Charm', 'Be Vietnam Pro', cursive;
+  --ff-sacramento: 'Sacramento', 'Charm', 'Be Vietnam Pro', cursive;
+  --ff-pinyonScript: 'Pinyon Script', 'Charm', 'Be Vietnam Pro', cursive;
+  --ff-parisienne: 'Parisienne', 'Charm', 'Be Vietnam Pro', cursive;
+}
+
+/* Fixed-design frame: the invitation card is designed at 400×560 px and
+   scaled uniformly via --s, so typography keeps its exact proportions at
+   every viewport (gallery previews and the detail page share this). */
+.card-frame {
+  --card-w: 400px;
+  --card-h: 560px;
+  width: calc(var(--card-w) * var(--s, 1));
+  height: calc(var(--card-h) * var(--s, 1));
+  overflow: hidden;
+}
+
+.card-frame > app-invitation-card {
+  width: var(--card-w);
+  height: var(--card-h);
+  transform: scale(var(--s, 1));
+  transform-origin: top left;
+}
+
+/* ── Animations (pure CSS; disabled for users who prefer reduced motion) ── */
+@media (prefers-reduced-motion: no-preference) {
+  /* Cards rise in; the gallery staggers via --enter-delay set per item. */
+  .card-frame > app-invitation-card {
+    opacity: 0;
+    animation: inv-enter 0.65s cubic-bezier(0.22, 0.7, 0.3, 1) forwards;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+  @keyframes inv-enter {
+    from {
+      opacity: 0;
+      transform: scale(var(--s, 1)) translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(var(--s, 1)) translateY(0);
+    }
+  }
+
+  /* Directions insert follows the card. */
+  .detail__guide {
+    animation: inv-rise 0.6s 0.25s cubic-bezier(0.22, 0.7, 0.3, 1) both;
+  }
+  @keyframes inv-rise {
+    from {
+      opacity: 0;
+      translate: 0 16px;
+    }
+  }
+
+  /* On the detail page, line ornaments draw themselves in
+     (stroked SVG paths carry pathLength="1"). */
+  .detail__card app-ornament path[pathLength] {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: inv-draw 1.2s ease-out 0.3s forwards;
+  }
+  @keyframes inv-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Corner florals drift gently (uses `translate` so the corner-mirroring
+     transforms stay untouched). */
+  .detail__card .inv__corner {
+    animation: inv-float 6.5s ease-in-out infinite alternate;
+  }
+  .detail__card .inv__corner--tr,
+  .detail__card .inv__corner--bl {
+    animation-duration: 7.5s;
+  }
+  @keyframes inv-float {
+    from {
+      translate: 0 0;
+    }
+    to {
+      translate: 0 4px;
+    }
+  }
+
+  /* The couple's names settle in last on the detail page. */
+  .detail__card .inv__couple {
+    animation: inv-rise 0.8s 0.35s cubic-bezier(0.22, 0.7, 0.3, 1) both;
+  }
+
+  /* Gold accents shimmer (gradient defined in the card stylesheet). */
+  .inv--gold .inv__title,
+  .inv--gold .inv__monogram,
+  .inv--gold .inv__band-title {
+    background-size: 220% 100%;
+    animation: inv-shimmer 4.5s ease-in-out infinite;
+  }
+  @keyframes inv-shimmer {
+    0%,
+    100% {
+      background-position: 0% 0;
+    }
+    50% {
+      background-position: 100% 0;
+    }
+  }
+}

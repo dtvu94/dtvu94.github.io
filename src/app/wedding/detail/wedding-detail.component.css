@@ -1,0 +1,155 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f6f3ed;
+}
+
+.detail {
+  min-height: 100vh;
+  padding: 28px 18px 72px;
+}
+
+/* ── top bar ────────────────────────────────────────────────────────── */
+.detail__bar {
+  max-width: 1140px;
+  margin: 0 auto 28px;
+  display: flex;
+  flex-wrap: wrap;
+  /* Pills sit left so the fixed top-right language toggle never collides. */
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+}
+.detail__pill {
+  font-family: var(--ff-beVietnamPro);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #5a4f3c;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  padding: 8px 15px;
+  text-decoration: none;
+}
+.detail__pill--button {
+  cursor: pointer;
+}
+.detail--dark .detail__pill {
+  color: #f0ead9;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* ── heading ────────────────────────────────────────────────────────── */
+.detail__head {
+  display: grid;
+  gap: 6px;
+  text-align: center;
+  margin-bottom: 32px;
+  color: #3a342a;
+}
+.detail--dark .detail__head {
+  color: #f0ead9;
+}
+.detail__name {
+  margin: 0;
+  font-family: var(--ff-playfair);
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 600;
+}
+.detail__desc {
+  margin: 0;
+  font-family: var(--ff-beVietnamPro);
+  font-size: 14px;
+  opacity: 0.82;
+}
+.detail__hint {
+  margin: 2px 0 0;
+  font-family: var(--ff-beVietnamPro);
+  font-size: 13px;
+  font-style: italic;
+  opacity: 0.75;
+}
+
+/* ── suite: card + guide ────────────────────────────────────────────── */
+.detail__suite {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 36px;
+}
+.detail__card {
+  flex-shrink: 0;
+}
+.detail__guide {
+  flex: 1 1 480px;
+  max-width: 660px;
+  min-width: 0;
+}
+
+/* Thai runs taller — give the heading area more air. */
+.detail:lang(th) .detail__desc,
+.detail:lang(th) .detail__hint {
+  line-height: 1.7;
+}
+
+/* 2K / large desktop: bigger suite, comfortable reading sizes. */
+@media (min-width: 1600px) {
+  .detail__suite {
+    max-width: 1320px;
+    gap: 48px;
+  }
+  .detail__card {
+    --s: 1.12;
+  }
+  .detail__guide {
+    max-width: 760px;
+  }
+  .detail__desc {
+    font-size: 15px;
+  }
+  .detail__hint {
+    font-size: 14px;
+  }
+}
+
+/* Phones: drop the content below the fixed language toggle. */
+@media (max-width: 700px) {
+  .detail {
+    padding-top: 64px;
+  }
+}
+
+@media (max-width: 460px) {
+  .detail__card {
+    --s: 0.82;
+  }
+}
+
+@media print {
+  :host,
+  .detail {
+    background: #ffffff !important;
+  }
+  .detail {
+    padding: 0;
+  }
+  .detail__bar,
+  .detail__hint {
+    display: none;
+  }
+  .detail__suite {
+    display: block;
+  }
+  .detail__card {
+    margin: 0 auto;
+  }
+  .detail__guide {
+    display: block;
+    max-width: none;
+    margin-top: 20px;
+  }
+}
