@@ -125,7 +125,7 @@ export interface VenueInfo {
 export interface WeddingConfig {
   groom: PersonName;
   bride: PersonName;
-  /** e.g. vi "11 giờ 00" / en "11:00 AM" / th "11:00 น." */
+  /** e.g. vi "18 giờ 00" / en "6:00 PM" / th "18:00 น." */
   timeText: LocalizedText;
   /** e.g. vi "Chủ Nhật" / en "Sunday" / th "วันอาทิตย์" */
   weekdayText: LocalizedText;

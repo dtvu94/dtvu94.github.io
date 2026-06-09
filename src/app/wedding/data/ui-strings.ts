@@ -55,7 +55,7 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
   },
 };
 
-/** "Sunday, March 28th, 2027 · 11:00 AM" badge for the gallery hero. */
+/** "Sunday, March 28th, 2027 · 6:00 PM" badge for the gallery hero. */
 export function formatDateBadge(config: WeddingConfig, lang: Lang): string {
   const weekday = config.weekdayText[lang];
   const date = config.dateText[lang];

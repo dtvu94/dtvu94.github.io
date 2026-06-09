@@ -13,7 +13,7 @@ describe('buildWording', () => {
     expect(copy.monogram).toBe('V & T');
     // The event line leads into the names: "đến dự Lễ Thành Hôn của — Vũ & Thảo".
     expect(copy.eventLine).toBe('đến dự Lễ Thành Hôn của');
-    expect(copy.dateLine).toBe('Vào lúc 11 giờ 00, Chủ Nhật, ngày 28 tháng 03 năm 2027');
+    expect(copy.dateLine).toBe('Vào lúc 18 giờ 00, Chủ Nhật, ngày 28 tháng 03 năm 2027');
     expect(copy.venueLines).toEqual([
       'Tại Sảnh (đang cập nhật)',
       'Trung Tâm Hội Nghị – Tiệc Cưới Riverside Palace',
@@ -30,7 +30,7 @@ describe('buildWording', () => {
     expect(copy.guestPrefix).toBe('Mr / Ms / Mrs');
     expect(copy.guestSuffix).toBe('& family');
     expect(copy.eventLine).toBe('to celebrate the wedding of');
-    expect(copy.dateLine).toBe('At 11:00 AM, Sunday, March 28th, 2027');
+    expect(copy.dateLine).toBe('At 6:00 PM, Sunday, March 28th, 2027');
     expect(copy.venueLines).toEqual([
       'Hall: to be announced',
       'Riverside Palace Convention & Wedding Center',
@@ -48,7 +48,7 @@ describe('buildWording', () => {
     expect(copy.guestPrefix).toBe('คุณ');
     expect(copy.guestSuffix).toBe('พร้อมครอบครัว');
     expect(copy.eventLine).toBe('ร่วมเป็นเกียรติในพิธีมงคลสมรสของ');
-    expect(copy.dateLine).toBe('เวลา 11:00 น. วันอาทิตย์ที่ 28 มีนาคม พ.ศ. 2570');
+    expect(copy.dateLine).toBe('เวลา 18:00 น. วันอาทิตย์ที่ 28 มีนาคม พ.ศ. 2570');
     expect(copy.venueLines[0]).toContain('ห้องจัดเลี้ยง');
     expect(copy.coupleLine).toBe('Vũ & Thảo');
   });

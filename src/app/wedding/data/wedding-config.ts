@@ -11,9 +11,9 @@ export const WEDDING_CONFIG: WeddingConfig = {
   groom: { short: 'Vũ', full: '' },
   bride: { short: 'Thảo', full: '' },
   timeText: {
-    vi: '11 giờ 00',
-    en: '11:00 AM',
-    th: '11:00 น.',
+    vi: '18 giờ 00',
+    en: '6:00 PM',
+    th: '18:00 น.',
   },
   weekdayText: {
     vi: 'Chủ Nhật',
