@@ -19,7 +19,18 @@
       "Bash(\"/c/Program Files \\(x86\\)/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --hide-scrollbars --window-size=1280,3400 --screenshot=/tmp/cv-shots/desktop-full.png http://localhost:4200/)",
       "Bash(\"/c/Program Files \\(x86\\)/Google/Chrome/Application/chrome.exe\" --headless=new --disable-gpu --hide-scrollbars --window-size=420,1200 --screenshot=/tmp/cv-shots/mobile.png http://localhost:4200/)",
       "Bash(git -C /home/vu/Projects/dtvu94.github.io ls-files)",
-      "Bash(npm test *)"
+      "Bash(npm test *)",
+      "PowerShell(npm outdated)",
+      "PowerShell(npm config get registry)",
+      "PowerShell(npm config get strict-ssl)",
+      "PowerShell(node -v)",
+      "PowerShell(npm -v)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "PowerShell($env:NODE_EXTRA_CA_CERTS; \"cafile=\" + \\(npm config get cafile\\); \"---chain---\"; node -e \"const t=require\\('tls'\\).connect\\(443,'registry.npmjs.org',{rejectUnauthorized:false},\\(\\)=>{let c=t.getPeerCertificate\\(true\\);while\\(c\\){console.log\\(c.subject && c.subject.CN, '<=', c.issuer && c.issuer.CN\\);if\\(!c.issuerCertificate||c.issuerCertificate===c\\)break;c=c.issuerCertificate;}t.end\\(\\);}\\);t.on\\('error',e=>console.log\\('ERR',e.message\\)\\);\")",
+      "PowerShell(npm outdated; echo \"---EXIT:$LASTEXITCODE---\")",
+      "PowerShell(npm install; echo \"---EXIT:$LASTEXITCODE---\")",
+      "PowerShell(foreach \\($p in '@angular/core','@angular/cli','@angular/build','rxjs','tslib','zone.js','typescript','jest','jest-preset-angular'\\) { \"{0}: {1}\" -f $p, \\(node -p \"require\\('$p/package.json'\\).version\"\\) })",
+      "PowerShell(node -e \"const p=require\\('jest-preset-angular/package.json'\\); console.log\\('deps:',JSON.stringify\\(p.dependencies\\)\\); console.log\\('peer:',JSON.stringify\\(p.peerDependencies\\)\\); console.log\\('peerMeta:',JSON.stringify\\(p.peerDependenciesMeta\\)\\);\")"
     ]
   }
 }
