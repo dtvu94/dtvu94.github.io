@@ -30,7 +30,9 @@
       "PowerShell(npm outdated; echo \"---EXIT:$LASTEXITCODE---\")",
       "PowerShell(npm install; echo \"---EXIT:$LASTEXITCODE---\")",
       "PowerShell(foreach \\($p in '@angular/core','@angular/cli','@angular/build','rxjs','tslib','zone.js','typescript','jest','jest-preset-angular'\\) { \"{0}: {1}\" -f $p, \\(node -p \"require\\('$p/package.json'\\).version\"\\) })",
-      "PowerShell(node -e \"const p=require\\('jest-preset-angular/package.json'\\); console.log\\('deps:',JSON.stringify\\(p.dependencies\\)\\); console.log\\('peer:',JSON.stringify\\(p.peerDependencies\\)\\); console.log\\('peerMeta:',JSON.stringify\\(p.peerDependenciesMeta\\)\\);\")"
+      "PowerShell(node -e \"const p=require\\('jest-preset-angular/package.json'\\); console.log\\('deps:',JSON.stringify\\(p.dependencies\\)\\); console.log\\('peer:',JSON.stringify\\(p.peerDependencies\\)\\); console.log\\('peerMeta:',JSON.stringify\\(p.peerDependenciesMeta\\)\\);\")",
+      "Skill(artifact-design)",
+      "Skill(artifact-design:*)"
     ]
   }
 }
