@@ -29,7 +29,8 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/app/wedding/wedding-theme.css"
+              "src/app/wedding/wedding-theme.css",
+              "src/app/wedding/wedding-finishes.css"
             ],
             "scripts": [],
             "browser": "src/main.ts"

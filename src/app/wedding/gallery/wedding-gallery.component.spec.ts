@@ -28,7 +28,7 @@ describe('WeddingGalleryComponent', () => {
     return fixture;
   }
 
-  it('renders all 24 invitation previews (at least 20 required)', () => {
+  it('renders all 34 invitation previews (at least 20 required)', () => {
     const cards = create().nativeElement.querySelectorAll('app-invitation-card');
     expect(cards.length).toBe(INVITATION_DESIGNS.length);
     expect(cards.length).toBeGreaterThanOrEqual(20);

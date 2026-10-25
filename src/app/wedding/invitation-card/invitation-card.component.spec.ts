@@ -47,7 +47,48 @@ describe('InvitationCardComponent', () => {
     expect(event?.textContent).not.toContain('chúng tôi');
   });
 
-  it('renders every one of the 24 designs with its layout and the full copy', () => {
+  function render(id: string) {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.design = getDesignById(id) as InvitationDesign;
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  }
+
+  it('lays the laser-cut jacket over the card as a single evenodd path', () => {
+    const root = render('laser-red-lace');
+    const sheet = root.querySelectorAll('svg.inv__laser path');
+    expect(sheet.length).toBe(1);
+    expect(sheet[0].getAttribute('fill-rule')).toBe('evenodd');
+    expect(sheet[0].getAttribute('d')?.length).toBeGreaterThan(1000);
+    const host = root.querySelector('app-invitation-card');
+    expect(host?.getAttribute('style')).toContain('--inv-overlay:#d7151c');
+  });
+
+  it('renders no jacket for non-laser layouts and falls back to the accent as overlay', () => {
+    const root = render('classic-ivory');
+    expect(root.querySelector('.inv__laser')).toBeNull();
+    expect(root.querySelector('app-invitation-card')?.getAttribute('style')).toContain('--inv-overlay:#b69256');
+  });
+
+  it('flags the print finish and dark paper on the card', () => {
+    expect(render('press-cotton').querySelector('.inv')?.className).toContain('inv--fin-letterpress');
+    expect(render('press-blind-ivory').querySelector('.inv')?.className).toContain('inv--fin-emboss');
+    expect(render('classic-ivory').querySelector('.inv')?.className).toContain('inv--fin-flat');
+
+    const redFoil = render('press-red-foil').querySelector('.inv');
+    expect(redFoil?.classList.contains('inv--dark-paper')).toBe(true);
+    expect(render('press-cotton').querySelector('.inv')?.classList.contains('inv--dark-paper')).toBe(false);
+  });
+
+  it('cuts the monogram through the laser doily crest', () => {
+    const root = render('laser-jade-doily');
+    const crest = root.querySelector('.inv__crest');
+    expect(crest?.classList.contains('inv__crest--laser')).toBe(true);
+    expect(crest?.querySelector('.inv__monogram--crest')?.textContent).toContain('V & T');
+    expect(crest?.querySelector('app-ornament path[fill-rule="evenodd"]')).toBeTruthy();
+  });
+
+  it('renders every design with its layout and the full copy', () => {
     for (const design of INVITATION_DESIGNS) {
       const fixture = TestBed.createComponent(HostComponent);
       fixture.componentInstance.design = design;

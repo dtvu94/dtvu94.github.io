@@ -15,6 +15,7 @@ export function invitationThemeStyle(design: InvitationDesign): string {
     `--inv-primary:${palette.primary}`,
     `--inv-accent:${palette.accent}`,
     `--inv-ink:${palette.ink}`,
+    `--inv-overlay:${palette.overlay ?? palette.accent}`,
     `--inv-font-display:var(--ff-${fonts.display})`,
     `--inv-font-body:var(--ff-${fonts.body})`,
     `--inv-font-accent:var(--ff-${fonts.accent ?? fonts.display})`,

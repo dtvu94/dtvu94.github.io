@@ -1,6 +1,7 @@
 import { Component, HostBinding, Input } from '@angular/core';
-import { InvitationCopy, InvitationDesign, OrnamentKey } from '../data/wedding.types';
-import { invitationThemeStyle } from '../theme';
+import { InvitationCopy, InvitationDesign, LayoutVariant, OrnamentKey } from '../data/wedding.types';
+import { LASER_SHAPES, LaserShape } from '../ornaments/laser-cut';
+import { invitationThemeStyle, isDarkColor } from '../theme';
 
 type OrnamentSlot = 'crest' | 'corners' | 'divider' | 'backdrop' | 'watermark';
 
@@ -19,16 +20,25 @@ const ORNAMENT_SLOTS: Record<OrnamentKey, OrnamentSlot | 'none'> = {
   monogramRing: 'crest',
   // Rendered by the card itself as a giant translucent "&" (not an SVG).
   grandAmpersand: 'watermark',
+  laserDoily: 'crest',
 };
 
 /** Crest ornaments that frame the couple's monogram. */
-const MONOGRAM_CRESTS: ReadonlySet<OrnamentKey> = new Set<OrnamentKey>(['monogramRing', 'leafyWreath']);
+const MONOGRAM_CRESTS: ReadonlySet<OrnamentKey> = new Set<OrnamentKey>(['monogramRing', 'leafyWreath', 'laserDoily']);
+
+/** Laser layouts: the jacket sheet laid over the card, framing its window. */
+const LASER_SHEETS: Partial<Record<LayoutVariant, LaserShape>> = {
+  laserLace: LASER_SHAPES.lace,
+  laserArch: LASER_SHAPES.arch,
+  laserLattice: LASER_SHAPES.lattice,
+};
 
 /**
- * Renders any of the 24 designs from pure data: the palette/fonts arrive as
- * `--inv-*` CSS variables (host style binding), the structure is one of six
- * layout variants, and decorations are slotted ornaments. The stylesheet is
- * structural only — keep colors out of it (anyComponentStyle budget).
+ * Renders any design from pure data: the palette/fonts arrive as `--inv-*`
+ * CSS variables (host style binding), the structure is one of the layout
+ * variants, and decorations are slotted ornaments. The stylesheet is
+ * structural only — keep colors out of it (anyComponentStyle budget). Print
+ * finishes and the laser layouts are styled globally in wedding-finishes.css.
  */
 @Component({
   selector: 'app-invitation-card',
@@ -43,6 +53,19 @@ export class InvitationCardComponent {
   @HostBinding('attr.style')
   get themeStyle(): string {
     return invitationThemeStyle(this.design);
+  }
+
+  get finish(): string {
+    return this.design.finish ?? 'flat';
+  }
+
+  /** Shading for pressed/raised finishes flips on dark paper. */
+  get isDarkPaper(): boolean {
+    return isDarkColor(this.design.palette.surface);
+  }
+
+  get laserSheet(): LaserShape | null {
+    return LASER_SHEETS[this.design.layout] ?? null;
   }
 
   get crestOrnament(): OrnamentKey | null {
@@ -68,6 +91,11 @@ export class InvitationCardComponent {
   get crestHoldsMonogram(): boolean {
     const crest = this.crestOrnament;
     return crest !== null && MONOGRAM_CRESTS.has(crest);
+  }
+
+  /** The monogram reads as cut through the laser-cut doily. */
+  get crestIsLaserCut(): boolean {
+    return this.crestOrnament === 'laserDoily';
   }
 
   private ornamentFor(slot: OrnamentSlot): OrnamentKey | null {

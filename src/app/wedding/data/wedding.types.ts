@@ -13,7 +13,11 @@ export type DesignCategory =
   | 'floral'
   | 'vietnamese'
   | 'rustic'
-  | 'artdeco';
+  | 'artdeco'
+  /** Dập chìm nổi — letterpress / blind-emboss print finishes. */
+  | 'letterpress'
+  /** Cắt laser — laser-cut paper jackets. */
+  | 'lasercut';
 
 export interface CategoryMeta {
   id: DesignCategory;
@@ -32,6 +36,8 @@ export interface Palette {
   accent: string;
   /** Body text ink. */
   ink: string;
+  /** Laser-cut jacket paper (laser layouts, laserDoily). Defaults to `accent`. */
+  overlay?: string;
 }
 
 /** Keys map to `--ff-*` CSS variables declared in wedding-theme.css. */
@@ -68,7 +74,13 @@ export type LayoutVariant =
   /** Arch-shaped inner frame — the signature 2026 silhouette. */
   | 'archFrame'
   /** Left-aligned editorial layout with oversized names. */
-  | 'editorialAsym';
+  | 'editorialAsym'
+  /** Laser-cut lace jacket with a scalloped rectangular window. */
+  | 'laserLace'
+  /** Laser-cut jacket with an arched, scalloped window (cổng vòm). */
+  | 'laserArch'
+  /** Laser-cut window-lattice jacket (song cửa). */
+  | 'laserLattice';
 
 /** Inline-SVG decorations — see ornament.component.html. */
 export type OrnamentKey =
@@ -84,10 +96,19 @@ export type OrnamentKey =
   | 'watercolorBlob'
   | 'monogramRing'
   /** Giant translucent "&" watermark — typography as decoration. */
-  | 'grandAmpersand';
+  | 'grandAmpersand'
+  /** Laser-cut paper doily crest; the monogram reads as cut through it. */
+  | 'laserDoily';
 
 /** Sheen treatment of accent-colored elements. */
 export type AccentStyle = 'gold' | 'flat';
+
+/**
+ * Physical print technique the card imitates (see wedding-finishes.css).
+ * - letterpress: ink pressed into thick cotton stock (dập chìm)
+ * - emboss: raised, ink-free ornaments (dập nổi không mực)
+ */
+export type PrintFinish = 'flat' | 'letterpress' | 'emboss';
 
 export interface InvitationDesign {
   /** Stable kebab-case id — used in the /wedding/:id URL. */
@@ -103,6 +124,8 @@ export interface InvitationDesign {
   ornament: OrnamentKey;
   ornamentSecondary?: OrnamentKey;
   accentStyle?: AccentStyle;
+  /** Defaults to 'flat'. */
+  finish?: PrintFinish;
 }
 
 export interface PersonName {

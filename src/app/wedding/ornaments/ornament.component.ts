@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { OrnamentKey } from '../data/wedding.types';
+import { LASER_SHAPES } from './laser-cut';
 
 /**
  * Inline-SVG decorations. Every shape inherits `currentColor`, which the host
@@ -16,4 +17,6 @@ import { OrnamentKey } from '../data/wedding.types';
 })
 export class OrnamentComponent {
   @Input({ required: true }) ornament!: OrnamentKey;
+
+  readonly doily = LASER_SHAPES.doily;
 }

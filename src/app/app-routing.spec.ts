@@ -18,11 +18,11 @@ describe('App routing', () => {
     expect(harness.routeNativeElement?.querySelector('.hero__name')?.textContent).toContain('Vu Dang');
   });
 
-  it('lazy loads the wedding gallery (24 previews) at /wedding', async () => {
+  it('lazy loads the wedding gallery (34 previews) at /wedding', async () => {
     const harness = await RouterTestingHarness.create();
     const gallery = await harness.navigateByUrl('/wedding', WeddingGalleryComponent);
     expect(gallery).toBeTruthy();
-    expect(harness.routeNativeElement?.querySelectorAll('app-invitation-card').length).toBe(24);
+    expect(harness.routeNativeElement?.querySelectorAll('app-invitation-card').length).toBe(34);
   });
 
   it('redirects unknown paths to the CV', async () => {

@@ -127,6 +127,11 @@
       />
     </svg>
   }
+  @case ('laserDoily') {
+    <svg [attr.viewBox]="doily.viewBox" aria-hidden="true">
+      <path [attr.d]="doily.d" fill="currentColor" fill-rule="evenodd" />
+    </svg>
+  }
   @case ('monogramRing') {
     <svg viewBox="0 0 100 100" aria-hidden="true">
       <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.6" />

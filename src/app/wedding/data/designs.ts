@@ -1,6 +1,11 @@
 import { CategoryMeta, InvitationDesign } from './wedding.types';
 
+/** Đỏ tươi — the vivid red shared by the red designs. */
+const VIVID_RED = '#d7151c';
+
 export const DESIGN_CATEGORIES: CategoryMeta[] = [
+  { id: 'letterpress', labels: { vi: 'Dập chìm nổi', en: 'Letterpress & Emboss', th: 'ปั๊มนูน-ปั๊มจม' } },
+  { id: 'lasercut', labels: { vi: 'Cắt laser', en: 'Laser-cut', th: 'ฉลุเลเซอร์' } },
   { id: 'modern', labels: { vi: 'Hiện đại', en: 'Modern', th: 'โมเดิร์น' } },
   { id: 'minimalist', labels: { vi: 'Tối giản', en: 'Minimalist', th: 'มินิมอล' } },
   { id: 'vintage', labels: { vi: 'Vintage', en: 'Vintage', th: 'วินเทจ' } },
@@ -12,13 +17,187 @@ export const DESIGN_CATEGORIES: CategoryMeta[] = [
 ];
 
 /**
- * The 24 invitation samples. Mỗi mẫu chỉ là dữ liệu — InvitationCardComponent
- * dựng thiệp từ palette + font + layout + họa tiết, nên thêm/sửa mẫu chỉ cần
- * thêm/sửa một entry ở đây. Design names are proper nouns (shown unchanged in
- * every language); only the blurbs are localized.
+ * The 34 invitation samples. Mỗi mẫu chỉ là dữ liệu — InvitationCardComponent
+ * dựng thiệp từ palette + font + layout + họa tiết (+ kỹ thuật in), nên
+ * thêm/sửa mẫu chỉ cần thêm/sửa một entry ở đây. Design names are proper
+ * nouns (shown unchanged in every language); only the blurbs are localized.
  */
 export const INVITATION_DESIGNS: InvitationDesign[] = [
+  // ── Dập chìm nổi / Letterpress & emboss ─────────────────────────────────
+  {
+    id: 'press-cotton',
+    nameVi: 'Giấy Cotton',
+    category: 'letterpress',
+    description: {
+      vi: 'Giấy cotton dày, mực xanh than ép chìm — chạm tay là cảm nhận từng con chữ.',
+      en: 'Thick cotton stock, navy ink pressed deep — you can feel every letter.',
+      th: 'กระดาษคอตตอนหนา หมึกกรมท่ากดลึก สัมผัสได้ทุกตัวอักษร',
+    },
+    palette: { bg: '#e8e3d8', surface: '#f8f5ee', primary: '#1f2a44', accent: '#4a5878', ink: '#2e3647' },
+    fonts: { display: 'cormorant', body: 'lora', accent: 'greatVibes' },
+    layout: 'centeredClassic',
+    ornament: 'monogramRing',
+    ornamentSecondary: 'hairlineFlourish',
+    finish: 'letterpress',
+  },
+  {
+    id: 'press-blind-ivory',
+    nameVi: 'Dập Nổi Ngà',
+    category: 'letterpress',
+    description: {
+      vi: 'Hoa lá dập nổi không mực trên giấy ngà, chữ ép nhũ vàng.',
+      en: 'Ink-free blind-embossed florals on ivory, with gold-foil lettering.',
+      th: 'ลายดอกไม้ปั๊มนูนไร้หมึกบนกระดาษงาช้าง ตัวอักษรปั๊มฟอยล์ทอง',
+    },
+    palette: { bg: '#ebe6dc', surface: '#fbf9f4', primary: '#5b4a33', accent: '#b08d57', ink: '#4f4535' },
+    fonts: { display: 'playfair', body: 'cormorant', accent: 'pinyonScript' },
+    layout: 'crestTop',
+    ornament: 'leafyWreath',
+    ornamentSecondary: 'floralCorner',
+    accentStyle: 'gold',
+    finish: 'emboss',
+  },
+  {
+    id: 'press-red-foil',
+    nameVi: 'Đỏ Tươi Ép Kim',
+    category: 'letterpress',
+    description: {
+      vi: 'Giấy đỏ tươi rực rỡ, chữ và hoa sen ép kim vàng chìm.',
+      en: 'Vivid red stock with gold-foil-pressed type and lotus.',
+      th: 'กระดาษแดงสด ตัวอักษรและดอกบัวปั๊มฟอยล์ทองแบบจม',
+    },
+    palette: { bg: '#f3e6d8', surface: VIVID_RED, primary: '#fff1cf', accent: '#f0c75e', ink: '#fff4e6' },
+    fonts: { display: 'playfair', body: 'beVietnamPro' },
+    layout: 'framedBorder',
+    ornament: 'lotus',
+    ornamentSecondary: 'hairlineFlourish',
+    accentStyle: 'gold',
+    finish: 'letterpress',
+  },
+  {
+    id: 'press-red-ink',
+    nameVi: 'Mực Đỏ Tươi',
+    category: 'letterpress',
+    description: {
+      vi: 'Giấy trắng mịn, mực đỏ tươi ép chìm, chữ “&” dập chìm không mực.',
+      en: 'Smooth white stock, vivid red ink pressed in, and a blind-debossed “&”.',
+      th: 'กระดาษขาวเนียน หมึกแดงสดกดจม และตัว “&” ปั๊มจมไร้หมึก',
+    },
+    palette: { bg: '#f2ede6', surface: '#fbf8f2', primary: VIVID_RED, accent: VIVID_RED, ink: '#3b2f2d' },
+    fonts: { display: 'playfair', body: 'montserrat' },
+    layout: 'editorialAsym',
+    ornament: 'hairlineFlourish',
+    ornamentSecondary: 'grandAmpersand',
+    finish: 'letterpress',
+  },
+
+  // ── Cắt laser / Laser-cut ───────────────────────────────────────────────
+  {
+    id: 'laser-red-lace',
+    nameVi: 'Ren Đỏ Tươi',
+    category: 'lasercut',
+    description: {
+      vi: 'Bìa ren đỏ tươi cắt laser tinh xảo ôm lấy thiệp màu ngà.',
+      en: 'An intricate vivid-red laser-cut lace jacket around an ivory card.',
+      th: 'ปกลูกไม้ฉลุเลเซอร์สีแดงสดอันประณีต โอบการ์ดสีงาช้าง',
+    },
+    palette: {
+      bg: '#f4e8dd',
+      surface: '#fffaf1',
+      primary: '#c3121a',
+      accent: '#b8902f',
+      ink: '#3f2b25',
+      overlay: VIVID_RED,
+    },
+    fonts: { display: 'playfair', body: 'beVietnamPro', accent: 'greatVibes' },
+    layout: 'laserLace',
+    ornament: 'rings',
+    ornamentSecondary: 'hairlineFlourish',
+  },
+  {
+    id: 'laser-ivory-arch',
+    nameVi: 'Cổng Hoa Ngà',
+    category: 'lasercut',
+    description: {
+      vi: 'Cổng vòm ren ngà cắt laser mở ra tấm thiệp hồng đào.',
+      en: 'An ivory laser-cut arch gate opening onto a blush card.',
+      th: 'ซุ้มโค้งลายลูกไม้ฉลุเลเซอร์สีงาช้าง เปิดสู่การ์ดสีชมพูพีช',
+    },
+    palette: {
+      bg: '#efe0dc',
+      surface: '#ecc9c3',
+      primary: '#4e1f28',
+      accent: '#7d3b47',
+      ink: '#4a2a2e',
+      overlay: '#fdf8ef',
+    },
+    fonts: { display: 'cormorant', body: 'lora', accent: 'parisienne' },
+    layout: 'laserArch',
+    ornament: 'leafyWreath',
+    ornamentSecondary: 'hairlineFlourish',
+  },
+  {
+    id: 'laser-red-lattice',
+    nameVi: 'Song Cửa Đỏ',
+    category: 'lasercut',
+    description: {
+      vi: 'Hoa văn song cửa gỗ cắt laser đỏ tươi — hồn Việt, nét thủ công hiện đại.',
+      en: 'Vivid red laser-cut window lattice — Vietnamese soul, modern craft.',
+      th: 'ลายฉลุบานหน้าต่างไม้สีแดงสด จิตวิญญาณเวียดนามในงานฝีมือร่วมสมัย',
+    },
+    palette: {
+      bg: '#f3e3cf',
+      surface: '#fdf3e1',
+      primary: '#b8121a',
+      accent: '#b8902f',
+      ink: '#4a2e1f',
+      overlay: VIVID_RED,
+    },
+    fonts: { display: 'playfair', body: 'beVietnamPro' },
+    layout: 'laserLattice',
+    ornament: 'lotus',
+    ornamentSecondary: 'hairlineFlourish',
+    accentStyle: 'gold',
+  },
+  {
+    id: 'laser-jade-doily',
+    nameVi: 'Ren Ngọc Bích',
+    category: 'lasercut',
+    description: {
+      vi: 'Ren trắng ngà cắt laser trên nền xanh ngọc bích, monogram đục xuyên giấy.',
+      en: 'Ivory laser-cut lace over jade green, with a cut-through monogram.',
+      th: 'ลูกไม้งาช้างฉลุเลเซอร์บนพื้นเขียวหยก พร้อมโมโนแกรมฉลุทะลุ',
+    },
+    palette: {
+      bg: '#13302a',
+      surface: '#1f4a40',
+      primary: '#f7f1e3',
+      accent: '#d8bd7f',
+      ink: '#e2e6dc',
+      overlay: '#f6f0e1',
+    },
+    fonts: { display: 'playfair', body: 'beVietnamPro', accent: 'greatVibes' },
+    layout: 'laserLace',
+    ornament: 'laserDoily',
+    ornamentSecondary: 'hairlineFlourish',
+  },
+
   // ── Hiện đại / Modern ───────────────────────────────────────────────────
+  {
+    id: 'modern-red',
+    nameVi: 'Đỏ Rực',
+    category: 'modern',
+    description: {
+      vi: 'Đỏ tươi nổi bật trên nền trắng tinh — tươi vui và hiện đại.',
+      en: 'Vivid red on crisp white — joyful and modern.',
+      th: 'แดงสดโดดเด่นบนพื้นขาว สดใสและทันสมัย',
+    },
+    palette: { bg: VIVID_RED, surface: '#ffffff', primary: VIVID_RED, accent: VIVID_RED, ink: '#2b2b2b' },
+    fonts: { display: 'montserrat', body: 'beVietnamPro', accent: 'dancingScript' },
+    layout: 'archFrame',
+    ornament: 'rings',
+    ornamentSecondary: 'grandAmpersand',
+  },
   {
     id: 'modern-noir',
     nameVi: 'Noir Ánh Kim',
@@ -325,6 +504,21 @@ export const INVITATION_DESIGNS: InvitationDesign[] = [
     ornament: 'lotus',
     ornamentSecondary: 'botanicalSprig',
     accentStyle: 'gold',
+  },
+  {
+    id: 'vn-hy-do',
+    nameVi: 'Hỷ Sự Đỏ',
+    category: 'vietnamese',
+    description: {
+      vi: 'Dải băng đỏ tươi viền sóng trên giấy kem — rộn ràng ngày vui.',
+      en: 'A scalloped vivid-red band on cream paper — pure celebration.',
+      th: 'แถบแดงสดขอบหยักบนกระดาษสีครีม เฉลิมฉลองวันมงคล',
+    },
+    palette: { bg: VIVID_RED, surface: '#fff8ec', primary: VIVID_RED, accent: VIVID_RED, ink: '#4a2a1c' },
+    fonts: { display: 'playfair', body: 'beVietnamPro', accent: 'greatVibes' },
+    layout: 'bandedHeader',
+    ornament: 'hairlineFlourish',
+    ornamentSecondary: 'geoFrame',
   },
 
   // ── Mộc mạc / Rustic ────────────────────────────────────────────────────

@@ -365,8 +365,9 @@
   font-family: var(--inv-font-display);
   font-size: 300px;
   line-height: 1;
-  color: var(--inv-primary);
-  opacity: 0.05;
+  /* --inv-wm-* hooks: print finishes turn the "&" into a blind impression. */
+  color: var(--inv-wm-color, var(--inv-primary));
+  opacity: var(--inv-wm-opacity, 0.05);
   pointer-events: none;
   user-select: none;
 }
@@ -375,7 +376,7 @@
   bottom: auto;
   left: -22px;
   top: -66px;
-  opacity: 0.045;
+  opacity: var(--inv-wm-opacity, 0.045);
 }
 
 /* ── scalloped band edge ────────────────────────────────────────────── */

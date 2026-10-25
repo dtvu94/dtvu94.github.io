@@ -1,6 +1,16 @@
-<article class="inv inv--{{ design.layout }}" [class.inv--gold]="design.accentStyle === 'gold'">
+<article
+  class="inv inv--{{ design.layout }} inv--fin-{{ finish }}"
+  [class.inv--gold]="design.accentStyle === 'gold'"
+  [class.inv--dark-paper]="isDarkPaper"
+>
   @if (hasWatermark) {
     <p class="inv__watermark" aria-hidden="true">&amp;</p>
+  }
+  @if (laserSheet; as sheet) {
+    <!-- Laser-cut jacket: sheet + cut-outs in one evenodd path. -->
+    <svg class="inv__laser" [attr.viewBox]="sheet.viewBox" preserveAspectRatio="none" aria-hidden="true">
+      <path [attr.d]="sheet.d" fill-rule="evenodd" />
+    </svg>
   }
   @if (backdropOrnament; as backdrop) {
     <app-ornament class="inv__backdrop" [ornament]="backdrop" aria-hidden="true" />
@@ -32,7 +42,11 @@
     <div class="inv__main">
       @if (design.layout !== 'splitVertical' && design.layout !== 'bandedHeader') {
         @if (crestOrnament; as crest) {
-          <div class="inv__crest" [class.inv__crest--monogram]="crestHoldsMonogram">
+          <div
+            class="inv__crest"
+            [class.inv__crest--monogram]="crestHoldsMonogram"
+            [class.inv__crest--laser]="crestIsLaserCut"
+          >
             <app-ornament class="inv__crest-art" [ornament]="crest" aria-hidden="true" />
             @if (crestHoldsMonogram) {
               <p class="inv__monogram inv__monogram--crest">{{ copy.monogram }}</p>
