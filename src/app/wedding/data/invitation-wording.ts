@@ -11,7 +11,17 @@ const MONTHS: Record<'en' | 'th', string[]> = {
   th: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'],
 };
 
-const PASSPORT: Record<Lang, Omit<PassportCopy, 'airline'>> = {
+/** The hall line of the address block, from the hall's name ('' = not chosen yet). */
+const HALL_LINE: Record<Lang, (name: string) => string> = {
+  vi: (name) => (name ? `Sảnh ${name}` : 'Sảnh (đang cập nhật)'),
+  en: (name) => (name ? `${name} Hall` : 'Hall: to be announced'),
+  th: (name) => (name ? `ห้องจัดเลี้ยง ${name}` : 'ห้องจัดเลี้ยง: จะแจ้งให้ทราบ'),
+};
+
+/** The boarding pass's hall field while no hall is chosen. */
+const HALL_TBA: Record<Lang, string> = { vi: 'Đang cập nhật', en: 'TBA', th: 'แจ้งภายหลัง' };
+
+const PASSPORT: Record<Lang, Omit<PassportCopy, 'airline' | 'hall'>> = {
   vi: {
     title: 'WEDDING PASSPORT',
     subtitle: 'Hộ chiếu đến hôn nhân',
@@ -23,7 +33,6 @@ const PASSPORT: Record<Lang, Omit<PassportCopy, 'airline'>> = {
     boarding: 'Giờ đón',
     gate: 'Sảnh',
     seat: 'Bàn',
-    hall: 'Đang cập nhật',
     fromPlace: 'Tình yêu',
   },
   en: {
@@ -37,7 +46,6 @@ const PASSPORT: Record<Lang, Omit<PassportCopy, 'airline'>> = {
     boarding: 'Boarding',
     gate: 'Hall',
     seat: 'Table',
-    hall: 'TBA',
     fromPlace: 'Love',
   },
   th: {
@@ -51,7 +59,6 @@ const PASSPORT: Record<Lang, Omit<PassportCopy, 'airline'>> = {
     boarding: 'เวลาขึ้น',
     gate: 'ห้อง',
     seat: 'โต๊ะ',
-    hall: 'แจ้งภายหลัง',
     fromPlace: 'ความรัก',
   },
 };
@@ -72,7 +79,7 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
   const time = config.timeText[lang];
   const weekday = config.weekdayText[lang];
   const date = config.dateText[lang];
-  const hall = config.hallText[lang];
+  const hall = HALL_LINE[lang](config.hall);
   const venueName = config.venue.name[lang];
   const address = config.venue.address[lang];
 
@@ -98,6 +105,7 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
     venueLabel: VENUE_LABEL[lang],
     passport: {
       ...PASSPORT[lang],
+      hall: config.hall || HALL_TBA[lang],
       airline: `${initialOf(config.groom.short)}&${initialOf(config.bride.short)} Airlines`,
     },
   };

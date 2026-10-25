@@ -4,8 +4,8 @@ import { WeddingConfig } from './wedding.types';
  * Single edit point for all wedding facts shown on every invitation sample,
  * in all three languages (vi / en / th).
  *
- * When the hall is chosen (or full names / lunar date are decided), update the
- * fields below, then `npm run build` and commit the regenerated `docs/`.
+ * When a fact changes (hall, full names, lunar date…), update the fields
+ * below, then `npm run build` and commit the regenerated `docs/`.
  */
 export const WEDDING_CONFIG: WeddingConfig = {
   groom: { short: 'Vũ', full: '' },
@@ -28,11 +28,8 @@ export const WEDDING_CONFIG: WeddingConfig = {
     th: 'ที่ 28 มีนาคม พ.ศ. 2570',
   },
   lunarDateText: '',
-  hallText: {
-    vi: 'Sảnh (đang cập nhật)',
-    en: 'Hall: to be announced',
-    th: 'ห้องจัดเลี้ยง: จะแจ้งให้ทราบ',
-  },
+  // Tên sảnh tiệc tại Riverside Palace (tên riêng, giữ nguyên ở mọi ngôn ngữ).
+  hall: 'Danube',
   venue: {
     name: {
       vi: 'Trung Tâm Hội Nghị – Tiệc Cưới Riverside Palace',

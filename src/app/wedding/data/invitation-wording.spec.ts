@@ -15,7 +15,7 @@ describe('buildWording', () => {
     expect(copy.eventLine).toBe('đến dự Lễ Thành Hôn của');
     expect(copy.dateLine).toBe('Vào lúc 18 giờ 00, Chủ Nhật, ngày 28 tháng 03 năm 2027');
     expect(copy.venueLines).toEqual([
-      'Tại Sảnh (đang cập nhật)',
+      'Tại Sảnh Danube',
       'Trung Tâm Hội Nghị – Tiệc Cưới Riverside Palace',
       '360D Bến Vân Đồn, P. Vĩnh Hội, Q.4, TP. Hồ Chí Minh',
     ]);
@@ -32,7 +32,7 @@ describe('buildWording', () => {
     expect(copy.eventLine).toBe('to celebrate the wedding of');
     expect(copy.dateLine).toBe('At 6:00 PM, Sunday, March 28th, 2027');
     expect(copy.venueLines).toEqual([
-      'Hall: to be announced',
+      'Danube Hall',
       'Riverside Palace Convention & Wedding Center',
       '360D Bến Vân Đồn, Vĩnh Hội Ward, District 4, Ho Chi Minh City',
     ]);
@@ -49,8 +49,19 @@ describe('buildWording', () => {
     expect(copy.guestSuffix).toBe('พร้อมครอบครัว');
     expect(copy.eventLine).toBe('ร่วมเป็นเกียรติในพิธีมงคลสมรสของ');
     expect(copy.dateLine).toBe('เวลา 18:00 น. วันอาทิตย์ที่ 28 มีนาคม พ.ศ. 2570');
-    expect(copy.venueLines[0]).toContain('ห้องจัดเลี้ยง');
+    expect(copy.venueLines[0]).toBe('ห้องจัดเลี้ยง Danube');
     expect(copy.coupleLine).toBe('Vũ & Thảo');
+  });
+
+  it('prints the banquet hall on the boarding pass, or a placeholder until one is chosen', () => {
+    for (const lang of ['vi', 'en', 'th'] as const) {
+      expect(buildWording(WEDDING_CONFIG, lang).passport.hall).toBe('Danube');
+    }
+    const undecided = { ...WEDDING_CONFIG, hall: '' };
+    expect(buildWording(undecided).venueLines[0]).toBe('Tại Sảnh (đang cập nhật)');
+    expect(buildWording(undecided).passport.hall).toBe('Đang cập nhật');
+    expect(buildWording(undecided, 'en').venueLines[0]).toBe('Hall: to be announced');
+    expect(buildWording(undecided, 'en').passport.hall).toBe('TBA');
   });
 
   it('builds the short cover copy in every language', () => {

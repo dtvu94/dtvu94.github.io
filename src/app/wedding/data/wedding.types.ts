@@ -421,8 +421,12 @@ export interface WeddingConfig {
   dateText: LocalizedText;
   /** Optional Vietnamese lunar date, e.g. "nhằm ngày … năm Đinh Mùi". Vi-only; hidden while ''. */
   lunarDateText: string;
-  /** Banquet hall — placeholder until chosen. */
-  hallText: LocalizedText;
+  /**
+   * Banquet hall name at the venue, e.g. "Danube" — printed as "Sảnh Danube" /
+   * "Danube Hall" / "ห้องจัดเลี้ยง Danube" and on the boarding pass. '' prints
+   * a "to be announced" placeholder.
+   */
+  hall: string;
   venue: VenueInfo;
   rsvpNote: LocalizedText;
   /**
