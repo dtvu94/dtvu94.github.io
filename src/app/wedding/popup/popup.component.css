@@ -154,7 +154,6 @@
   position: absolute;
   left: 0;
   width: 400px;
-  overflow: visible;
   transform-origin: 50% 100%;
   transform: rotateX(-6deg);
   transition:
@@ -169,10 +168,20 @@
     transform 0.5s ease-in,
     opacity 0.3s ease-in;
 }
+.pp__layer-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
 .pp__text {
-  paint-order: stroke;
-  stroke-width: 1.4px;
-  stroke-linejoin: round;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  line-height: 1;
+  -webkit-text-stroke: 1.4px var(--pp-stroke, transparent);
+  paint-order: stroke fill;
 }
 .pp__text--display {
   font-family: var(--inv-font-display);

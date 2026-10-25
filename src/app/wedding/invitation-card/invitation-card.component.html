@@ -3,6 +3,8 @@
   [class.inv--gold]="design.accentStyle === 'gold'"
   [class.inv--dark-paper]="isDarkPaper"
   [class.inv--top]="valign === 'top'"
+  [class.inv--vine-frame]="reliefBorder?.motif === 'vineFrame'"
+  [class.inv--corners]="!!cornerOrnament"
   [style.clip-path]="clip"
   [style.padding]="padding"
 >
@@ -78,7 +80,11 @@
         <p class="inv__headline">{{ copy.inviteHeadline }}</p>
         <p class="inv__guest">
           <span>{{ copy.guestPrefix }}</span>
-          <span class="inv__guest-dots" aria-hidden="true"></span>
+          @if (guest) {
+            <span class="inv__guest-name">{{ guest }}</span>
+          } @else {
+            <span class="inv__guest-dots" aria-hidden="true"></span>
+          }
           <span>{{ copy.guestSuffix }}</span>
         </p>
         <p class="inv__event">{{ copy.eventLine }}</p>

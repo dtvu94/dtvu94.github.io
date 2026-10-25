@@ -34,45 +34,10 @@
     animation: inv-rise 0.6s cubic-bezier(0.22, 0.7, 0.3, 1) both;
   }
 
-  /* Directions insert follows the card. */
-  .detail__guide {
-    animation: inv-rise 0.6s 0.25s cubic-bezier(0.22, 0.7, 0.3, 1) both;
-  }
   @keyframes inv-rise {
     from {
       opacity: 0;
       translate: 0 16px;
-    }
-  }
-
-  /* On the detail page, line ornaments draw themselves in as the card
-     comes out of its envelope (stroked SVG paths carry pathLength="1"). */
-  .detail__stage .suite--out app-ornament path[pathLength] {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    animation: inv-draw 1.2s ease-out 0.3s forwards;
-  }
-  @keyframes inv-draw {
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-
-  /* Corner florals drift gently (uses `translate` so the corner-mirroring
-     transforms stay untouched). */
-  .detail__stage .suite--out .inv__corner {
-    animation: inv-float 6.5s ease-in-out infinite alternate;
-  }
-  .detail__stage .suite--out .inv__corner--tr,
-  .detail__stage .suite--out .inv__corner--bl {
-    animation-duration: 7.5s;
-  }
-  @keyframes inv-float {
-    from {
-      translate: 0 0;
-    }
-    to {
-      translate: 0 4px;
     }
   }
 

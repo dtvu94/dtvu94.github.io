@@ -30,7 +30,7 @@ const LAYOUTS: LayoutVariant[] = [
 ];
 const ORNAMENTS: OrnamentKey[] = [
   'none', 'floralCorner', 'lotus', 'rings', 'artDecoFan', 'leafyWreath', 'botanicalSprig', 'geoFrame',
-  'hairlineFlourish', 'watercolorBlob', 'monogramRing', 'grandAmpersand', 'laserDoily', 'laurel', 'doubleHappiness',
+  'hairlineFlourish', 'watercolorBlob', 'monogramRing', 'grandAmpersand', 'laserDoily', 'laurel',
 ];
 const FONTS: FontFamilyKey[] = [
   'inter', 'beVietnamPro', 'montserrat', 'playfair', 'cormorant', 'lora',

@@ -1,0 +1,40 @@
+<article class="dc" [style.background-image]="texture">
+  <!-- Labels are HTML over the SVG drawing: Chrome can keep SVG text at a
+       stale scale inside a scaled frame (giant glyphs after navigation). -->
+  <div class="dc__map" role="img" [attr.aria-label]="copy.mapCard.title">
+    <svg class="dc__drawing" [attr.viewBox]="'0 0 ' + mapW + ' ' + mapH" aria-hidden="true">
+      <rect class="dc__ground" x="0" y="0" [attr.width]="mapW" [attr.height]="mapH" rx="10" />
+      <path class="dc__canal" [attr.d]="map.canal" [attr.stroke-width]="map.canalWidth" />
+      <path class="dc__street" [attr.d]="map.streets" />
+      <path class="dc__bridge" [attr.d]="map.bridges" />
+      <path class="dc__pin" [attr.d]="pin" />
+      <circle class="dc__pin-dot" [attr.cx]="map.pin.x" [attr.cy]="map.pin.y - 15.3" r="3.4" />
+    </svg>
+    @for (label of map.labels; track label.text) {
+      <span
+        class="dc__label dc__label--{{ label.kind }}"
+        [style.left.px]="label.at.x"
+        [style.top.px]="label.at.y"
+        [style.transform]="labelTransform(label)"
+        aria-hidden="true"
+        >{{ label.text }}</span
+      >
+    }
+  </div>
+
+  <div class="dc__copy">
+    <p class="dc__kicker">{{ copy.mapCard.title }}</p>
+    <p class="dc__venue">{{ copy.venueShort }}</p>
+    <p class="dc__hall">{{ hallLine }}</p>
+    <p class="dc__address">{{ address }}</p>
+    <p class="dc__time">{{ copy.timeWeekday }} · {{ copy.shortDate }}</p>
+    <div class="dc__qr-row">
+      <svg class="dc__qr" [attr.viewBox]="qrBox" shape-rendering="crispEdges" role="img" [attr.aria-label]="copy.mapCard.scan">
+        <rect class="dc__qr-bg" x="-2" y="-2" [attr.width]="qr.size + 4" [attr.height]="qr.size + 4" />
+        <path class="dc__qr-dots" [attr.d]="qr.d" />
+      </svg>
+      <p class="dc__scan">{{ copy.mapCard.scan }}</p>
+    </div>
+    <p class="dc__sketch">{{ copy.mapCard.sketch }}</p>
+  </div>
+</article>

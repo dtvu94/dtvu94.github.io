@@ -1,0 +1,162 @@
+/* Directions card at 480 × 320 design pixels, in the design's colours. */
+
+:host {
+  display: block;
+  width: 480px;
+  height: 320px;
+}
+
+.dc {
+  position: relative;
+  box-sizing: border-box;
+  width: 480px;
+  height: 320px;
+  display: flex;
+  gap: 18px;
+  padding: 18px;
+  background-color: var(--inv-surface);
+  color: var(--inv-ink);
+  font-family: var(--inv-font-body);
+}
+/* Fine printed frame, like the invitation's. */
+.dc::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid color-mix(in srgb, var(--inv-accent) 55%, transparent);
+  pointer-events: none;
+}
+.dc p {
+  margin: 0;
+}
+
+/* ── sketch map ─────────────────────────────────────────────────────── */
+.dc__map {
+  position: relative;
+  flex: 0 0 228px;
+  height: 284px;
+}
+.dc__drawing {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.dc__ground {
+  fill: color-mix(in srgb, var(--inv-ink) 6%, var(--inv-surface));
+}
+.dc__canal {
+  fill: none;
+  /* Water reads as water on any paper colour. */
+  stroke: color-mix(in srgb, #6f9fbd 82%, var(--inv-surface));
+  stroke-linecap: round;
+}
+.dc__street {
+  fill: none;
+  stroke: color-mix(in srgb, var(--inv-ink) 30%, transparent);
+  stroke-width: 2.4;
+}
+.dc__bridge {
+  fill: none;
+  stroke: color-mix(in srgb, var(--inv-ink) 70%, var(--inv-surface));
+  stroke-width: 6;
+  stroke-linecap: square;
+}
+.dc__label {
+  position: absolute;
+  white-space: nowrap;
+  line-height: 1;
+  color: color-mix(in srgb, var(--inv-ink) 75%, transparent);
+  /* A plain sans at map size, whatever the card's body face. */
+  font-family: var(--ff-beVietnamPro);
+  font-size: 8.5px;
+}
+.dc__label--district {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: color-mix(in srgb, var(--inv-ink) 45%, transparent);
+}
+.dc__label--water {
+  font-style: italic;
+  font-weight: 600;
+  color: #ffffff;
+}
+.dc__label--street {
+  font-size: 7.5px;
+}
+.dc__label--venue {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--inv-primary);
+}
+.dc__pin {
+  fill: var(--inv-primary);
+}
+.dc__pin-dot {
+  fill: var(--inv-surface);
+}
+
+/* ── copy ───────────────────────────────────────────────────────────── */
+.dc__copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 6px 0 0;
+}
+.dc__kicker {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--inv-accent);
+}
+.dc__venue {
+  font-family: var(--inv-font-display);
+  font-size: 25px;
+  line-height: 1.15;
+  color: var(--inv-primary);
+}
+.dc__hall {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--inv-primary);
+}
+.dc__address {
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+.dc__time {
+  font-size: 11px;
+  font-weight: 600;
+}
+.dc__qr-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+}
+.dc__qr {
+  flex: 0 0 78px;
+  width: 78px;
+  height: 78px;
+}
+/* QR stays dark-on-light whatever the paper, so phones can read it. */
+.dc__qr-bg {
+  fill: #ffffff;
+}
+.dc__qr-dots {
+  fill: #1a1a1a;
+}
+.dc__scan {
+  font-size: 10px;
+  line-height: 1.35;
+}
+.dc__sketch {
+  font-size: 7.5px;
+  font-style: italic;
+  opacity: 0.7;
+  padding-bottom: 2px;
+}

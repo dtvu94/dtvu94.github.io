@@ -134,6 +134,16 @@
   border-bottom: 1.5px dotted currentColor;
   opacity: 0.45;
 }
+.inv__guest-name {
+  font-family: var(--inv-font-accent);
+  font-size: 1.45em;
+  line-height: 1;
+  color: var(--inv-primary);
+  max-width: 62%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .inv__couple {
   font-family: var(--inv-font-display);
@@ -475,4 +485,21 @@
   .inv {
     box-shadow: none;
   }
+}
+
+/* A relief vine runs ~50 px in from every edge: keep the copy inside it.
+   zoom (unlike transform) shrinks the layout too, so lines wrap to fit. */
+.inv--vine-frame .inv__content {
+  padding-left: 56px;
+  padding-right: 56px;
+}
+.inv--vine-frame .inv__main {
+  zoom: 0.9;
+}
+
+/* Corner sprays sit level with the closing lines: keep those narrower. */
+.inv--corners .inv__closing,
+.inv--corners .inv__rsvp {
+  padding-left: 12%;
+  padding-right: 12%;
 }

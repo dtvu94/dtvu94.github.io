@@ -140,9 +140,10 @@ describe('InvitationCardComponent', () => {
     expect(crest?.querySelector('app-ornament path[fill-rule="evenodd"]')).toBeTruthy();
   });
 
-  it('draws the double-happiness crest as vector strokes', () => {
-    const crest = render('press-red-foil').querySelector('.inv__crest app-ornament path');
-    expect(crest?.getAttribute('d')?.split('M').length).toBeGreaterThan(20);
+  it('leaves the crest out when a design asks for none (đỏ tươi ép kim: corner sprays only)', () => {
+    const card = render('press-red-foil');
+    expect(card.querySelector('.inv__crest')).toBeNull();
+    expect(card.querySelector('.inv__relief')).toBeTruthy();
   });
 
   it('renders every design with its layout and the full copy', () => {

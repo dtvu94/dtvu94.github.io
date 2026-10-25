@@ -14,29 +14,46 @@
     </div>
   </div>
 
-  <div class="guide__map">
-    <iframe [src]="embedUrl" title="Riverside Palace — Google Maps" loading="lazy" allowfullscreen></iframe>
-    <p class="guide__map-print">{{ directions().mapOnlineLabel }} {{ directions().openMapsUrl }}</p>
-  </div>
+  @if (collapsible) {
+    <button
+      type="button"
+      class="guide__toggle"
+      [attr.aria-expanded]="expanded()"
+      [attr.aria-controls]="bodyId"
+      (click)="toggle()"
+    >
+      {{ expanded() ? directions().collapseLabel : directions().expandLabel }}
+      <span class="guide__chevron" [class.guide__chevron--up]="expanded()" aria-hidden="true"></span>
+    </button>
+  }
 
-  <div class="guide__routes">
-    @for (route of directions().routes; track route.id) {
-      <article class="guide__route">
-        <h3 class="guide__route-title">{{ route.title }}</h3>
-        <p class="guide__route-meta">{{ route.approxKm }} · {{ route.approxTime }}</p>
-        <ol class="guide__steps">
-          @for (step of route.steps; track $index) {
-            <li>{{ step }}</li>
-          }
-        </ol>
-      </article>
-    }
-  </div>
+  @if (open) {
+    <div class="guide__body" [attr.id]="bodyId">
+      <div class="guide__map">
+        <iframe [src]="embedUrl" title="Riverside Palace — Google Maps" loading="lazy" allowfullscreen></iframe>
+        <p class="guide__map-print">{{ directions().mapOnlineLabel }} {{ directions().openMapsUrl }}</p>
+      </div>
 
-  <ul class="guide__notes">
-    <li><span class="guide__note-icon" aria-hidden="true">🚕</span>{{ directions().rideHailNote }}</li>
-    <li><span class="guide__note-icon" aria-hidden="true">🚇</span>{{ directions().metroNote }}</li>
-    <li><span class="guide__note-icon" aria-hidden="true">🚌</span>{{ directions().busNote }}</li>
-    <li><span class="guide__note-icon" aria-hidden="true">🅿️</span>{{ directions().parkingNote }}</li>
-  </ul>
+      <div class="guide__routes">
+        @for (route of directions().routes; track route.id) {
+          <article class="guide__route">
+            <h3 class="guide__route-title">{{ route.title }}</h3>
+            <p class="guide__route-meta">{{ route.approxKm }} · {{ route.approxTime }}</p>
+            <ol class="guide__steps">
+              @for (step of route.steps; track $index) {
+                <li>{{ step }}</li>
+              }
+            </ol>
+          </article>
+        }
+      </div>
+
+      <ul class="guide__notes">
+        <li><span class="guide__note-icon" aria-hidden="true">🚕</span>{{ directions().rideHailNote }}</li>
+        <li><span class="guide__note-icon" aria-hidden="true">🚇</span>{{ directions().metroNote }}</li>
+        <li><span class="guide__note-icon" aria-hidden="true">🚌</span>{{ directions().busNote }}</li>
+        <li><span class="guide__note-icon" aria-hidden="true">🅿️</span>{{ directions().parkingNote }}</li>
+      </ul>
+    </div>
+  }
 </section>

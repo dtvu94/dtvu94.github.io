@@ -15,39 +15,30 @@
       <p class="detail__hint">{{ ui().detailHint }}</p>
     </header>
 
-    <section class="detail__suite">
-      <div class="detail__stage-col">
-        <app-scene-frame class="detail__stage" (click)="suite.advance()">
-          <app-suite #suite [design]="d" [copy]="copy()" [interactive]="true" />
-        </app-scene-frame>
-        <div class="detail__controls">
-          @switch (suite.state()) {
-            @case ('sealed') {
-              <button type="button" class="detail__action detail__action--primary" (click)="suite.open()">{{ ui().openLabel }}</button>
-              <span class="detail__stage-hint">{{ ui().stageHint }}</span>
-            }
-            @case ('out') {
-              @if (suite.hasInside) {
-                <button type="button" class="detail__action detail__action--primary" (click)="suite.unfold()">{{ ui().insideLabel }}</button>
-              }
-              <button type="button" class="detail__action" (click)="suite.close()">{{ ui().closeLabel }}</button>
-            }
-            @case ('unfolded') {
-              <button type="button" class="detail__action detail__action--primary" (click)="suite.fold()">{{ ui().foldLabel }}</button>
-              <button type="button" class="detail__action" (click)="suite.close()">{{ ui().closeLabel }}</button>
-            }
-            @default {
-              <span class="detail__stage-hint">…</span>
-            }
-          }
-        </div>
-      </div>
-      <app-directions-guide class="detail__guide" [design]="d" />
+    <!-- Thiệp giấy: the printed suite, laid out flat. -->
+    <section class="detail__section detail__paper" aria-labelledby="paper-title">
+      <header class="detail__section-head">
+        <h2 class="detail__section-title" id="paper-title">{{ ui().paperTitle }}</h2>
+        <p class="detail__section-sub">{{ ui().paperSub }}</p>
+      </header>
+      <app-paper-suite [design]="d" [copy]="copy()" [labels]="ui().paperLabels" />
     </section>
 
-    <!-- Print: the flat card face, at full size. -->
-    <div class="detail__print" aria-hidden="true">
-      <app-invitation-card [design]="d" [copy]="copy()" />
-    </div>
+    <!-- Thiệp online: the card as sent by link, next to the directions. -->
+    <section class="detail__section detail__online" aria-labelledby="online-title">
+      <header class="detail__section-head">
+        <h2 class="detail__section-title" id="online-title">{{ ui().onlineTitle }}</h2>
+        <p class="detail__section-sub">{{ ui().onlineSub }}</p>
+        @if (!guest()) {
+          <p class="detail__tip">
+            {{ ui().guestTip }} <code>{{ guestExample(d) }}</code>
+          </p>
+        }
+      </header>
+      <div class="detail__online-grid">
+        <app-online-card class="detail__online-card" [design]="d" [copy]="copy()" [lang]="lang()" [ui]="ui()" [guest]="guest()" />
+        <app-directions-guide class="detail__guide" [design]="d" [collapsible]="true" />
+      </div>
+    </section>
   </main>
 }

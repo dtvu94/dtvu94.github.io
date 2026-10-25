@@ -7,19 +7,25 @@ import { ENV_H, ENV_W, EnvelopeGeometry, envelopeGeometry } from '../geometry/sh
 import { svgRef, uniqueSvgId } from '../relief/svg-ref';
 import { invitationThemeStyle } from '../theme';
 
-/** One physical layer of the envelope; the suite interleaves the card between them. */
+/**
+ * One physical layer of the envelope. Seen from the back, the suite
+ * interleaves the card between back panel, pocket and flap; the front is a
+ * face of its own.
+ */
 export type EnvelopeLayer =
   /** Inside of the back panel, with the liner showing at the top. */
   | 'back'
-  /** Front pocket (side and bottom flaps), with the print and guest line. */
+  /** Back of the envelope: side and bottom flaps glued into a pocket (seams only). */
   | 'pocket'
   /** The top flap, hinged at the top edge: outside face + lined inside face. */
-  | 'flap';
+  | 'flap'
+  /** Front of the envelope: the guest line ("Kính mời: …"), the couple and the print. */
+  | 'front';
 
 const geometryCache = new Map<string, EnvelopeGeometry>();
 
-/** Where the print sits, as fractions of the envelope height. */
-const PRINT_Y: Record<string, number> = { names: 0.71, monogram: 0.745, fern: 0.66, frame: 0.56, florals: 0.71, lotus: 0.64 };
+/** Where the print sits on the front, as fractions of the envelope height. */
+const PRINT_Y: Record<string, number> = { names: 0.44, monogram: 0.33, fern: 0.42, frame: 0.36, florals: 0.42, lotus: 0.32 };
 
 /**
  * One layer of a design's matching envelope, drawn at ENV_W × ENV_H design
@@ -108,11 +114,11 @@ export class EnvelopeComponent {
     const y = this.printY;
     switch (this.spec.print) {
       case 'monogram':
-        return monogramCrest({ x: cx, y }, 30);
+        return monogramCrest({ x: cx, y }, 40);
       case 'fern':
         return mergeMotifs(fern({ x: ENV_W - 70, y: ENV_H - 14 }, -1.85, 150, 0.35), fern({ x: ENV_W - 58, y: ENV_H - 16 }, -1.45, 112, -0.3));
       case 'frame':
-        return curlFrame(cx - 128, ENV_H * 0.34, 256, ENV_H * 0.42);
+        return curlFrame(cx - 128, ENV_H * 0.14, 256, ENV_H * 0.46);
       case 'florals':
         return mergeMotifs(cornerSpray({ x: 6, y: ENV_H - 6 }, -0.75, 96, 3), cornerSpray({ x: ENV_W - 6, y: ENV_H - 6 }, -2.4, 96, 8));
       case 'lotus':
@@ -123,14 +129,22 @@ export class EnvelopeComponent {
   }
 
   get showsNames(): boolean {
-    return this.spec.print === 'names' || this.spec.print === 'florals' || this.spec.print === 'lotus' || this.spec.print === 'frame';
+    return this.spec.print !== 'none' && this.spec.print !== 'fern';
   }
 
   get namesY(): number {
     if (this.spec.print === 'lotus') {
-      return ENV_H * 0.8;
+      return ENV_H * 0.56;
     }
-    return this.spec.print === 'frame' ? ENV_H * 0.62 : this.printY;
+    if (this.spec.print === 'monogram') {
+      return ENV_H * 0.6;
+    }
+    return this.spec.print === 'frame' ? ENV_H * 0.45 : this.printY;
+  }
+
+  /** A coloured edge band on the front, matching the flap's edge. */
+  get edgeShadow(): string | null {
+    return this.spec.edge ? `inset 0 0 0 6px ${this.spec.edge}` : null;
   }
 
   get waxPath(): string {
@@ -143,6 +157,6 @@ export class EnvelopeComponent {
   }
 
   get twineY(): number {
-    return ENV_H * 0.62;
+    return ENV_H * 0.66;
   }
 }

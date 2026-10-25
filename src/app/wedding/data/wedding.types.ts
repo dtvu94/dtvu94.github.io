@@ -126,9 +126,7 @@ export type OrnamentKey =
   /** Laser-cut paper doily crest; the monogram reads as cut through it. */
   | 'laserDoily'
   /** Laurel wreath crest around the monogram (made for relief finishes). */
-  | 'laurel'
-  /** Song hỷ (囍) seal-style crest. */
-  | 'doubleHappiness';
+  | 'laurel';
 
 /** Sheen treatment of accent-colored elements. */
 export type AccentStyle = 'gold' | 'flat';
@@ -328,7 +326,7 @@ export interface FoldSpec {
 export type PopupScene =
   /** Wildflower hills in front of the big date. */
   | 'meadow'
-  /** Lotus pond under a double-happiness seal. */
+  /** Lotus pond under a moon bearing the monogram. */
   | 'lotus'
   /** Flower arbour framing the monogram. */
   | 'arbor'
@@ -413,6 +411,11 @@ export interface WeddingConfig {
   bride: PersonName;
   /** Calendar date of the reception, ISO "YYYY-MM-DD" — drives short dates. */
   isoDate: string;
+  /** Party start and end, local time "HH:mm" (for calendar invites). */
+  startTime: string;
+  endTime: string;
+  /** Venue's UTC offset, e.g. "+07:00". */
+  utcOffset: string;
   /** e.g. vi "18 giờ 00" / en "6:00 PM" / th "18:00 น." */
   timeText: LocalizedText;
   /** e.g. vi "Chủ Nhật" / en "Sunday" / th "วันอาทิตย์" */
@@ -478,6 +481,17 @@ export interface InvitationCopy {
   venueLabel: string;
   /** Passport / boarding pass labels. */
   passport: PassportCopy;
+  /** The printed directions card that goes in the envelope. */
+  mapCard: MapCardCopy;
+}
+
+export interface MapCardCopy {
+  /** e.g. "Đường đến tiệc cưới". */
+  title: string;
+  /** Caption under the QR code. */
+  scan: string;
+  /** Small print under the sketch map: not to scale. */
+  sketch: string;
 }
 
 export interface PassportCopy {
@@ -517,6 +531,9 @@ export interface DirectionsContent {
   openMapsLabel: string;
   directionsLabel: string;
   mapOnlineLabel: string;
+  /** Toggle of the collapsed guide (map, routes and notes). */
+  expandLabel: string;
+  collapseLabel: string;
   routes: RouteOption[];
   rideHailNote: string;
   metroNote: string;

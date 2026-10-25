@@ -1,4 +1,4 @@
-import { InvitationCopy, Lang, PassportCopy, WeddingConfig } from './wedding.types';
+import { InvitationCopy, Lang, MapCardCopy, PassportCopy, WeddingConfig } from './wedding.types';
 
 const WEEKDAYS: Record<Lang, string[]> = {
   vi: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
@@ -65,6 +65,12 @@ const PASSPORT: Record<Lang, Omit<PassportCopy, 'airline' | 'hall'>> = {
 
 const VENUE_LABEL: Record<Lang, string> = { vi: 'Địa điểm', en: 'Venue', th: 'สถานที่' };
 
+const MAP_CARD: Record<Lang, MapCardCopy> = {
+  vi: { title: 'Đường đến tiệc cưới', scan: 'Quét mã để mở Google Maps', sketch: 'Sơ đồ minh họa, không theo tỷ lệ' },
+  en: { title: 'Getting to the party', scan: 'Scan to open Google Maps', sketch: 'Sketch map, not to scale' },
+  th: { title: 'เส้นทางไปงานเลี้ยง', scan: 'สแกนเพื่อเปิด Google Maps', sketch: 'แผนที่โดยสังเขป ไม่ตรงตามมาตราส่วน' },
+};
+
 const PHOTO_SOON: Record<Lang, string> = {
   vi: 'Ảnh cưới sẽ cập nhật sau',
   en: 'Wedding photo coming soon',
@@ -103,6 +109,7 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
     daysInMonth: new Date(Date.UTC(year, month, 0)).getUTCDate(),
     photoSoon: PHOTO_SOON[lang],
     venueLabel: VENUE_LABEL[lang],
+    mapCard: MAP_CARD[lang],
     passport: {
       ...PASSPORT[lang],
       hall: config.hall || HALL_TBA[lang],

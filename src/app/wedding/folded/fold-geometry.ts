@@ -1,7 +1,7 @@
 import { FoldSpec, PanelKind } from '../data/wedding.types';
 
-/** How far a folded card is opened. */
-export type FoldPose = 'closed' | 'ajar' | 'open';
+/** How far a folded card is opened: shut, cover lifted a little (gallery), or laid out flat. */
+export type FoldPose = 'closed' | 'ajar' | 'flat';
 
 /** What the outside face of a leaf shows. */
 export type LeafBack = PanelKind | 'coverLeft' | 'coverRight' | 'blank';
@@ -32,16 +32,16 @@ export function leavesFor(fold: FoldSpec): Leaf[] {
   const [first, second, third] = fold.inside;
   switch (fold.variant) {
     case 'bifold':
-      return [{ side: 'left', width: 400, front: first, back: fold.cover, angles: { closed: 180, ajar: 150, open: 4 }, nudge: -1 }];
+      return [{ side: 'left', width: 400, front: first, back: fold.cover, angles: { closed: 180, ajar: 150, flat: 0 }, nudge: -1 }];
     case 'gatefold':
       return [
-        { side: 'left', width: 200, front: first, back: 'coverLeft', angles: { closed: 180, ajar: 156, open: 3 }, nudge: -1 },
-        { side: 'right', width: 200, front: third ?? first, back: 'coverRight', angles: { closed: -180, ajar: -156, open: -3 }, nudge: -1 },
+        { side: 'left', width: 200, front: first, back: 'coverLeft', angles: { closed: 180, ajar: 156, flat: 0 }, nudge: -1 },
+        { side: 'right', width: 200, front: third ?? first, back: 'coverRight', angles: { closed: -180, ajar: -156, flat: 0 }, nudge: -1 },
       ];
     case 'accordion':
       return [
-        { side: 'left', width: 400, front: first, back: fold.cover, angles: { closed: 180, ajar: 152, open: 20 }, nudge: -1 },
-        { side: 'right', width: 400, front: third ?? second, back: 'monogram', angles: { closed: 180, ajar: 172, open: 20 }, nudge: 2 },
+        { side: 'left', width: 400, front: first, back: fold.cover, angles: { closed: 180, ajar: 152, flat: 0 }, nudge: -1 },
+        { side: 'right', width: 400, front: third ?? second, back: 'monogram', angles: { closed: 180, ajar: 172, flat: 0 }, nudge: 2 },
       ];
   }
 }

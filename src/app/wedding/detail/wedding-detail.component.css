@@ -71,69 +71,73 @@
   opacity: 0.75;
 }
 
-/* ── suite: card + guide ────────────────────────────────────────────── */
-.detail__suite {
-  max-width: 1140px;
+/* ── sections: printed suite, then online card + guide ────────────── */
+.detail__section {
+  max-width: 1180px;
   margin: 0 auto;
+  --detail-muted: #7a6a4c;
+}
+.detail--dark .detail__section {
+  --detail-muted: #d8cdb4;
+}
+.detail__online {
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.detail--dark .detail__online {
+  border-top-color: rgba(255, 255, 255, 0.16);
+}
+.detail__section-head {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+  margin-bottom: 28px;
+  color: #3a342a;
+}
+.detail--dark .detail__section-head {
+  color: #f0ead9;
+}
+.detail__section-title {
+  margin: 0;
+  font-family: var(--ff-playfair);
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 600;
+}
+.detail__section-sub,
+.detail__tip {
+  margin: 0;
+  font-family: var(--ff-beVietnamPro);
+  font-size: 13.5px;
+  opacity: 0.8;
+}
+.detail__tip {
+  font-size: 12.5px;
+  opacity: 0.7;
+  overflow-wrap: anywhere;
+}
+.detail__tip code {
+  font-size: 12px;
+}
+
+/* Online card and directions side by side, tops aligned; the guide starts
+   folded so both columns look balanced. */
+.detail__online-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
   gap: 36px;
 }
-.detail__stage-col {
-  flex: 1 1 440px;
-  max-width: 580px;
+.detail__online-card {
+  flex: 1 1 360px;
+  max-width: 440px;
   min-width: 0;
-  display: grid;
-  gap: 14px;
-  justify-items: center;
-}
-.detail__stage {
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.detail__controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  min-height: 40px;
-}
-.detail__action {
-  font-family: var(--ff-beVietnamPro);
-  font-size: 14px;
-  font-weight: 600;
-  color: #5a4f3c;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 999px;
-  padding: 9px 18px;
-  cursor: pointer;
-}
-.detail__action--primary {
-  color: #ffffff;
-  background: #b69256;
-  border-color: #b69256;
-}
-.detail__stage-hint {
-  font-family: var(--ff-beVietnamPro);
-  font-size: 13px;
-  font-style: italic;
-  opacity: 0.75;
-  color: #3a342a;
-}
-.detail--dark .detail__stage-hint {
-  color: #f0ead9;
 }
 .detail__guide {
-  flex: 1 1 480px;
-  max-width: 660px;
+  flex: 1 1 420px;
+  max-width: 600px;
   min-width: 0;
-}
-.detail__print {
-  display: none;
 }
 
 /* Thai runs taller — give the heading area more air. */
@@ -142,17 +146,13 @@
   line-height: 1.7;
 }
 
-/* 2K / large desktop: bigger suite, comfortable reading sizes. */
+/* 2K / large desktop: roomier sections, comfortable reading sizes. */
 @media (min-width: 1600px) {
-  .detail__suite {
-    max-width: 1320px;
-    gap: 48px;
-  }
-  .detail__stage-col {
-    max-width: 660px;
+  .detail__section {
+    max-width: 1360px;
   }
   .detail__guide {
-    max-width: 760px;
+    max-width: 680px;
   }
   .detail__desc {
     font-size: 15px;
@@ -178,28 +178,10 @@
   .detail {
     padding: 0;
   }
+  /* Print the paper suite only — the online card lives on screens. */
   .detail__bar,
   .detail__hint,
-  .detail__stage-col {
+  .detail__online {
     display: none;
-  }
-  .detail__suite {
-    display: block;
-  }
-  .detail__print {
-    display: block;
-    width: 400px;
-    height: 560px;
-    margin: 0 auto;
-  }
-  .detail__print app-invitation-card {
-    display: block;
-    width: 400px;
-    height: 560px;
-  }
-  .detail__guide {
-    display: block;
-    max-width: none;
-    margin-top: 20px;
   }
 }

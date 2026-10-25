@@ -232,6 +232,31 @@ describe('motifs', () => {
     }
     expect(reliefArt('vineFrame', 'oval').fill).not.toBe(reliefArt('vineFrame', 'rect').fill);
   });
+
+  it('keeps the corner blossom sprays out of the copy', () => {
+    // Footprint of the copy on the branch cards (press-red-foil,
+    // vintage-letter), measured in Chromium for vi / en / th, plus a little
+    // air: centred headings on top, full-width lines, shorter closing lines.
+    const copy = [
+      { left: 100, right: 300, top: 88, bottom: 150 },
+      { left: 36, right: 364, top: 145, bottom: 440 },
+      { left: 52, right: 348, top: 440, bottom: 482 },
+    ];
+    const art = reliefArt('branches', 'rect');
+    const inside = vertices(art.fill).filter(([x, y]) =>
+      copy.some((r) => x > r.left && x < r.right && y > r.top && y < r.bottom),
+    );
+    expect(inside).toEqual([]);
+  });
+
+  it('turns every twig to one side when asked', () => {
+    // A stem running left → right along the top edge; side -1 = up, towards the edge.
+    const spray = blossomBranch({ x: 0, y: 40 }, { x: 60, y: 40 }, { x: 120, y: 40 }, { x: 180, y: 40 }, {
+      width: 6, blossomRadius: 8, twigs: [0.3, 0.6, 0.85], seed: 3, blossoms: 2, side: -1,
+    });
+    const below = vertices(spray.fill).filter(([, y]) => y > 40 + 6 + 8 * 1.3);
+    expect(below).toEqual([]);
+  });
 });
 
 describe('patterns', () => {

@@ -4,16 +4,36 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { formLabel, styleLabel } from '../data/categories';
 import { getDesignById } from '../data/designs';
 import { buildWording } from '../data/invitation-wording';
-import { WEDDING_UI } from '../data/ui-strings';
+import { GUEST_PARAM, WEDDING_UI } from '../data/ui-strings';
 import { WEDDING_CONFIG } from '../data/wedding-config';
 import { InvitationDesign } from '../data/wedding.types';
 import { LanguageService } from '../language.service';
 import { isDarkColor } from '../theme';
 
+/** Longest guest name printed on the online card. */
+const GUEST_MAX = 60;
+
 /**
- * One full invitation suite on a stage: the envelope opens, the card comes
- * out (and out of its sleeve), next to the matching directions insert. The
- * page URL (/wedding/:id) is the "share this design" link.
+ * Cleans a guest name from the link (?khach=…): collapses whitespace, drops
+ * control characters, caps the length. Angular escapes it when printed.
+ */
+export function guestName(raw: string | null): string {
+  if (!raw) {
+    return '';
+  }
+  return raw
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, GUEST_MAX);
+}
+
+/**
+ * One design, in two parts: the printed suite laid out flat (envelope front
+ * and back, the invitation, the directions card), then the online
+ * invitation — no envelope, optionally addressed to a guest via ?khach= —
+ * beside the directions guide. The page URL (/wedding/:id) is the "share
+ * this design" link.
  */
 @Component({
   selector: 'app-wedding-detail',
@@ -32,6 +52,8 @@ export class WeddingDetailComponent implements OnInit, OnDestroy {
   readonly ui = computed(() => WEDDING_UI[this.lang()]);
   readonly design = signal<InvitationDesign | null>(null);
   readonly copy = computed(() => buildWording(WEDDING_CONFIG, this.lang()));
+  /** Guest's name from the link, for the online card. */
+  readonly guest = signal('');
 
   constructor() {
     effect(() => {
@@ -50,6 +72,7 @@ export class WeddingDetailComponent implements OnInit, OnDestroy {
       return;
     }
     this.design.set(design);
+    this.guest.set(guestName(this.route.snapshot.queryParamMap.get(GUEST_PARAM)));
     // Private family page — keep it out of search engines.
     this.meta.updateTag({ name: 'robots', content: 'noindex' });
   }
@@ -66,6 +89,11 @@ export class WeddingDetailComponent implements OnInit, OnDestroy {
   get isDark(): boolean {
     const design = this.design();
     return design !== null && isDarkColor(design.palette.bg);
+  }
+
+  /** Example personalised link shown to the couple. */
+  guestExample(design: InvitationDesign): string {
+    return `${location.origin}/wedding/${design.id}?${GUEST_PARAM}=Anh Minh`;
   }
 
   print(): void {

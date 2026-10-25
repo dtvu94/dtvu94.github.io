@@ -230,6 +230,12 @@ export interface BranchOptions {
   blossoms: number;
   /** Twig length as a fraction of the main branch (default 0.28). */
   twigLength?: number;
+  /**
+   * Put every twig and side blossom on one side of the stem (1 = left of
+   * the direction of travel, -1 = right), at a shallower angle — for a
+   * spray that hugs a card edge and keeps clear of the text.
+   */
+  side?: 1 | -1;
 }
 
 /**
@@ -246,10 +252,10 @@ export function blossomBranch(start: Point, c1: Point, c2: Point, end: Point, o:
 
   o.twigs.forEach((at, i) => {
     const st = main.at(at * main.length);
-    const side = i % 2 === 0 ? 1 : -1;
+    const side = o.side ?? (i % 2 === 0 ? 1 : -1);
     const reach = o.twigLength ?? 0.28;
     const len = main.length * reach * (1 - at * 0.43) * (0.85 + rand() * 0.3);
-    const a = st.angle + side * (0.55 + rand() * 0.35);
+    const a = st.angle + side * (o.side ? 0.38 + rand() * 0.22 : 0.55 + rand() * 0.35);
     const tip = polar(st.point, len, a);
     const twig = Track.build(st.point, [
       { kind: 'quad', c: polar(lerp(st.point, tip, 0.5), len * 0.18, a - side * Math.PI / 2), to: tip },
@@ -261,7 +267,7 @@ export function blossomBranch(start: Point, c1: Point, c2: Point, end: Point, o:
 
   for (let i = 1; i <= o.blossoms; i++) {
     const st = main.at((main.length * i) / (o.blossoms + 1));
-    const side = i % 2 === 0 ? 1 : -1;
+    const side = o.side ?? (i % 2 === 0 ? 1 : -1);
     bloom(polar(st.point, o.blossomRadius * 0.95, st.angle + side * Math.PI / 2), 0.8);
   }
   bloom(end, 1.1);

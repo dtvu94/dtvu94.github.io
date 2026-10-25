@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { getDesignById } from '../data/designs';
 import { buildWording } from '../data/invitation-wording';
+import { WEDDING_UI } from '../data/ui-strings';
 import { WEDDING_CONFIG } from '../data/wedding-config';
 import { InvitationDesign, PanelKind } from '../data/wedding.types';
 import { FoldPose } from '../folded/fold-geometry';
 import { popupLayers } from '../geometry/popup-art';
 import { PassportPose, mrzName } from '../passport/passport.component';
 import { SUITE_DECLARATIONS } from '../wedding.declarations';
-import { SuiteComponent } from './suite.component';
 
-type Piece = 'folded' | 'popup' | 'passport' | 'panel' | 'suite';
+type Piece = 'folded' | 'popup' | 'passport' | 'panel' | 'paper' | 'suite';
 
 @Component({
   template: `
@@ -27,8 +27,11 @@ type Piece = 'folded' | 'popup' | 'passport' | 'panel' | 'suite';
       @case ('panel') {
         <app-panel [design]="design" [copy]="copy" [kind]="kind" [width]="width" />
       }
+      @case ('paper') {
+        <app-paper-suite [design]="design" [copy]="copy" [labels]="labels" />
+      }
       @default {
-        <app-suite [design]="design" [copy]="copy" [interactive]="true" />
+        <app-suite [design]="design" [copy]="copy" />
       }
     }
   `,
@@ -43,6 +46,7 @@ class HostComponent {
   passportPose: PassportPose = 'closed';
   kind: PanelKind = 'calendar';
   width = 400;
+  labels = WEDDING_UI.vi.paperLabels;
 }
 
 describe('folded cards, pop-ups and passports', () => {
@@ -66,17 +70,17 @@ describe('folded cards, pop-ups and passports', () => {
       expect(doors[1].style.left).toBe('400px');
     });
 
-    it('swings the leaves from closed to ajar to open', () => {
+    it('swings the leaves from closed to ajar to flat', () => {
       const fixture = render('fold-blush-zigzag', { piece: 'folded' });
       const leaf = () => fixture.nativeElement.querySelector('.fd__leaf') as HTMLElement;
       expect(fixture.nativeElement.querySelector('app-folded').classList).toContain('fd--closed');
       expect(leaf().style.transform).toContain('rotateY(180deg)');
-      for (const pose of ['ajar', 'open'] as const) {
+      for (const pose of ['ajar', 'flat'] as const) {
         fixture.componentInstance.pose = pose;
         fixture.detectChanges();
         expect(fixture.nativeElement.querySelector('app-folded').classList).toContain(`fd--${pose}`);
       }
-      expect(leaf().style.transform).toContain('rotateY(20deg)');
+      expect(leaf().style.transform).toContain('rotateY(0deg)');
     });
 
     it('prints the cover outside and the panels inside', () => {
@@ -127,7 +131,7 @@ describe('folded cards, pop-ups and passports', () => {
       const fixture = render('pop-meadow', { piece: 'popup', open: true });
       const root: HTMLElement = fixture.nativeElement;
       const design = fixture.componentInstance.design;
-      expect(root.querySelectorAll('svg.pp__layer').length).toBe(popupLayers('meadow', design.palette).length);
+      expect(root.querySelectorAll('.pp__layer').length).toBe(popupLayers('meadow', design.palette).length);
       expect(root.querySelector('.pp__text')?.textContent?.trim()).toBe('28.03');
       expect(root.querySelector('app-popup')?.classList).toContain('pp--open');
     });
@@ -169,39 +173,33 @@ describe('folded cards, pop-ups and passports', () => {
     });
   });
 
-  describe('in a suite', () => {
-    const suiteOf = (fixture: ReturnType<typeof render>) =>
-      fixture.debugElement.query((el) => el.componentInstance instanceof SuiteComponent).componentInstance as SuiteComponent;
-
+  describe('in the gallery and laid flat on paper', () => {
     it.each([
-      ['fold-red-bifold', 'app-folded', 'fd--closed', 'fd--open'],
-      ['pop-skyline', 'app-popup', 'pp--closed', 'pp--open'],
-      ['passport-emerald', 'app-passport', 'ps--peek', 'ps--open'],
-    ])('%s comes out shut and opens on “Xem bên trong”', fakeAsync((id: string, selector: string, shut: string, opened: string) => {
-      const fixture = render(id);
-      const suite = suiteOf(fixture);
-      const piece = () => fixture.nativeElement.querySelector(selector) as HTMLElement;
-      const transform = () => (fixture.nativeElement.querySelector('.suite__piece') as HTMLElement).style.transform;
-      expect(suite.hasInside).toBe(true);
-      expect(piece()).toBeTruthy();
+      ['fold-red-bifold', 'app-folded', 'fd--ajar'],
+      ['pop-skyline', 'app-popup', 'pp--open'],
+      ['passport-emerald', 'app-passport', 'ps--peek'],
+    ])('%s previews a hint of its inside in the gallery', (id: string, selector: string, pose: string) => {
+      const root: HTMLElement = render(id).nativeElement;
+      expect(root.querySelector(`${selector}.${pose}`)).toBeTruthy();
+    });
 
-      suite.advance();
-      tick(1500);
-      fixture.detectChanges();
-      expect(suite.state()).toBe('out');
-      expect(piece().classList).toContain(shut);
-      const outTransform = transform();
+    it('lays a folded card out flat: every leaf at 0°, the cover shown shut beside it', () => {
+      const fixture = render('fold-sage-gate', { piece: 'paper' });
+      const root: HTMLElement = fixture.nativeElement;
+      expect(root.querySelector('.paper__piece--foldClosed app-folded.fd--closed')).toBeTruthy();
+      const flat = root.querySelector('.paper__piece--foldFlat app-folded.fd--flat')!;
+      for (const leaf of Array.from(flat.querySelectorAll<HTMLElement>('.fd__leaf'))) {
+        expect(leaf.style.transform).toContain('rotateY(0deg)');
+      }
+    });
 
-      suite.advance();
-      fixture.detectChanges();
-      expect(suite.state()).toBe('unfolded');
-      expect(piece().classList).toContain(opened);
-      expect(transform()).not.toBe(outTransform);
-
-      suite.close();
-      tick(1250 + 950);
-      fixture.detectChanges();
-      expect(suite.state()).toBe('sealed');
-    }));
+    it('shows a pop-up shut and opened, and a passport shut and opened with its ticket', () => {
+      const pop: HTMLElement = render('pop-hearts', { piece: 'paper' }).nativeElement;
+      expect(pop.querySelector('.paper__piece--popupClosed app-popup.pp--closed')).toBeTruthy();
+      expect(pop.querySelector('.paper__piece--popupOpen app-popup.pp--open')).toBeTruthy();
+      const passport: HTMLElement = render('passport-red', { piece: 'paper' }).nativeElement;
+      expect(passport.querySelector('.paper__piece--passportClosed app-passport.ps--closed')).toBeTruthy();
+      expect(passport.querySelector('.paper__piece--passportOpen app-passport.ps--open .ps__ticket')).toBeTruthy();
+    });
   });
 });

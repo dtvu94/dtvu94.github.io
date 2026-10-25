@@ -3,10 +3,40 @@ import { InvitationCopy, InvitationDesign, PocketSpec } from '../data/wedding.ty
 import { drawnBow, waxSealPath } from '../geometry/envelope-art';
 import { STOCK_TEXTURE } from '../geometry/patterns';
 import { CARD_H, CARD_W, SLEEVE_H, SLEEVE_W, WindowGeometry, lowerPocketPath, sleevePath, sleeveWindow } from '../geometry/shapes';
+import { CardPart } from '../invitation-card/invitation-card.component';
 import { invitationThemeStyle } from '../theme';
 
 /** Wave top of the lower pocket, in card pixels. */
 const LOWER_POCKET_TOP = 318;
+
+export interface PocketInsert {
+  /** The card that goes inside, in its own colours. */
+  design: InvitationDesign;
+  /** What it prints: a lower pocket holds just the invitation proper. */
+  part: CardPart;
+}
+
+const insertCache = new Map<string, PocketInsert>();
+
+/** The card held by a pocket design (main card for jackets and bands). */
+export function pocketInsert(design: InvitationDesign): PocketInsert {
+  let insert = insertCache.get(design.id);
+  if (!insert) {
+    const spec = design.pocket;
+    const override = spec?.insert;
+    // Lower-pocket inserts are plain rounded cards whatever the main card's cut.
+    const lower = spec?.variant === 'lowerPocket';
+    insert = {
+      design:
+        override || lower
+          ? { ...design, palette: { ...design.palette, ...override }, shape: lower ? 'rounded' : design.shape }
+          : design,
+      part: lower ? 'invite' : 'full',
+    };
+    insertCache.set(design.id, insert);
+  }
+  return insert;
+}
 
 /**
  * Thiệp rút & túi — constructions that hold the invitation:
@@ -14,7 +44,7 @@ const LOWER_POCKET_TOP = 318;
  * - lowerPocket: an announcement card whose lower pocket holds the invite,
  * - vellumWrap: a vellum jacket folded over the card, tied and sealed,
  * - bellyBand: a paper band round the card.
- * `out` is the opened state (card drawn out, jacket opened, band slid off).
+ * The insert on its own is `pocketInsert()` (laid out beside it on paper).
  */
 @Component({
   selector: 'app-pocket',
@@ -25,9 +55,6 @@ const LOWER_POCKET_TOP = 318;
 export class PocketComponent {
   @Input({ required: true }) design!: InvitationDesign;
   @Input({ required: true }) copy!: InvitationCopy;
-  @Input() out = false;
-  /** Set once the viewer has interacted, so closing animates too (never on first paint). */
-  @Input() animate = false;
   /** Gallery pose: the sleeve's card peeks out above it. */
   @Input() pulled = false;
 
@@ -45,7 +72,7 @@ export class PocketComponent {
 
   @HostBinding('class')
   get hostClass(): string {
-    return `pk pk--${this.spec.variant}${this.out ? ' pk--out' : ''}${this.animate ? ' pk--anim' : ''}`;
+    return `pk pk--${this.spec.variant}`;
   }
 
   /** Vertical rhythm of the sleeve print round its window. */
@@ -64,26 +91,8 @@ export class PocketComponent {
 
   /** The design as printed on the insert card (its own colours, if any). */
   get insertDesign(): InvitationDesign {
-    const override = this.spec.insert;
-    // Lower-pocket inserts are plain rounded cards whatever the main card's cut.
-    const reshape = this.spec.variant === 'lowerPocket';
-    if (!override && !reshape) {
-      return this.design;
-    }
-    if (this.insertCache?.source !== this.design) {
-      this.insertCache = {
-        source: this.design,
-        value: {
-          ...this.design,
-          palette: { ...this.design.palette, ...override },
-          shape: reshape ? 'rounded' : this.design.shape,
-        },
-      };
-    }
-    return this.insertCache.value;
+    return pocketInsert(this.design).design;
   }
-
-  private insertCache?: { source: InvitationDesign; value: InvitationDesign };
 
   get texture(): string | null {
     return STOCK_TEXTURE[this.spec.stock ?? 'smooth'] || null;

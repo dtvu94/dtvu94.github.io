@@ -9,16 +9,28 @@
   }
 
   @case ('pocket') {
+    <!-- Back of the envelope: side and bottom flaps, glued over the card. -->
     <div class="env__pocket" [style.clip-path]="pocketClip" [style.background-image]="texture">
+      <svg class="env__art" [attr.viewBox]="'0 0 ' + w + ' ' + h" aria-hidden="true">
+        @if (geo.seams) {
+          <path class="env__seam env__seam--lo" [attr.d]="geo.seams" />
+          <path class="env__seam env__seam--hi" [attr.d]="geo.seams" />
+        }
+        @if (spec.seal === 'twine') {
+          <path class="env__twine" [attr.d]="'M0 ' + twineY + 'H' + w + 'M' + w / 2 + ' ' + geo.flapDepth + 'V' + h" />
+        }
+      </svg>
+    </div>
+  }
+
+  @case ('front') {
+    <!-- Front of the envelope: what the guest sees first — their name line and the print. -->
+    <div class="env__front" [style.background-image]="texture" [style.box-shadow]="edgeShadow">
       <svg class="env__art" [attr.viewBox]="'0 0 ' + w + ' ' + h" aria-hidden="true">
         @if (spec.foil) {
           <defs>
             <filter appReliefFilter [attr.id]="foilId" finish="foil" [metal]="spec.ink" [scale]="0.7" />
           </defs>
-        }
-        @if (geo.seams) {
-          <path class="env__seam env__seam--lo" [attr.d]="geo.seams" />
-          <path class="env__seam env__seam--hi" [attr.d]="geo.seams" />
         }
         @if (printArt; as art) {
           <g [attr.filter]="spec.foil ? foilRef : null" [attr.fill]="spec.ink" [attr.stroke]="spec.ink">
@@ -29,7 +41,7 @@
           </g>
         }
         @if (spec.seal === 'twine') {
-          <path class="env__twine" [attr.d]="'M0 ' + twineY + 'H' + w + 'M' + w / 2 + ' ' + geo.flapDepth + 'V' + h" />
+          <path class="env__twine" [attr.d]="'M0 ' + twineY + 'H' + w" />
         }
       </svg>
       @if (spec.print === 'monogram') {
@@ -92,17 +104,16 @@
               class="env__wax-ring"
             />
           }
-          <text
-            class="env__seal-text"
-            [class.env__seal-text--small]="spec.seal === 'bow'"
-            [attr.x]="geo.sealAt.x"
-            [attr.y]="geo.sealAt.y"
-            text-anchor="middle"
-            dominant-baseline="central"
-          >
-            {{ copy.monogram }}
-          </text>
         </svg>
+        <!-- HTML, not SVG <text>: Chrome can keep SVG text at a stale scale in scaled frames. -->
+        <span
+          class="env__seal-text"
+          [class.env__seal-text--small]="spec.seal === 'bow'"
+          [style.left.px]="geo.sealAt.x"
+          [style.top.px]="geo.sealAt.y"
+          aria-hidden="true"
+          >{{ copy.monogram }}</span
+        >
       }
     </div>
   }

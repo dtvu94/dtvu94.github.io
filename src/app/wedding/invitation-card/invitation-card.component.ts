@@ -42,7 +42,6 @@ const ORNAMENT_SLOTS: Record<OrnamentKey, OrnamentSlot | 'none'> = {
   grandAmpersand: 'watermark',
   laserDoily: 'crest',
   laurel: 'crest',
-  doubleHappiness: 'crest',
 };
 
 /** Crest ornaments that frame the couple's monogram. */
@@ -78,6 +77,8 @@ export class InvitationCardComponent {
   @Input() part: CardPart = 'full';
   /** Stack the copy from the top (cards partly hidden by a pocket). */
   @Input() valign: 'center' | 'top' = 'center';
+  /** The guest's name in place of the dotted line (online invitations). */
+  @Input() guest = '';
 
   @HostBinding('attr.style')
   get themeStyle(): string {

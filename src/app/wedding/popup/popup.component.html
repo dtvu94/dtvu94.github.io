@@ -29,38 +29,31 @@
   </div>
 
   @for (layer of layers; track $index) {
-    <svg
-      class="pp__layer"
-      [style.top.px]="layer.foot - layer.height"
-      [style.height.px]="layer.height"
-      [style.transition-delay]="delay($index)"
-      [attr.viewBox]="'0 0 400 ' + layer.height"
-      aria-hidden="true"
-    >
-      @for (shape of layer.shapes; track $index) {
-        <path
-          [attr.d]="shape.d"
-          [attr.fill]="shape.fill"
-          [attr.stroke]="shape.stroke ?? null"
-          [attr.stroke-width]="shape.strokeWidth ?? null"
-          [attr.fill-rule]="shape.evenOdd ? 'evenodd' : null"
-          stroke-linecap="round"
-        />
-      }
+    <div class="pp__layer" [style.top.px]="layer.foot - layer.height" [style.height.px]="layer.height" [style.transition-delay]="delay($index)">
+      <svg class="pp__layer-art" [attr.viewBox]="'0 0 400 ' + layer.height" aria-hidden="true">
+        @for (shape of layer.shapes; track $index) {
+          <path
+            [attr.d]="shape.d"
+            [attr.fill]="shape.fill"
+            [attr.stroke]="shape.stroke ?? null"
+            [attr.stroke-width]="shape.strokeWidth ?? null"
+            [attr.fill-rule]="shape.evenOdd ? 'evenodd' : null"
+            stroke-linecap="round"
+          />
+        }
+      </svg>
+      <!-- HTML, not SVG <text>: Chrome can keep SVG text at a stale scale in scaled frames. -->
       @for (text of layer.texts ?? []; track $index) {
-        <text
+        <span
           class="pp__text pp__text--{{ text.font }}"
-          [attr.x]="text.x"
-          [attr.y]="text.y"
-          [attr.font-size]="text.size"
-          [attr.fill]="text.fill"
-          [attr.stroke]="text.stroke ?? null"
-          text-anchor="middle"
-          dominant-baseline="central"
+          [style.left.px]="text.x"
+          [style.top.px]="text.y"
+          [style.font-size.px]="text.size"
+          [style.color]="text.fill"
+          [style.--pp-stroke]="text.stroke ?? null"
+          >{{ textOf(text) }}</span
         >
-          {{ textOf(text) }}
-        </text>
       }
-    </svg>
+    </div>
   }
 </div>

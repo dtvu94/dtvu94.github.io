@@ -186,3 +186,36 @@
     margin: 0;
   }
 }
+
+/* ── collapsed by default on the detail page ───────────────────────── */
+.guide__body {
+  display: grid;
+  gap: 22px;
+}
+.guide__toggle {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 600 13.5px var(--inv-font-body);
+  color: var(--inv-primary);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--inv-accent) 60%, transparent);
+  border-radius: 999px;
+  padding: 8px 18px;
+  cursor: pointer;
+}
+.guide__toggle:hover,
+.guide__toggle:focus-visible {
+  background: color-mix(in srgb, var(--inv-accent) 12%, transparent);
+}
+.guide__chevron {
+  width: 7px;
+  height: 7px;
+  border-right: 1.6px solid currentColor;
+  border-bottom: 1.6px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+.guide__chevron--up {
+  transform: translateY(2px) rotate(-135deg);
+}

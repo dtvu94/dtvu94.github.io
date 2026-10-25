@@ -1,0 +1,51 @@
+:host {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+}
+
+.online__card {
+  max-width: 420px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.14)) drop-shadow(0 14px 26px rgba(0, 0, 0, 0.16));
+}
+
+.online__card app-invitation-card {
+  display: block;
+  width: 400px;
+  height: 560px;
+}
+
+.online__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 440px;
+}
+
+.online__btn {
+  font-family: var(--ff-beVietnamPro);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #5a4f3c;
+  background: #fffdf8;
+  border: 1px solid #d8cdb8;
+  border-radius: 999px;
+  padding: 9px 16px;
+}
+.online__btn:hover,
+.online__btn:focus-visible {
+  border-color: #b69256;
+  color: #7a6a45;
+}
+.online__btn--primary {
+  background: #b69256;
+  border-color: #b69256;
+  color: #ffffff;
+}
+.online__btn--primary:hover,
+.online__btn--primary:focus-visible {
+  color: #ffffff;
+  background: #a17f47;
+}

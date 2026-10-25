@@ -1,9 +1,11 @@
-import { Component, HostBinding, Input, computed, inject } from '@angular/core';
+import { Component, HostBinding, Input, computed, inject, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MAPS_LINKS, getDirections } from '../data/directions';
 import { InvitationDesign } from '../data/wedding.types';
 import { LanguageService } from '../language.service';
 import { invitationThemeStyle } from '../theme';
+
+let guideCount = 0;
 
 /**
  * The directions insert card — same content for every sample, localized via
@@ -18,6 +20,11 @@ import { invitationThemeStyle } from '../theme';
 })
 export class DirectionsGuideComponent {
   @Input({ required: true }) design!: InvitationDesign;
+  /** Start folded to the venue and links; the map (and its iframe) load on demand. */
+  @Input() collapsible = false;
+
+  readonly expanded = signal(false);
+  readonly bodyId = `guide-body-${++guideCount}`;
 
   private readonly language = inject(LanguageService);
 
@@ -30,5 +37,13 @@ export class DirectionsGuideComponent {
   @HostBinding('attr.style')
   get themeStyle(): string {
     return invitationThemeStyle(this.design);
+  }
+
+  get open(): boolean {
+    return !this.collapsible || this.expanded();
+  }
+
+  toggle(): void {
+    this.expanded.update((value) => !value);
   }
 }

@@ -1,35 +1,31 @@
-<div
-  class="suite suite--{{ state() }} suite--dir-{{ direction() }}"
-  [class.suite--front]="front()"
->
+<div class="suite">
+  <!-- Envelope seen from the back, flap open: flap (behind), back panel, pocket. -->
+  <div class="suite__env suite__env--flap">
+    <app-envelope [design]="design" [copy]="copy" layer="flap" [open]="true" />
+  </div>
   <div class="suite__env suite__env--back">
     <app-envelope [design]="design" [copy]="copy" layer="back" />
-  </div>
-  <div class="suite__slot">
-    <div class="suite__piece suite__piece--{{ kind }}" [style.transform]="pieceTransform">
-      @switch (kind) {
-        @case ('pocket') {
-          <app-pocket [design]="design" [copy]="copy" [out]="state() === 'unfolded'" [pulled]="!interactive" [animate]="touched()" />
-        }
-        @case ('folded') {
-          <app-folded [design]="design" [copy]="copy" [pose]="poses.fold" />
-        }
-        @case ('popup') {
-          <app-popup [design]="design" [copy]="copy" [open]="poses.popupOpen" />
-        }
-        @case ('passport') {
-          <app-passport [design]="design" [copy]="copy" [pose]="poses.passport" />
-        }
-        @default {
-          <app-invitation-card [design]="design" [copy]="copy" />
-        }
-      }
-    </div>
   </div>
   <div class="suite__env suite__env--pocket">
     <app-envelope [design]="design" [copy]="copy" layer="pocket" />
   </div>
-  <div class="suite__env suite__env--flap">
-    <app-envelope [design]="design" [copy]="copy" layer="flap" [open]="state() !== 'sealed'" />
+  <div class="suite__piece suite__piece--{{ kind }}" [style.transform]="pieceTransform">
+    @switch (kind) {
+      @case ('pocket') {
+        <app-pocket [design]="design" [copy]="copy" [pulled]="true" />
+      }
+      @case ('folded') {
+        <app-folded [design]="design" [copy]="copy" [pose]="poses.fold" />
+      }
+      @case ('popup') {
+        <app-popup [design]="design" [copy]="copy" [open]="poses.popupOpen" />
+      }
+      @case ('passport') {
+        <app-passport [design]="design" [copy]="copy" [pose]="poses.passport" />
+      }
+      @default {
+        <app-invitation-card [design]="design" [copy]="copy" />
+      }
+    }
   </div>
 </div>

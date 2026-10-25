@@ -28,6 +28,8 @@ const CONTENT: Record<Lang, DirectionsContent> = {
     openMapsLabel: '📍 Mở Google Maps',
     directionsLabel: '🧭 Chỉ đường từ vị trí của bạn',
     mapOnlineLabel: 'Bản đồ trực tuyến:',
+    expandLabel: 'Xem bản đồ và lộ trình',
+    collapseLabel: 'Thu gọn',
     routes: [
       {
         id: 'ong-lanh',
@@ -84,6 +86,8 @@ const CONTENT: Record<Lang, DirectionsContent> = {
     openMapsLabel: '📍 Open Google Maps',
     directionsLabel: '🧭 Directions from your location',
     mapOnlineLabel: 'Online map:',
+    expandLabel: 'Show map and routes',
+    collapseLabel: 'Show less',
     routes: [
       {
         id: 'ong-lanh',
@@ -140,6 +144,8 @@ const CONTENT: Record<Lang, DirectionsContent> = {
     openMapsLabel: '📍 เปิด Google Maps',
     directionsLabel: '🧭 นำทางจากตำแหน่งของคุณ',
     mapOnlineLabel: 'แผนที่ออนไลน์:',
+    expandLabel: 'ดูแผนที่และเส้นทาง',
+    collapseLabel: 'ย่อ',
     routes: [
       {
         id: 'ong-lanh',

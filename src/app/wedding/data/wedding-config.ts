@@ -11,6 +11,10 @@ export const WEDDING_CONFIG: WeddingConfig = {
   groom: { short: 'Vũ', full: '' },
   bride: { short: 'Thảo', full: '' },
   isoDate: '2027-03-28',
+  // Giờ dùng cho nút "Lưu vào lịch" của thiệp online (giờ Việt Nam).
+  startTime: '18:00',
+  endTime: '21:00',
+  utcOffset: '+07:00',
   timeText: {
     vi: '18 giờ 00',
     en: '6:00 PM',

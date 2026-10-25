@@ -1,7 +1,6 @@
-/* A suite scene at SCENE_W × SCENE_H design pixels; SceneFrame scales it.
-   Envelope layers share one transform (--env-*, per state below); the
-   piece moves on its own transform from piece-layout.ts. Either way every
-   move is a plain transform transition. */
+/* A gallery preview at SCENE_W × SCENE_H design pixels; SceneFrame scales
+   it. The envelope lies tilted on the left, flap open; the piece rests in
+   front of it (its transform comes from piece-layout.ts). */
 
 :host {
   display: block;
@@ -13,24 +12,6 @@
   position: relative;
   width: 640px;
   height: 820px;
-  /* "out": envelope behind on the left, card in front on the right. */
-  --env-x: 16px;
-  --env-y: 214px;
-  --env-r: -6deg;
-  --ease: cubic-bezier(0.45, 0.05, 0.3, 1);
-}
-.suite--unfolded {
-  --env-x: -40px;
-  --env-y: 286px;
-  --env-r: -9deg;
-}
-/* Inside the envelope: centred and upright (the piece rises from it to
-   where its foot clears the front pocket, see piece-layout.ts). */
-.suite--sealed,
-.suite--opened {
-  --env-x: 85px;
-  --env-y: 400px;
-  --env-r: 0deg;
 }
 
 .suite__env,
@@ -41,76 +22,20 @@
 }
 
 .suite__env {
-  transform: translate(var(--env-x), var(--env-y)) rotate(var(--env-r));
+  transform: translate(16px, 214px) rotate(-6deg);
   transform-origin: 235px 165px;
-  transition: transform 0.95s var(--ease);
 }
 .suite__env--back {
-  z-index: 1;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.12)) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.14));
-}
-.suite__env--pocket {
-  z-index: 3;
-}
-/* The closed flap covers the card; once it swings past upright it lies
-   behind everything. z-index flips half-way through the swing. */
-.suite__env--flap {
-  z-index: 5;
-  --flap-delay: 0s;
-  transition:
-    transform 0.95s var(--ease),
-    z-index 0s linear 0.38s;
-}
-.suite:not(.suite--sealed) .suite__env--flap {
-  z-index: 0;
-}
-/* Closing: wait for the card to slip back in before the flap comes down. */
-.suite--sealed .suite__env--flap {
-  --flap-delay: 0.75s;
-  transition:
-    transform 0.95s var(--ease),
-    z-index 0s linear 1.13s;
-}
-
-/* The card's slot: clipped at the envelope's bottom edge while the card is
-   inside, so the part still in the envelope never shows below it. */
-.suite__slot {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  clip-path: inset(-3000px);
-  transition: clip-path 0s linear 0s;
-}
-.suite--front .suite__slot {
-  z-index: 6;
-}
-.suite--sealed .suite__slot,
-.suite--opened .suite__slot {
-  clip-path: inset(-3000px -3000px 90px -3000px);
-}
-.suite--dir-in.suite--opened .suite__slot {
-  transition-delay: 0.9s;
 }
 
 .suite__piece {
   transform-origin: 0 0;
-  transition: transform 0.95s var(--ease);
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.16)) drop-shadow(0 12px 22px rgba(0, 0, 0, 0.16));
-}
-/* Rising starts once the flap is out of the way. */
-.suite--dir-out.suite--opened .suite__piece {
-  transition-delay: 0.55s;
 }
 
 .suite__piece app-invitation-card {
   display: block;
   width: 400px;
   height: 560px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .suite__env,
-  .suite__piece {
-    transition-duration: 1ms;
-  }
 }

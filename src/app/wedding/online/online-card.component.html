@@ -1,0 +1,9 @@
+<app-scene-frame class="online__card" [w]="cardW" [h]="cardH">
+  <app-invitation-card [design]="design" [copy]="copy" [guest]="guest" />
+</app-scene-frame>
+
+<div class="online__actions">
+  <a class="online__btn online__btn--primary" [href]="mapsUrl" target="_blank" rel="noopener">{{ ui.mapsLabel }}</a>
+  <a class="online__btn" [href]="calendar.google" target="_blank" rel="noopener">{{ ui.googleCalendarLabel }}</a>
+  <a class="online__btn" [href]="calendar.ics" [attr.download]="calendar.icsName">{{ ui.icsLabel }}</a>
+</div>

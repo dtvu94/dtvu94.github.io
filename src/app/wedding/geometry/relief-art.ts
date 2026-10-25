@@ -53,20 +53,27 @@ function build(motif: ReliefMotif, shape: CardShape): Motif {
         tendrils: 0.22,
       });
     case 'branches':
+      // Two sprays hugging opposite corners: each stem runs close along two
+      // edges with its twigs turned outwards, so the copy in between stays
+      // clear in every language (footprint checked in shapes.spec.ts).
       return mergeMotifs(
-        blossomBranch({ x: -8, y: 132 }, { x: 40, y: 86 }, { x: 76, y: 40 }, { x: 176, y: 22 }, {
-          width: 7,
-          blossomRadius: 12,
-          twigs: [0.3, 0.55, 0.78],
+        blossomBranch({ x: -6, y: 162 }, { x: 24, y: 92 }, { x: 66, y: 40 }, { x: 172, y: 26 }, {
+          width: 6.5,
+          blossomRadius: 11,
+          twigs: [0.28, 0.52, 0.76],
           seed: 4,
           blossoms: 2,
+          twigLength: 0.2,
+          side: -1,
         }),
-        blossomBranch({ x: 408, y: 430 }, { x: 362, y: 476 }, { x: 330, y: 520 }, { x: 222, y: 542 }, {
-          width: 7,
-          blossomRadius: 12,
-          twigs: [0.3, 0.55, 0.78],
+        blossomBranch({ x: 406, y: 412 }, { x: 378, y: 480 }, { x: 336, y: 530 }, { x: 226, y: 538 }, {
+          width: 6.5,
+          blossomRadius: 11,
+          twigs: [0.28, 0.52, 0.76],
           seed: 9,
           blossoms: 2,
+          twigLength: 0.2,
+          side: -1,
         }),
       );
     case 'lotusBorder':
