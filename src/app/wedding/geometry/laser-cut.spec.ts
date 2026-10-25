@@ -1,5 +1,7 @@
 import {
   ARCH_WINDOW,
+  BRANCH_EDGE_MAX_X,
+  CLOUD_WINDOW,
   CARD_H,
   CARD_W,
   LACE_WINDOW_INSET,
@@ -52,7 +54,7 @@ function outsideArchWindow(m: MotifBound): boolean {
   return clearOfRect && clearOfDome;
 }
 
-const KEYS: LaserShapeKey[] = ['lace', 'arch', 'lattice', 'doily'];
+const KEYS: LaserShapeKey[] = ['lace', 'arch', 'lattice', 'doily', 'branch', 'cloud'];
 
 describe('LASER_SHAPES', () => {
   it.each(KEYS)('%s: emits a well-formed path with finite coordinates', (key) => {
@@ -94,6 +96,25 @@ describe('LASER_SHAPES', () => {
 
   it('keeps the arch motifs clear of the arched window', () => {
     expect(LASER_SHAPES.arch.motifs.every(outsideArchWindow)).toBe(true);
+  });
+
+  it('keeps the cloud motifs clear of the oval window', () => {
+    const { cx, cy, rx, ry } = CLOUD_WINDOW;
+    for (const motif of LASER_SHAPES.cloud.motifs) {
+      for (const p of [motif.a, motif.b]) {
+        // Grow the window by the motif radius and require the point outside it.
+        const nx = (p.x - cx) / (rx + motif.radius);
+        const ny = (p.y - cy) / (ry + motif.radius);
+        expect(nx * nx + ny * ny).toBeGreaterThan(1);
+      }
+    }
+  });
+
+  it('keeps the branch holes on the paper side of the cut edge', () => {
+    for (const motif of LASER_SHAPES.branch.motifs) {
+      expect(Math.max(motif.a.x, motif.b.x) + motif.radius).toBeLessThan(BRANCH_EDGE_MAX_X - 60);
+    }
+    expect(LASER_SHAPES.branch.print).toMatch(/^M/);
   });
 
   it('leaves the doily centre solid for the cut-through monogram', () => {

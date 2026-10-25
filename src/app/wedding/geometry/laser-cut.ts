@@ -8,15 +8,15 @@
  * stations that never collide (laser-cut.spec.ts verifies this via each
  * motif's bounding capsule).
  *
- * Sheets use the card's design space (400 × 560, see `.card-frame` in
- * wedding-theme.css); the doily crest uses a 100 × 100 box. Paths are built
+ * Sheets use the card's design space (400 × 560); the doily crest uses a
+ * 100 × 100 box. Paths are built
  * once at module load — the gallery renders them as static strings.
  */
 
-export interface Point {
-  x: number;
-  y: number;
-}
+import { blossomBranch, taperedStroke } from './motifs';
+import { Point, Track, seededRandom } from './path-kit';
+
+export type { Point } from './path-kit';
 
 /**
  * Conservative bound of one decorative cut-out: every point within `radius`
@@ -34,9 +34,11 @@ export interface LaserShape {
   d: string;
   /** Decorative cut-outs (excludes the sheet, the window and edge bites). */
   motifs: MotifBound[];
+  /** Art printed on the sheet (filled, in the accent colour), if any. */
+  print?: string;
 }
 
-export type LaserShapeKey = 'lace' | 'arch' | 'lattice' | 'doily';
+export type LaserShapeKey = 'lace' | 'arch' | 'lattice' | 'doily' | 'branch' | 'cloud';
 
 export const CARD_W = 400;
 export const CARD_H = 560;
@@ -47,6 +49,10 @@ export const LACE_WINDOW_INSET = 32;
 export const LATTICE_WINDOW_INSET = 36;
 /** laserArch: arched window — straight sides from `spring` down to `base`. */
 export const ARCH_WINDOW = { left: 36, right: 364, centerX: 200, spring: 206, radius: 164, base: 528 } as const;
+/** laserCloud: oval window (scallops bulge further in). */
+export const CLOUD_WINDOW = { cx: 200, cy: 292, rx: 134, ry: 198 } as const;
+/** laserBranch: the jacket's cut edge never reaches right of this x. */
+export const BRANCH_EDGE_MAX_X = 196;
 
 // ── path primitives ─────────────────────────────────────────────────────────
 
@@ -239,8 +245,54 @@ class Cutter {
     }
   }
 
-  shape(viewBox: string): LaserShape {
-    return { viewBox, d: this.parts.join(''), motifs: this.motifs };
+  /**
+   * Auspicious cloud (mây lành) carved as line art: two lobes, two curls and
+   * a base, each a thin tapered channel. Channels keep small gaps so they
+   * never overlap; the bound is one capsule round the whole cloud.
+   */
+  cloud(c: Point, w: number, flip = false): void {
+    const fx = (x: number) => (flip ? 2 * c.x - x : x);
+    const arc = (cx: number, cy: number, r: number, from: number, to: number, w0: number, w1: number) => {
+      const steps = 24;
+      const pts = Array.from({ length: steps + 1 }, (_, i) => {
+        const a = from + ((to - from) * i) / steps;
+        return { x: fx(cx + r * Math.cos(a)), y: cy + r * Math.sin(a) };
+      });
+      this.parts.push(taperedStroke(Track.polyline(pts), w0, w1, steps));
+    };
+    const big = { x: c.x - w * 0.17, y: c.y };
+    const small = { x: c.x + w * 0.22, y: c.y + w * 0.03 };
+    arc(big.x, big.y, w * 0.21, Math.PI * 1.04, Math.PI * 1.97, 3.4, 2.4);
+    arc(small.x, small.y, w * 0.15, Math.PI * 1.12, Math.PI * 1.98, 2.8, 2);
+    arc(big.x - w * 0.02, big.y, w * 0.09, Math.PI * 0.95, Math.PI * 1.75, 2.4, 1.4);
+    arc(small.x + w * 0.02, small.y, w * 0.06, Math.PI * 1.25, Math.PI * 1.95, 2, 1.2);
+    const baseY = c.y + w * 0.08;
+    this.parts.push(
+      taperedStroke(
+        Track.polyline([
+          { x: fx(c.x - w * 0.44), y: baseY },
+          { x: fx(c.x - w * 0.1), y: baseY + 1.5 },
+          { x: fx(c.x + w * 0.42), y: baseY },
+        ]),
+        1.4,
+        3,
+        16,
+      ),
+    );
+    this.motifs.push({ a: { x: c.x - w * 0.2, y: c.y }, b: { x: c.x + w * 0.2, y: c.y }, radius: w * 0.32 });
+  }
+
+  /** Five-petal blossom hole (hoa đào), ≈ 2 r across. */
+  blossom(c: Point, r: number, rotation = 0): void {
+    this.dot(c, r * 0.18);
+    for (let i = 0; i < 5; i++) {
+      const a = rotation + (i * 2 * Math.PI) / 5;
+      this.leaf({ x: c.x + r * 0.75 * Math.cos(a), y: c.y + r * 0.75 * Math.sin(a) }, r * 0.5, r * 0.42, a);
+    }
+  }
+
+  shape(viewBox: string, print?: string): LaserShape {
+    return { viewBox, d: this.parts.join(''), motifs: this.motifs, print };
   }
 }
 
@@ -388,9 +440,88 @@ function buildDoily(): LaserShape {
   return cut.shape('0 0 100 100');
 }
 
+/**
+ * Cành đào — a jacket over the left of the card whose right edge is cut
+ * into irregular blossom lobes, pierced with a line of dots along the cut and
+ * printed with a flowering branch.
+ */
+function buildBranch(): LaserShape {
+  const rand = seededRandom(31);
+  const spineX = (y: number) => 120 - 22 * (y / CARD_H) + 12 * Math.sin((y / CARD_H) * Math.PI * 2.2);
+  const ys = [-2];
+  while (ys[ys.length - 1] < CARD_H + 2) {
+    ys.push(Math.min(CARD_H + 2, ys[ys.length - 1] + 26 + rand() * 22));
+  }
+  const pts = ys.map((y) => ({ x: spineX(y), y }));
+  let edge = '';
+  pts.slice(1).forEach((p, i) => {
+    const prev = pts[i];
+    const chord = Math.hypot(p.x - prev.x, p.y - prev.y);
+    // Large arcs with sweep 1 bulge towards the open (right) side.
+    const r = n((chord / 2) * (1.06 + rand() * 0.22));
+    edge += `A${r} ${r} 0 1 1 ${n(p.x)} ${n(p.y)}`;
+  });
+  const last = pts[pts.length - 1];
+  const cut = new Cutter();
+  cut.raw(`M0 -2L${n(pts[0].x)} ${n(pts[0].y)}${edge}L${n(last.x)} ${CARD_H + 2}H0Z`);
+  // Pierced dots following the cut.
+  for (let y = 24; y < CARD_H - 16; y += 21) {
+    cut.dot({ x: spineX(y) - 16, y }, 2);
+  }
+  const art = blossomBranch({ x: -8, y: 552 }, { x: 46, y: 430 }, { x: 8, y: 210 }, { x: 70, y: 18 }, {
+    width: 6,
+    blossomRadius: 10,
+    twigs: [0.16, 0.32, 0.5, 0.66, 0.82],
+    twigLength: 0.11,
+    seed: 5,
+    blossoms: 3,
+  });
+  return cut.shape(`0 0 ${CARD_W} ${CARD_H}`, art.fill);
+}
+
+/** Mây lành — clouds and pearls cut round a scalloped oval window. */
+function buildCloud(): LaserShape {
+  const { cx, cy, rx, ry } = CLOUD_WINDOW;
+  const cut = new Cutter();
+  cut.raw(rectPath(0, 0, CARD_W, CARD_H));
+  // Window: points round the ellipse, scallops bulging into the opening.
+  const count = 44;
+  const ring = Array.from({ length: count }, (_, i) => {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / count;
+    return { x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) };
+  });
+  let window = moveTo(ring[0]);
+  for (let i = 1; i <= count; i++) {
+    const a = ring[i - 1];
+    const b = ring[i % count];
+    const r = n(Math.hypot(b.x - a.x, b.y - a.y) / 2);
+    window += `A${r} ${r} 0 0 0 ${n(b.x)} ${n(b.y)}`;
+  }
+  cut.raw(`${window}Z`);
+  // Pearl ring just outside the window.
+  for (let i = 0; i < 40; i++) {
+    const a = -Math.PI / 2 + ((i + 0.5) * 2 * Math.PI) / 40;
+    cut.dot({ x: cx + (rx + 16) * Math.cos(a), y: cy + (ry + 16) * Math.sin(a) }, 2.4);
+  }
+  // Clouds: two per corner, one at each side's waist.
+  cut.cloud({ x: 62, y: 56 }, 84);
+  cut.cloud({ x: 338, y: 56 }, 84, true);
+  cut.cloud({ x: 62, y: 520 }, 84);
+  cut.cloud({ x: 338, y: 520 }, 84, true);
+  cut.cloud({ x: 46, y: 140 }, 52);
+  cut.cloud({ x: 354, y: 140 }, 52, true);
+  cut.cloud({ x: 44, y: 430 }, 52);
+  cut.cloud({ x: 356, y: 430 }, 52, true);
+  cut.cloud({ x: 200, y: 34 }, 64);
+  cut.cloud({ x: 200, y: 532 }, 64, true);
+  return cut.shape(`0 0 ${CARD_W} ${CARD_H}`);
+}
+
 export const LASER_SHAPES: Readonly<Record<LaserShapeKey, LaserShape>> = {
   lace: buildLace(),
   arch: buildArch(),
   lattice: buildLattice(),
   doily: buildDoily(),
+  branch: buildBranch(),
+  cloud: buildCloud(),
 };

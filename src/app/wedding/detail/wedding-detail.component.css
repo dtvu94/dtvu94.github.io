@@ -81,13 +81,59 @@
   align-items: flex-start;
   gap: 36px;
 }
-.detail__card {
-  flex-shrink: 0;
+.detail__stage-col {
+  flex: 1 1 440px;
+  max-width: 580px;
+  min-width: 0;
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+}
+.detail__stage {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.detail__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+}
+.detail__action {
+  font-family: var(--ff-beVietnamPro);
+  font-size: 14px;
+  font-weight: 600;
+  color: #5a4f3c;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 999px;
+  padding: 9px 18px;
+  cursor: pointer;
+}
+.detail__action--primary {
+  color: #ffffff;
+  background: #b69256;
+  border-color: #b69256;
+}
+.detail__stage-hint {
+  font-family: var(--ff-beVietnamPro);
+  font-size: 13px;
+  font-style: italic;
+  opacity: 0.75;
+  color: #3a342a;
+}
+.detail--dark .detail__stage-hint {
+  color: #f0ead9;
 }
 .detail__guide {
   flex: 1 1 480px;
   max-width: 660px;
   min-width: 0;
+}
+.detail__print {
+  display: none;
 }
 
 /* Thai runs taller — give the heading area more air. */
@@ -102,8 +148,8 @@
     max-width: 1320px;
     gap: 48px;
   }
-  .detail__card {
-    --s: 1.12;
+  .detail__stage-col {
+    max-width: 660px;
   }
   .detail__guide {
     max-width: 760px;
@@ -123,11 +169,6 @@
   }
 }
 
-@media (max-width: 460px) {
-  .detail__card {
-    --s: 0.82;
-  }
-}
 
 @media print {
   :host,
@@ -138,14 +179,23 @@
     padding: 0;
   }
   .detail__bar,
-  .detail__hint {
+  .detail__hint,
+  .detail__stage-col {
     display: none;
   }
   .detail__suite {
     display: block;
   }
-  .detail__card {
+  .detail__print {
+    display: block;
+    width: 400px;
+    height: 560px;
     margin: 0 auto;
+  }
+  .detail__print app-invitation-card {
+    display: block;
+    width: 400px;
+    height: 560px;
   }
   .detail__guide {
     display: block;

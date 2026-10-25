@@ -1,89 +1,120 @@
 <article
-  class="inv inv--{{ design.layout }} inv--fin-{{ finish }}"
+  class="inv inv--{{ design.layout }} inv--fin-{{ finish }} inv--part-{{ part }} inv--stock-{{ stock }} inv--shape-{{ shape }}"
   [class.inv--gold]="design.accentStyle === 'gold'"
   [class.inv--dark-paper]="isDarkPaper"
+  [class.inv--top]="valign === 'top'"
+  [style.clip-path]="clip"
+  [style.padding]="padding"
 >
-  @if (hasWatermark) {
+  @if (reliefBorder; as border) {
+    <app-relief class="inv__relief" [spec]="border" [palette]="design.palette" [shape]="shape" aria-hidden="true" />
+  }
+  @if (hasWatermark && part !== 'announce') {
     <p class="inv__watermark" aria-hidden="true">&amp;</p>
   }
   @if (laserSheet; as sheet) {
     <!-- Laser-cut jacket: sheet + cut-outs in one evenodd path. -->
     <svg class="inv__laser" [attr.viewBox]="sheet.viewBox" preserveAspectRatio="none" aria-hidden="true">
       <path [attr.d]="sheet.d" fill-rule="evenodd" />
+      @if (sheet.print) {
+        <path class="inv__laser-print" [attr.d]="sheet.print" />
+      }
     </svg>
   }
   @if (backdropOrnament; as backdrop) {
     <app-ornament class="inv__backdrop" [ornament]="backdrop" aria-hidden="true" />
   }
   @if (cornerOrnament; as corner) {
-    <app-ornament class="inv__corner inv__corner--tl" [ornament]="corner" aria-hidden="true" />
-    <app-ornament class="inv__corner inv__corner--tr" [ornament]="corner" aria-hidden="true" />
-    <app-ornament class="inv__corner inv__corner--bl" [ornament]="corner" aria-hidden="true" />
-    <app-ornament class="inv__corner inv__corner--br" [ornament]="corner" aria-hidden="true" />
+    <app-ornament class="inv__corner inv__corner--tl" [ornament]="corner" [relief]="relief" [palette]="design.palette" aria-hidden="true" />
+    <app-ornament class="inv__corner inv__corner--tr" [ornament]="corner" [relief]="relief" [palette]="design.palette" aria-hidden="true" />
+    <app-ornament class="inv__corner inv__corner--bl" [ornament]="corner" [relief]="relief" [palette]="design.palette" aria-hidden="true" />
+    <app-ornament class="inv__corner inv__corner--br" [ornament]="corner" [relief]="relief" [palette]="design.palette" aria-hidden="true" />
   }
 
-  @if (design.layout === 'bandedHeader') {
+  @if (design.layout === 'bandedHeader' && showsHeader) {
     <header class="inv__band">
       <p class="inv__band-title">{{ copy.titleWord }}</p>
     </header>
   }
 
   <div class="inv__content">
-    @if (design.layout === 'splitVertical') {
+    @if (design.layout === 'splitVertical' && showsHeader) {
       <aside class="inv__side">
         <p class="inv__monogram">{{ copy.monogram }}</p>
         @if (crestOrnament; as crest) {
-          <app-ornament class="inv__side-ornament" [ornament]="crest" aria-hidden="true" />
+          <app-ornament class="inv__side-ornament" [ornament]="crest" [relief]="relief" [palette]="design.palette" aria-hidden="true" />
         }
         <p class="inv__side-title">{{ copy.titleWord }}</p>
       </aside>
     }
 
     <div class="inv__main">
-      @if (design.layout !== 'splitVertical' && design.layout !== 'bandedHeader') {
+      @if (part === 'announce') {
         @if (crestOrnament; as crest) {
-          <div
-            class="inv__crest"
-            [class.inv__crest--monogram]="crestHoldsMonogram"
-            [class.inv__crest--laser]="crestIsLaserCut"
-          >
-            <app-ornament class="inv__crest-art" [ornament]="crest" aria-hidden="true" />
-            @if (crestHoldsMonogram) {
-              <p class="inv__monogram inv__monogram--crest">{{ copy.monogram }}</p>
-            }
-          </div>
+          <ng-container *ngTemplateOutlet="crestTpl; context: { $implicit: crest }" />
         }
-        <p class="inv__title">{{ copy.titleWord }}</p>
-      } @else if (design.layout === 'bandedHeader') {
-        <p class="inv__monogram inv__monogram--band">{{ copy.monogram }}</p>
-      }
-
-      <p class="inv__headline">{{ copy.inviteHeadline }}</p>
-      <p class="inv__guest">
-        <span>{{ copy.guestPrefix }}</span>
-        <span class="inv__guest-dots" aria-hidden="true"></span>
-        <span>{{ copy.guestSuffix }}</span>
-      </p>
-      <p class="inv__event">{{ copy.eventLine }}</p>
-      <p class="inv__couple">{{ copy.coupleLine }}</p>
-
-      @if (dividerOrnament; as divider) {
-        <app-ornament class="inv__divider" [ornament]="divider" aria-hidden="true" />
+        <p class="inv__kicker">{{ copy.kicker }}</p>
+        <p class="inv__couple inv__couple--hero">{{ copy.coupleLine }}</p>
+        @if (dividerOrnament; as divider) {
+          <app-ornament class="inv__divider" [ornament]="divider" [relief]="relief" [palette]="design.palette" aria-hidden="true" />
+        } @else {
+          <div class="inv__rule" aria-hidden="true"></div>
+        }
+        <p class="inv__short-date">{{ copy.shortDate }}</p>
+        <p class="inv__time-weekday">{{ copy.timeWeekday }}</p>
+        <p class="inv__venue-short">{{ copy.venueShort }}</p>
       } @else {
-        <div class="inv__rule" aria-hidden="true"></div>
-      }
-
-      <p class="inv__date">{{ copy.dateLine }}</p>
-      @if (copy.lunarLine) {
-        <p class="inv__lunar">{{ copy.lunarLine }}</p>
-      }
-      <div class="inv__venue">
-        @for (line of copy.venueLines; track line) {
-          <p class="inv__venue-line">{{ line }}</p>
+        @if (showsHeader) {
+          @if (design.layout !== 'splitVertical' && design.layout !== 'bandedHeader') {
+            @if (crestOrnament; as crest) {
+              <ng-container *ngTemplateOutlet="crestTpl; context: { $implicit: crest }" />
+            }
+            <p class="inv__title">{{ copy.titleWord }}</p>
+          } @else if (design.layout === 'bandedHeader') {
+            <p class="inv__monogram inv__monogram--band">{{ copy.monogram }}</p>
+          }
         }
-      </div>
-      <p class="inv__closing">{{ copy.closing }}</p>
-      <p class="inv__rsvp">{{ copy.rsvp }}</p>
+
+        <p class="inv__headline">{{ copy.inviteHeadline }}</p>
+        <p class="inv__guest">
+          <span>{{ copy.guestPrefix }}</span>
+          <span class="inv__guest-dots" aria-hidden="true"></span>
+          <span>{{ copy.guestSuffix }}</span>
+        </p>
+        <p class="inv__event">{{ copy.eventLine }}</p>
+        <p class="inv__couple">{{ copy.coupleLine }}</p>
+
+        @if (dividerOrnament; as divider) {
+          <app-ornament class="inv__divider" [ornament]="divider" [relief]="relief" [palette]="design.palette" aria-hidden="true" />
+        } @else {
+          <div class="inv__rule" aria-hidden="true"></div>
+        }
+
+        <p class="inv__date">{{ copy.dateLine }}</p>
+        @if (copy.lunarLine) {
+          <p class="inv__lunar">{{ copy.lunarLine }}</p>
+        }
+        <div class="inv__venue">
+          @for (line of copy.venueLines; track line) {
+            <p class="inv__venue-line">{{ line }}</p>
+          }
+        </div>
+        <p class="inv__closing">{{ copy.closing }}</p>
+        <p class="inv__rsvp">{{ copy.rsvp }}</p>
+      }
     </div>
   </div>
+
+  @if (stockTexture) {
+    <div class="inv__stock" [style.background-image]="stockTexture" aria-hidden="true"></div>
+  }
 </article>
+
+<ng-template #crestTpl let-crest>
+  <div class="inv__crest" [class.inv__crest--monogram]="crestHoldsMonogram" [class.inv__crest--laser]="crestIsLaserCut">
+    <app-ornament class="inv__crest-art" [ornament]="crest" [relief]="relief" [palette]="design.palette" aria-hidden="true" />
+    @if (crestHoldsMonogram) {
+      <p class="inv__monogram inv__monogram--crest">{{ copy.monogram }}</p>
+    }
+  </div>
+</ng-template>

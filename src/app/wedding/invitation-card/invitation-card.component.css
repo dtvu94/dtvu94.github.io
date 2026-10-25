@@ -19,6 +19,12 @@
   box-shadow: 0 1px 3px rgba(20, 16, 10, 0.12), 0 14px 36px rgba(20, 16, 10, 0.18);
 }
 
+/* ── paper layers: relief art under the copy, stock texture over it ──── */
+.inv__relief {
+  position: absolute;
+  inset: 0;
+}
+
 /* ── ornament slots ─────────────────────────────────────────────────── */
 .inv__backdrop {
   position: absolute;
@@ -89,6 +95,11 @@
 }
 .inv__main > p {
   margin: 0;
+}
+
+/* Cards partly hidden in a pocket stack their copy from the top. */
+.inv--top .inv__main {
+  justify-content: flex-start;
 }
 
 /* ── typography ─────────────────────────────────────────────────────── */
@@ -194,6 +205,36 @@
 }
 .inv__monogram--band {
   font-size: 20px;
+}
+
+/* ── announcement face ──────────────────────────────────────────────── */
+.inv__kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+.inv__couple--hero {
+  font-size: 50px;
+  line-height: 1.1;
+  margin: 4px 0;
+}
+.inv__short-date {
+  font-family: var(--inv-font-display);
+  color: var(--inv-primary);
+  font-size: 23px;
+  letter-spacing: 0.08em;
+}
+.inv__time-weekday {
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+}
+.inv__venue-short {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--inv-accent);
 }
 
 /* ── layout: centeredClassic ────────────────────────────────────────── */

@@ -16,10 +16,38 @@
     </header>
 
     <section class="detail__suite">
-      <div class="card-frame detail__card">
-        <app-invitation-card [design]="d" [copy]="copy()" />
+      <div class="detail__stage-col">
+        <app-scene-frame class="detail__stage" (click)="suite.advance()">
+          <app-suite #suite [design]="d" [copy]="copy()" [interactive]="true" />
+        </app-scene-frame>
+        <div class="detail__controls">
+          @switch (suite.state()) {
+            @case ('sealed') {
+              <button type="button" class="detail__action detail__action--primary" (click)="suite.open()">{{ ui().openLabel }}</button>
+              <span class="detail__stage-hint">{{ ui().stageHint }}</span>
+            }
+            @case ('out') {
+              @if (suite.hasInside) {
+                <button type="button" class="detail__action detail__action--primary" (click)="suite.unfold()">{{ ui().insideLabel }}</button>
+              }
+              <button type="button" class="detail__action" (click)="suite.close()">{{ ui().closeLabel }}</button>
+            }
+            @case ('unfolded') {
+              <button type="button" class="detail__action detail__action--primary" (click)="suite.fold()">{{ ui().foldLabel }}</button>
+              <button type="button" class="detail__action" (click)="suite.close()">{{ ui().closeLabel }}</button>
+            }
+            @default {
+              <span class="detail__stage-hint">…</span>
+            }
+          }
+        </div>
       </div>
       <app-directions-guide class="detail__guide" [design]="d" />
     </section>
+
+    <!-- Print: the flat card face, at full size. -->
+    <div class="detail__print" aria-hidden="true">
+      <app-invitation-card [design]="d" [copy]="copy()" />
+    </div>
   </main>
 }

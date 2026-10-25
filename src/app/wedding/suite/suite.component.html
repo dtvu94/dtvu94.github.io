@@ -1,0 +1,26 @@
+<div
+  class="suite suite--{{ state() }} suite--dir-{{ direction() }}"
+  [class.suite--front]="front()"
+  [class.suite--sleeve]="pieceWidth !== 400"
+  [style.--pc-w]="pieceWidth + 'px'"
+  [style.--pc-h]="pieceHeight + 'px'"
+>
+  <div class="suite__env suite__env--back">
+    <app-envelope [design]="design" [copy]="copy" layer="back" />
+  </div>
+  <div class="suite__slot">
+    <div class="suite__piece">
+      @if (isPocket) {
+        <app-pocket [design]="design" [copy]="copy" [out]="state() === 'unfolded'" [pulled]="!interactive" [animate]="touched()" />
+      } @else {
+        <app-invitation-card [design]="design" [copy]="copy" />
+      }
+    </div>
+  </div>
+  <div class="suite__env suite__env--pocket">
+    <app-envelope [design]="design" [copy]="copy" layer="pocket" />
+  </div>
+  <div class="suite__env suite__env--flap">
+    <app-envelope [design]="design" [copy]="copy" layer="flap" [open]="state() !== 'sealed'" />
+  </div>
+</div>

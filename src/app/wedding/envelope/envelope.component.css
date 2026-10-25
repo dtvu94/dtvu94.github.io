@@ -1,0 +1,231 @@
+/* Envelope layers at ENV_W × ENV_H design pixels. Colours arrive as
+   --env-* / --inv-* custom properties from the host binding. */
+
+:host {
+  display: block;
+  position: relative;
+  width: 470px;
+  height: 330px;
+  pointer-events: none;
+}
+
+.env__back,
+.env__pocket,
+.env__face {
+  position: absolute;
+  inset: 0;
+}
+
+/* ── back panel (inside) ────────────────────────────────────────────── */
+.env__back {
+  border-radius: 3px;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--env-paper) 88%, #000000);
+}
+.env__back-liner {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  right: 10px;
+  height: 64%;
+}
+.env__back-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.05) 55%, rgba(0, 0, 0, 0.12));
+}
+
+/* ── front pocket ───────────────────────────────────────────────────── */
+:host(.env--pocket) {
+  filter: drop-shadow(0 -1px 1.5px rgba(0, 0, 0, 0.16));
+}
+.env__pocket {
+  background-color: var(--env-paper);
+  color: var(--env-ink);
+}
+.env__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.env__seam {
+  fill: none;
+}
+.env__seam--lo {
+  stroke: rgba(0, 0, 0, 0.13);
+  stroke-width: 1.4;
+}
+.env__seam--hi {
+  stroke: rgba(255, 255, 255, 0.45);
+  stroke-width: 1;
+  transform: translateY(1.2px);
+}
+.env__twine {
+  fill: none;
+  stroke: #b08a5a;
+  stroke-width: 3;
+  stroke-dasharray: 5 1.5;
+  filter: drop-shadow(0 1px 0.6px rgba(0, 0, 0, 0.35));
+}
+
+.env__names,
+.env__monogram,
+.env__script,
+.env__frame-title,
+.env__guest {
+  position: absolute;
+  margin: 0;
+  white-space: nowrap;
+}
+.env__names {
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  text-align: center;
+  font-family: var(--inv-font-display);
+  font-size: 34px;
+  line-height: 1.1;
+}
+.env__monogram {
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  text-align: center;
+  font-family: var(--inv-font-accent);
+  font-size: 20px;
+}
+.env__script {
+  left: 30px;
+  top: 52%;
+  transform: translateY(-50%) rotate(-5deg);
+  font-family: var(--inv-font-accent);
+  font-size: 40px;
+}
+.env__frame-title {
+  left: 0;
+  right: 0;
+  top: 43%;
+  text-align: center;
+  font-family: var(--inv-font-accent);
+  font-size: 28px;
+}
+.env__guest {
+  left: 44px;
+  right: 44px;
+  top: 86%;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-family: var(--inv-font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.env__guest-line {
+  flex: 1;
+  border-bottom: 1px dotted currentColor;
+  opacity: 0.6;
+}
+
+/* ── flap, hinged at the top edge ───────────────────────────────────── */
+:host(.env--flap) {
+  perspective: 1600px;
+  perspective-origin: 50% 0;
+}
+.env__hinge {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+  transition: transform 0.75s cubic-bezier(0.45, 0.05, 0.3, 1) var(--flap-delay, 0s);
+}
+.env__hinge--open {
+  transform: rotateX(180deg);
+}
+.env__face {
+  backface-visibility: hidden;
+}
+.env__face--shadow {
+  background: rgba(0, 0, 0, 0.2);
+  transform: translateY(2px);
+  filter: blur(2px);
+}
+.env__face--out {
+  background-color: var(--env-paper);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.06));
+}
+.env__face--in {
+  transform: rotateY(180deg);
+  background-color: color-mix(in srgb, var(--env-paper) 92%, #000000);
+}
+.env__flap-liner {
+  position: absolute;
+  inset: 0;
+  transform: translateY(8px) scale(0.9, 0.86);
+  transform-origin: 50% 0;
+}
+.env__edge {
+  fill: none;
+  stroke-width: 12;
+}
+.env__seal {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  backface-visibility: hidden;
+}
+.env__wax {
+  filter: drop-shadow(0 2px 1.5px rgba(0, 0, 0, 0.35));
+}
+.env__wax-ring {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.22);
+  stroke-width: 1.6;
+}
+.env__sticker-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-width: 1;
+}
+.env__bow {
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.env__seal-text {
+  font-family: var(--inv-font-accent);
+  font-size: 15px;
+  fill: rgba(255, 255, 255, 0.82);
+  paint-order: stroke;
+  stroke: rgba(0, 0, 0, 0.18);
+  stroke-width: 0.8px;
+}
+.env__seal-text--small {
+  font-size: 10px;
+}
+
+/* ── vellum (giấy can): translucent paper, frosted ─────────────────── */
+:host(.env--vellum) .env__pocket,
+:host(.env--vellum) .env__face--out {
+  /* Milky, not blurred: backdrop-filter misrenders in the 3-D flap. */
+  background-color: color-mix(in srgb, var(--env-paper) 62%, transparent);
+}
+:host(.env--vellum) .env__back {
+  background-color: color-mix(in srgb, var(--env-paper) 60%, transparent);
+}
+:host(.env--vellum) .env__face--shadow {
+  opacity: 0.4;
+}
+
+/* Fewer moving parts for people who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .env__hinge {
+    transition: none;
+  }
+}

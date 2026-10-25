@@ -1,9 +1,13 @@
-/* ═══ Print finishes & laser-cut layouts for the invitation card ═══════════
-   Dập chìm (letterpress) · dập nổi (blind emboss) · cắt laser (laser-cut).
+/* ═══ Paper, print finishes & laser-cut layouts for the invitation card ════
+   Giấy · dập chìm (letterpress) · dập nổi (emboss) · cắt laser (laser-cut).
 
    Global stylesheet (angular.json `styles[]`): the card's component
-   stylesheet sits close to its anyComponentStyle budget, so the finish and
-   laser-cut collections are styled here.
+   stylesheet sits close to its anyComponentStyle budget, so the paper,
+   finish and laser-cut collections are styled here.
+
+   Ornament and border relief is real lighting (SVG filters, see
+   relief/relief-filter.component); this sheet only shades the *type*, which
+   is HTML, with text-shadows that match that light (top-left).
 
    Specificity: the card's emulated-encapsulation rules compile to one extra
    attribute selector per compound — `.inv__content` weighs 0-2-0. Rules here
@@ -26,18 +30,20 @@
   --fin-lo: rgba(0, 0, 0, 0.45);
 }
 
-/* ── Cotton-paper tooth: fractal noise blended soft-light keeps the paper's
-   own color and adds fibre across paper and ink alike. ──────────────────── */
-.inv--fin-letterpress::before,
-.inv--fin-emboss::before {
-  content: '';
+/* ── Paper stock: texture over paper and ink alike ─────────────────────── */
+.inv__stock {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 3;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23f)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+.inv--stock-pearl .inv__stock {
   mix-blend-mode: soft-light;
-  opacity: 0.5;
+}
+.inv--dark-paper .inv__stock {
+  mix-blend-mode: soft-light;
+  opacity: 0.8;
 }
 
 /* ── Letterpress (dập chìm): ink pressed into the sheet. The upper lip of
@@ -48,55 +54,27 @@
 .inv--fin-letterpress .inv__side > p {
   text-shadow: 0 -0.5px 0 var(--fin-lo), 0 1px 0 var(--fin-hi);
 }
-.inv--fin-letterpress app-ornament {
-  filter: drop-shadow(0 -0.5px 0 var(--fin-lo)) drop-shadow(0 1px 0 var(--fin-hi));
-}
 .inv--fin-letterpress .inv__rule {
   box-shadow: 0 1px 0 var(--fin-hi);
 }
 .inv--fin-letterpress .inv__watermark {
   text-shadow: 0 -1.5px 1px var(--fin-lo), 0 1.5px 0.5px var(--fin-hi);
 }
-/* Recessed panel pressed around the copy. */
-.inv--fin-letterpress::after {
-  content: '';
-  position: absolute;
-  inset: 14px;
-  border-radius: 2px;
-  pointer-events: none;
-  box-shadow: inset 0 1.5px 1.5px var(--fin-lo), inset 0 -1px 0 var(--fin-hi);
-}
 
-/* ── Blind emboss (dập nổi): raised, ink-free ornaments — the same paper
-   pushed up, read only through light and shadow. ────────────────────────── */
+/* ── Blind emboss (dập nổi): raised, ink-free type — the same paper pushed
+   up, read only through light and shadow. ───────────────────────────────── */
 .inv--fin-emboss .inv__main > p,
 .inv--fin-emboss .inv__venue-line,
 .inv--fin-emboss .inv__band-title,
 .inv--fin-emboss .inv__side > p {
   text-shadow: 0 -0.6px 0 var(--fin-hi), 0 1px 0.8px var(--fin-lo);
 }
-.inv--fin-emboss :is(.inv__crest-art, .inv__corner, .inv__side-ornament, .inv__divider) {
-  color: color-mix(in srgb, var(--inv-surface) 93%, var(--inv-ink));
-  filter: drop-shadow(-0.6px -0.8px 0 var(--fin-hi)) drop-shadow(0.8px 1.2px 0.7px var(--fin-lo));
-}
 .inv--fin-emboss .inv__watermark {
   text-shadow: -1px -1.5px 0.5px var(--fin-hi), 1.5px 2px 1.5px var(--fin-lo);
 }
-/* Raised plateau around the copy. */
-.inv--fin-emboss::after {
-  content: '';
-  position: absolute;
-  inset: 14px;
-  border-radius: 2px;
-  pointer-events: none;
-  box-shadow:
-    -0.6px -0.6px 0 var(--fin-hi),
-    1px 1.5px 1.5px var(--fin-lo),
-    inset 0.6px 0.6px 0 var(--fin-hi);
-}
 
-/* Gold foil is a gradient clipped to the glyphs, which text-shadow would
-   paint over — shade the foil with filter drop-shadows instead. */
+/* Gold foil type is a gradient clipped to the glyphs, which text-shadow
+   would paint over — shade it with filter drop-shadows instead. */
 .inv--fin-letterpress.inv--gold :is(.inv__title, .inv__monogram, .inv__band-title) {
   text-shadow: none;
   filter: drop-shadow(0 -0.5px 0 var(--fin-lo)) drop-shadow(0 1px 0 var(--fin-hi));
@@ -106,9 +84,25 @@
   filter: drop-shadow(0 -0.6px 0 var(--fin-hi)) drop-shadow(0 1px 0.8px var(--fin-lo));
 }
 
-/* Framed layouts press their own border instead of the extra panel. */
-:is(.inv--fin-letterpress, .inv--fin-emboss):is(.inv--framedBorder, .inv--archFrame)::after {
-  content: none;
+/* Pressed / raised panel round the copy on plain rectangular stock. */
+:is(.inv--fin-letterpress, .inv--fin-emboss):is(.inv--shape-rect, .inv--shape-rounded, .inv--shape-deckle):not(
+    .inv--framedBorder,
+    .inv--archFrame
+  )::after {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+.inv--fin-letterpress::after {
+  box-shadow: inset 0 1.5px 1.5px var(--fin-lo), inset 0 -1px 0 var(--fin-hi);
+}
+.inv--fin-emboss::after {
+  box-shadow:
+    -0.6px -0.6px 0 var(--fin-hi),
+    1px 1.5px 1.5px var(--fin-lo),
+    inset 0.6px 0.6px 0 var(--fin-hi);
 }
 .inv--fin-letterpress:is(.inv--framedBorder, .inv--archFrame) .inv__content {
   box-shadow: 0 1px 0 var(--fin-hi), inset 0 1px 0 var(--fin-lo);
@@ -118,9 +112,9 @@
 }
 
 /* ── Laser-cut (cắt laser) ─────────────────────────────────────────────────
-   The jacket is one evenodd path (see ornaments/laser-cut.ts) in the
-   design's overlay paper; stacked drop-shadows lift it off the card so every
-   cut-out reads as a real hole. */
+   The jacket is one evenodd path (see geometry/laser-cut.ts) in the design's
+   overlay paper; stacked drop-shadows lift it off the card so every cut-out
+   reads as a real hole. */
 .inv__laser {
   position: absolute;
   inset: 0;
@@ -129,6 +123,10 @@
   fill: var(--inv-overlay);
   pointer-events: none;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.14));
+}
+.inv__laser-print {
+  fill: var(--inv-accent);
+  opacity: 0.85;
 }
 .inv .inv__crest--laser .inv__crest-art {
   color: var(--inv-overlay);
@@ -147,14 +145,36 @@
 .inv.inv--laserArch .inv__content {
   padding: 72px 56px 46px;
 }
-.inv:is(.inv--laserLace, .inv--laserArch, .inv--laserLattice) .inv__main {
+.inv.inv--laserCloud .inv__content {
+  padding: 112px 76px 92px;
+}
+.inv.inv--laserBranch {
+  text-align: left;
+}
+.inv.inv--laserBranch .inv__content {
+  padding: 40px 26px 36px 200px;
+}
+.inv.inv--laserBranch .inv__guest {
+  justify-content: flex-start;
+}
+.inv.inv--laserBranch :is(.inv__rule, .inv__divider) {
+  margin-left: 0;
+}
+.inv:is(.inv--laserLace, .inv--laserArch, .inv--laserLattice, .inv--laserCloud, .inv--laserBranch) .inv__main {
   gap: 6px;
 }
 .inv:is(.inv--laserLace, .inv--laserArch, .inv--laserLattice) .inv__couple {
   font-size: 34px;
 }
-.inv:is(.inv--laserLace, .inv--laserArch, .inv--laserLattice) .inv__guest-dots {
-  flex-basis: 96px;
+.inv:is(.inv--laserCloud, .inv--laserBranch) .inv__couple {
+  font-size: 30px;
+}
+.inv:is(.inv--laserCloud, .inv--laserBranch) :is(.inv__headline, .inv__venue-line, .inv__closing) {
+  letter-spacing: 0.08em;
+  font-size: 10.5px;
+}
+.inv:is(.inv--laserLace, .inv--laserArch, .inv--laserLattice, .inv--laserCloud, .inv--laserBranch) .inv__guest-dots {
+  flex-basis: 80px;
 }
 .inv.inv--laserArch .inv__crest {
   width: 84px;
@@ -164,10 +184,14 @@
   width: 96px;
   height: 96px;
 }
-.inv:is(.inv--laserLace, .inv--laserArch, .inv--laserLattice) .inv__monogram--crest {
+.inv:is(.inv--laserLace, .inv--laserArch, .inv--laserLattice, .inv--laserCloud) .inv__monogram--crest {
   white-space: nowrap;
 }
 .inv:is(.inv--laserLace, .inv--laserLattice) .inv__crest--monogram {
   width: 96px;
   height: 96px;
+}
+.inv.inv--laserCloud .inv__crest {
+  width: 70px;
+  height: 46px;
 }

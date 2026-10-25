@@ -1,0 +1,42 @@
+@if (finish === 'foil') {
+  <svg:feGaussianBlur in="SourceAlpha" [attr.stdDeviation]="1.1 * scale" result="h" />
+  <svg:feSpecularLighting
+    in="h"
+    [attr.surfaceScale]="3 * scale"
+    specularConstant="1.25"
+    specularExponent="14"
+    [attr.lighting-color]="sheen"
+    result="spec"
+  >
+    <svg:feDistantLight [attr.azimuth]="azimuth" elevation="50" />
+  </svg:feSpecularLighting>
+  <svg:feComposite in="spec" in2="SourceAlpha" operator="in" result="specIn" />
+  <svg:feDiffuseLighting in="h" [attr.surfaceScale]="3 * scale" diffuseConstant="1.25" lighting-color="#ffffff" result="diff">
+    <svg:feDistantLight [attr.azimuth]="azimuth" elevation="50" />
+  </svg:feDiffuseLighting>
+  <svg:feFlood [attr.flood-color]="metal" result="metal" />
+  <svg:feComposite in="metal" in2="diff" operator="arithmetic" k1="1" result="shaded" />
+  <svg:feComposite in="shaded" in2="SourceAlpha" operator="in" result="body" />
+  <svg:feComposite in="specIn" in2="body" operator="arithmetic" k2="1" k3="1" result="lit" />
+  <svg:feGaussianBlur in="SourceAlpha" [attr.stdDeviation]="1.2 * scale" result="soft" />
+  <svg:feOffset in="soft" [attr.dx]="0.8 * scale" [attr.dy]="1.2 * scale" result="cast" />
+  <svg:feColorMatrix in="cast" type="matrix" values="0 0 0 0 0.2 0 0 0 0 0.1 0 0 0 0 0 0 0 0 0.45 0" result="drop" />
+  <svg:feMerge>
+    <svg:feMergeNode in="drop" />
+    <svg:feMergeNode in="lit" />
+  </svg:feMerge>
+} @else {
+  <svg:feGaussianBlur in="SourceAlpha" [attr.stdDeviation]="blur" result="h" />
+  <svg:feDiffuseLighting in="h" [attr.surfaceScale]="surfaceScale" diffuseConstant="1" lighting-color="#ffffff" result="light">
+    <svg:feDistantLight [attr.azimuth]="azimuth" [attr.elevation]="params.elevation" />
+  </svg:feDiffuseLighting>
+  <svg:feColorMatrix in="light" type="matrix" [attr.values]="highlightMatrix" result="hi" />
+  <svg:feColorMatrix in="light" type="matrix" [attr.values]="shadowMatrix" result="lo" />
+  <svg:feMerge>
+    @if (params.keepSource) {
+      <svg:feMergeNode in="SourceGraphic" />
+    }
+    <svg:feMergeNode in="lo" />
+    <svg:feMergeNode in="hi" />
+  </svg:feMerge>
+}

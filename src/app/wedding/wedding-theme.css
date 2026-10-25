@@ -23,41 +23,15 @@
   --ff-parisienne: 'Parisienne', 'Charm', 'Be Vietnam Pro', cursive;
 }
 
-/* Fixed-design frame: the invitation card is designed at 400×560 px and
-   scaled uniformly via --s, so typography keeps its exact proportions at
-   every viewport (gallery previews and the detail page share this). */
-.card-frame {
-  --card-w: 400px;
-  --card-h: 560px;
-  width: calc(var(--card-w) * var(--s, 1));
-  height: calc(var(--card-h) * var(--s, 1));
-  overflow: hidden;
-}
-
-.card-frame > app-invitation-card {
-  width: var(--card-w);
-  height: var(--card-h);
-  transform: scale(var(--s, 1));
-  transform-origin: top left;
-}
+/* Suites are drawn at fixed design sizes (cards 400×560, scenes 640×820)
+   and scaled uniformly by app-scene-frame, so typography keeps its exact
+   proportions at every viewport. */
 
 /* ── Animations (pure CSS; disabled for users who prefer reduced motion) ── */
 @media (prefers-reduced-motion: no-preference) {
-  /* Cards rise in; the gallery staggers via --enter-delay set per item. */
-  .card-frame > app-invitation-card {
-    opacity: 0;
-    animation: inv-enter 0.65s cubic-bezier(0.22, 0.7, 0.3, 1) forwards;
-    animation-delay: var(--enter-delay, 0ms);
-  }
-  @keyframes inv-enter {
-    from {
-      opacity: 0;
-      transform: scale(var(--s, 1)) translateY(18px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(var(--s, 1)) translateY(0);
-    }
+  /* Gallery tiles rise in. */
+  .gallery__item {
+    animation: inv-rise 0.6s cubic-bezier(0.22, 0.7, 0.3, 1) both;
   }
 
   /* Directions insert follows the card. */
@@ -71,9 +45,9 @@
     }
   }
 
-  /* On the detail page, line ornaments draw themselves in
-     (stroked SVG paths carry pathLength="1"). */
-  .detail__card app-ornament path[pathLength] {
+  /* On the detail page, line ornaments draw themselves in as the card
+     comes out of its envelope (stroked SVG paths carry pathLength="1"). */
+  .detail__stage .suite--out app-ornament path[pathLength] {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
     animation: inv-draw 1.2s ease-out 0.3s forwards;
@@ -86,11 +60,11 @@
 
   /* Corner florals drift gently (uses `translate` so the corner-mirroring
      transforms stay untouched). */
-  .detail__card .inv__corner {
+  .detail__stage .suite--out .inv__corner {
     animation: inv-float 6.5s ease-in-out infinite alternate;
   }
-  .detail__card .inv__corner--tr,
-  .detail__card .inv__corner--bl {
+  .detail__stage .suite--out .inv__corner--tr,
+  .detail__stage .suite--out .inv__corner--bl {
     animation-duration: 7.5s;
   }
   @keyframes inv-float {
@@ -100,11 +74,6 @@
     to {
       translate: 0 4px;
     }
-  }
-
-  /* The couple's names settle in last on the detail page. */
-  .detail__card .inv__couple {
-    animation: inv-rise 0.8s 0.35s cubic-bezier(0.22, 0.7, 0.3, 1) both;
   }
 
   /* Gold accents shimmer (gradient defined in the card stylesheet). */

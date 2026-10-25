@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DESIGN_CATEGORIES, getDesignById } from '../data/designs';
+import { formLabel, styleLabel } from '../data/categories';
+import { getDesignById } from '../data/designs';
 import { buildWording } from '../data/invitation-wording';
 import { WEDDING_UI } from '../data/ui-strings';
 import { WEDDING_CONFIG } from '../data/wedding-config';
@@ -10,8 +11,9 @@ import { LanguageService } from '../language.service';
 import { isDarkColor } from '../theme';
 
 /**
- * One full invitation suite: the card plus the matching directions insert.
- * The page URL (/wedding/:id) is the "share this design" link.
+ * One full invitation suite on a stage: the envelope opens, the card comes
+ * out (and out of its sleeve), next to the matching directions insert. The
+ * page URL (/wedding/:id) is the "share this design" link.
  */
 @Component({
   selector: 'app-wedding-detail',
@@ -30,10 +32,6 @@ export class WeddingDetailComponent implements OnInit, OnDestroy {
   readonly ui = computed(() => WEDDING_UI[this.lang()]);
   readonly design = signal<InvitationDesign | null>(null);
   readonly copy = computed(() => buildWording(WEDDING_CONFIG, this.lang()));
-
-  private readonly categoryLabels = new Map(
-    DESIGN_CATEGORIES.map((category) => [category.id, category.labels] as const),
-  );
 
   constructor() {
     effect(() => {
@@ -60,8 +58,9 @@ export class WeddingDetailComponent implements OnInit, OnDestroy {
     this.meta.removeTag('name="robots"');
   }
 
+  /** "Dập chìm nổi · Cổ điển" */
   categoryLabel(design: InvitationDesign): string {
-    return this.categoryLabels.get(design.category)?.[this.lang()] ?? '';
+    return `${formLabel(design.form, this.lang())} · ${styleLabel(design.style, this.lang())}`;
   }
 
   get isDark(): boolean {

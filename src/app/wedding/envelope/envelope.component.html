@@ -1,0 +1,109 @@
+@switch (layer) {
+  @case ('back') {
+    <div class="env__back" [style.background-image]="texture">
+      @if (hasLiner) {
+        <div class="env__back-liner" [style.background]="liner"></div>
+      }
+      <div class="env__back-shade"></div>
+    </div>
+  }
+
+  @case ('pocket') {
+    <div class="env__pocket" [style.clip-path]="pocketClip" [style.background-image]="texture">
+      <svg class="env__art" [attr.viewBox]="'0 0 ' + w + ' ' + h" aria-hidden="true">
+        @if (spec.foil) {
+          <defs>
+            <filter appReliefFilter [attr.id]="foilId" finish="foil" [metal]="spec.ink" [scale]="0.7" />
+          </defs>
+        }
+        @if (geo.seams) {
+          <path class="env__seam env__seam--lo" [attr.d]="geo.seams" />
+          <path class="env__seam env__seam--hi" [attr.d]="geo.seams" />
+        }
+        @if (printArt; as art) {
+          <g [attr.filter]="spec.foil ? foilRef : null" [attr.fill]="spec.ink" [attr.stroke]="spec.ink">
+            <path [attr.d]="art.fill" stroke="none" />
+            @if (art.stroke) {
+              <path [attr.d]="art.stroke" fill="none" [attr.stroke-width]="art.strokeWidth" stroke-linecap="round" />
+            }
+          </g>
+        }
+        @if (spec.seal === 'twine') {
+          <path class="env__twine" [attr.d]="'M0 ' + twineY + 'H' + w + 'M' + w / 2 + ' ' + geo.flapDepth + 'V' + h" />
+        }
+      </svg>
+      @if (spec.print === 'monogram') {
+        <p class="env__monogram" [style.top.px]="printY">{{ copy.monogram }}</p>
+      }
+      @if (spec.print === 'fern') {
+        <p class="env__script">{{ copy.titleWord }}</p>
+      }
+      @if (spec.print === 'frame') {
+        <p class="env__frame-title">{{ copy.titleWord }}</p>
+      }
+      @if (showsNames) {
+        <p class="env__names" [style.top.px]="namesY">{{ copy.coupleLine }}</p>
+      }
+      <p class="env__guest">
+        <span>{{ copy.guestLabel }}:</span>
+        <span class="env__guest-line"></span>
+      </p>
+    </div>
+  }
+
+  @case ('flap') {
+    <div class="env__hinge" [class.env__hinge--open]="open">
+      <div class="env__face env__face--shadow" [style.clip-path]="flapClip"></div>
+      <div class="env__face env__face--out" [style.clip-path]="flapClip" [style.background-image]="texture">
+        <svg class="env__art" [attr.viewBox]="'0 0 ' + w + ' ' + h" aria-hidden="true">
+          <path class="env__edge" [attr.d]="geo.flap" [attr.stroke]="edge" />
+          @if (spec.seal === 'twine') {
+            <path class="env__twine" [attr.d]="'M' + w / 2 + ' 0V' + geo.flapDepth" />
+          }
+        </svg>
+      </div>
+      <div class="env__face env__face--in" [style.clip-path]="flapClip">
+        @if (hasLiner) {
+          <div class="env__flap-liner" [style.clip-path]="flapClip" [style.background]="liner"></div>
+        }
+      </div>
+      @if (spec.seal !== 'none' && spec.seal !== 'twine') {
+        <svg class="env__seal" [attr.viewBox]="'0 0 ' + w + ' ' + h" aria-hidden="true">
+          <defs>
+            <radialGradient [attr.id]="waxId" cx="0.4" cy="0.35" r="0.75">
+              <stop offset="0" stop-color="#ffffff" stop-opacity="0.35" />
+              <stop offset="0.45" stop-color="#ffffff" stop-opacity="0" />
+              <stop offset="1" stop-color="#000000" stop-opacity="0.28" />
+            </radialGradient>
+          </defs>
+          @if (spec.seal === 'bow') {
+            <path class="env__bow" [attr.d]="bowPath" [attr.stroke]="sealColor" />
+          }
+          @if (spec.seal === 'sticker') {
+            <circle [attr.cx]="geo.sealAt.x" [attr.cy]="geo.sealAt.y" r="27" [attr.fill]="sealColor" />
+            <circle [attr.cx]="geo.sealAt.x" [attr.cy]="geo.sealAt.y" r="22" class="env__sticker-ring" />
+          } @else {
+            <path class="env__wax" [attr.d]="waxPath" [attr.fill]="sealColor" />
+            <path [attr.d]="waxPath" [attr.fill]="waxRef" />
+            <circle
+              [attr.cx]="geo.sealAt.x"
+              [attr.cy]="geo.sealAt.y"
+              [attr.r]="spec.seal === 'bow' ? 12 : 20"
+              class="env__wax-ring"
+            />
+          }
+          <text
+            class="env__seal-text"
+            [class.env__seal-text--small]="spec.seal === 'bow'"
+            [attr.x]="geo.sealAt.x"
+            [attr.y]="geo.sealAt.y"
+            text-anchor="middle"
+            dominant-baseline="central"
+          >
+            {{ copy.monogram }}
+          </text>
+        </svg>
+      }
+    </div>
+  }
+}

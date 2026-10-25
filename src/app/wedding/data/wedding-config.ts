@@ -10,6 +10,7 @@ import { WeddingConfig } from './wedding.types';
 export const WEDDING_CONFIG: WeddingConfig = {
   groom: { short: 'Vũ', full: '' },
   bride: { short: 'Thảo', full: '' },
+  isoDate: '2027-03-28',
   timeText: {
     vi: '18 giờ 00',
     en: '6:00 PM',
@@ -38,6 +39,7 @@ export const WEDDING_CONFIG: WeddingConfig = {
       en: 'Riverside Palace Convention & Wedding Center',
       th: 'ศูนย์การประชุมและงานเลี้ยง Riverside Palace',
     },
+    shortName: 'Riverside Palace',
     address: {
       vi: '360D Bến Vân Đồn, P. Vĩnh Hội, Q.4, TP. Hồ Chí Minh',
       en: '360D Bến Vân Đồn, Vĩnh Hội Ward, District 4, Ho Chi Minh City',

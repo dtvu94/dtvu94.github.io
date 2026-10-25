@@ -5,41 +5,69 @@
     <p class="gallery__script">{{ copy().coupleLine }}</p>
     <h1 class="gallery__title">{{ ui().heroTitle }}</h1>
     <p class="gallery__sub">{{ ui().heroSub }}</p>
-    <p class="gallery__meta">{{ dateBadge() }} · Riverside Palace</p>
+    <p class="gallery__meta">{{ dateBadge() }} · {{ copy().venueShort }}</p>
   </header>
 
-  <nav class="gallery__filters" [attr.aria-label]="ui().langGroupLabel">
-    <button
-      type="button"
-      class="chip"
-      [class.chip--active]="activeCategory() === 'all'"
-      (click)="setCategory('all')"
-    >
-      {{ ui().allLabel }} ({{ designs.length }})
-    </button>
-    @for (category of categories; track category.id) {
-      <button
-        type="button"
-        class="chip"
-        [class.chip--active]="activeCategory() === category.id"
-        (click)="setCategory(category.id)"
-      >
-        {{ labelFor(category.id) }}
+  <div class="gallery__filters">
+    <div class="filter-row" role="group" [attr.aria-label]="ui().formRowLabel">
+      <span class="filter-row__label">{{ ui().formRowLabel }}</span>
+      <button type="button" class="chip" data-form="all" [class.chip--active]="activeForm() === 'all'" (click)="setForm('all')">
+        {{ ui().allLabel }} <span class="chip__count">{{ formCount('all') }}</span>
       </button>
-    }
-  </nav>
+      @for (form of forms; track form.id) {
+        <button
+          type="button"
+          class="chip"
+          [attr.data-form]="form.id"
+          [class.chip--active]="activeForm() === form.id"
+          [class.chip--empty]="formCount(form.id) === 0"
+          (click)="setForm(form.id)"
+        >
+          {{ formLabelFor(form.id) }} <span class="chip__count">{{ formCount(form.id) }}</span>
+        </button>
+      }
+    </div>
+    <div class="filter-row" role="group" [attr.aria-label]="ui().styleRowLabel">
+      <span class="filter-row__label">{{ ui().styleRowLabel }}</span>
+      <button type="button" class="chip" data-style="all" [class.chip--active]="activeStyle() === 'all'" (click)="setStyle('all')">
+        {{ ui().allLabel }} <span class="chip__count">{{ styleCount('all') }}</span>
+      </button>
+      @for (style of styles; track style.id) {
+        <button
+          type="button"
+          class="chip"
+          [attr.data-style]="style.id"
+          [class.chip--active]="activeStyle() === style.id"
+          [class.chip--empty]="styleCount(style.id) === 0"
+          (click)="setStyle(style.id)"
+        >
+          {{ styleLabelFor(style.id) }} <span class="chip__count">{{ styleCount(style.id) }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (filteredDesigns().length === 0) {
+    <p class="gallery__empty">
+      {{ ui().emptyLabel }}
+      <button type="button" class="chip" (click)="resetFilters()">{{ ui().resetLabel }}</button>
+    </p>
+  }
 
   <ul class="gallery__grid">
     @for (design of filteredDesigns(); track design.id) {
-      <li class="gallery__item" [style.--enter-delay]="staggerDelay($index)">
+      <li class="gallery__item">
         <a class="gallery__link" [routerLink]="['/wedding', design.id]">
-          <div class="card-frame gallery__frame">
-            <app-invitation-card [design]="design" [copy]="copy()" />
-          </div>
+          <app-scene-frame class="gallery__scene" [style.background]="design.palette.bg">
+            <app-suite [design]="design" [copy]="copy()" />
+          </app-scene-frame>
           <div class="gallery__caption">
             <p class="gallery__name">{{ design.nameVi }}</p>
             <p class="gallery__desc">{{ design.description[lang()] }}</p>
-            <span class="gallery__tag">{{ labelFor(design.category) }}</span>
+            <p class="gallery__tags">
+              <span class="gallery__tag">{{ formLabelFor(design.form) }}</span>
+              <span class="gallery__tag">{{ styleLabelFor(design.style) }}</span>
+            </p>
           </div>
         </a>
       </li>

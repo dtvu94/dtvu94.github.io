@@ -53,6 +53,24 @@ describe('buildWording', () => {
     expect(copy.coupleLine).toBe('Vũ & Thảo');
   });
 
+  it('builds the short cover copy in every language', () => {
+    const vi = buildWording(WEDDING_CONFIG);
+    expect(vi.kicker).toBe('Lễ Thành Hôn');
+    expect(vi.shortDate).toBe('28 · 03 · 2027');
+    expect(vi.timeWeekday).toBe('18 giờ 00 · Chủ Nhật');
+    expect(vi.venueShort).toBe('Riverside Palace');
+    expect(vi.guestLabel).toBe('Kính mời');
+
+    const en = buildWording(WEDDING_CONFIG, 'en');
+    expect(en.kicker).toBe('The Wedding of');
+    expect(en.timeWeekday).toBe('6:00 PM · Sunday');
+
+    // Thai short dates use the Buddhist Era as well.
+    const th = buildWording(WEDDING_CONFIG, 'th');
+    expect(th.shortDate).toBe('28 · 03 · 2570');
+    expect(th.guestLabel).toBe('เรียน');
+  });
+
   it('renders the lunar line only in Vietnamese', () => {
     const config = { ...WEDDING_CONFIG, lunarDateText: 'nhằm ngày 21 tháng 02 năm Đinh Mùi' };
     expect(buildWording(config).lunarLine).toBe('(nhằm ngày 21 tháng 02 năm Đinh Mùi)');

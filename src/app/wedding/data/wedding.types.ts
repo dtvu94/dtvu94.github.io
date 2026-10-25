@@ -4,8 +4,10 @@ export type Lang = 'vi' | 'en' | 'th';
 /** A piece of copy in all three languages. */
 export type LocalizedText = Record<Lang, string>;
 
-/** Style family a design belongs to — drives the gallery filter. */
-export type DesignCategory =
+// ── the two gallery filters ─────────────────────────────────────────────────
+
+/** Phong cách — the style family (second filter row). */
+export type DesignStyle =
   | 'modern'
   | 'minimalist'
   | 'vintage'
@@ -13,20 +15,40 @@ export type DesignCategory =
   | 'floral'
   | 'vietnamese'
   | 'rustic'
-  | 'artdeco'
-  /** Dập chìm nổi — letterpress / blind-emboss print finishes. */
-  | 'letterpress'
-  /** Cắt laser — laser-cut paper jackets. */
-  | 'lasercut';
+  | 'artdeco';
 
-export interface CategoryMeta {
-  id: DesignCategory;
+/** Kiểu thiệp — the physical format of the suite (first filter row). */
+export type CardForm =
+  /** Cắt bế: a flat card die-cut to a silhouette. */
+  | 'diecut'
+  /** Dập chìm nổi: relief printing — letterpress, blind emboss, foil. */
+  | 'letterpress'
+  /** Cắt laser: laser-cut jackets and crests. */
+  | 'lasercut'
+  /** Thiệp gấp: bi-fold, tri-fold, gate-fold, accordion. */
+  | 'folded'
+  /** Pop-up 3D. */
+  | 'popup'
+  /** Thiệp rút & túi: sleeves, sliders, pockets, wraps. */
+  | 'pocket'
+  /** Hộ chiếu & vé: passport booklet with a boarding pass. */
+  | 'passport';
+
+export interface StyleMeta {
+  id: DesignStyle;
   labels: LocalizedText;
 }
 
+export interface FormMeta {
+  id: CardForm;
+  labels: LocalizedText;
+}
+
+// ── the printed card ────────────────────────────────────────────────────────
+
 /** All values are hex colors (e.g. "#7a1220"). */
 export interface Palette {
-  /** Backdrop behind the card. */
+  /** Backdrop behind the suite. */
   bg: string;
   /** The card "paper". */
   surface: string;
@@ -63,7 +85,7 @@ export interface FontPairing {
   accent?: FontFamilyKey;
 }
 
-/** Structural template of the card — see invitation-card.component.html. */
+/** Structural template of the card face — see invitation-card.component.html. */
 export type LayoutVariant =
   | 'centeredClassic'
   | 'framedBorder'
@@ -80,7 +102,11 @@ export type LayoutVariant =
   /** Laser-cut jacket with an arched, scalloped window (cổng vòm). */
   | 'laserArch'
   /** Laser-cut window-lattice jacket (song cửa). */
-  | 'laserLattice';
+  | 'laserLattice'
+  /** Laser-cut jacket whose window follows a flowering branch (cành đào). */
+  | 'laserBranch'
+  /** Laser-cut jacket of auspicious clouds (mây) around an oval window. */
+  | 'laserCloud';
 
 /** Inline-SVG decorations — see ornament.component.html. */
 export type OrnamentKey =
@@ -98,24 +124,174 @@ export type OrnamentKey =
   /** Giant translucent "&" watermark — typography as decoration. */
   | 'grandAmpersand'
   /** Laser-cut paper doily crest; the monogram reads as cut through it. */
-  | 'laserDoily';
+  | 'laserDoily'
+  /** Laurel wreath crest around the monogram (made for relief finishes). */
+  | 'laurel'
+  /** Song hỷ (囍) seal-style crest. */
+  | 'doubleHappiness';
 
 /** Sheen treatment of accent-colored elements. */
 export type AccentStyle = 'gold' | 'flat';
 
 /**
- * Physical print technique the card imitates (see wedding-finishes.css).
+ * Physical print technique the copy imitates (see wedding-finishes.css).
  * - letterpress: ink pressed into thick cotton stock (dập chìm)
- * - emboss: raised, ink-free ornaments (dập nổi không mực)
+ * - emboss: raised, ink-free type (dập nổi không mực)
  */
 export type PrintFinish = 'flat' | 'letterpress' | 'emboss';
 
+/** Die-cut silhouette of a flat card (cắt bế) — see geometry/shapes.ts. */
+export type CardShape =
+  | 'rect'
+  | 'rounded'
+  /** Big scallops (viền sóng). */
+  | 'scallop'
+  /** Fine scallops (viền vỏ sò). */
+  | 'scallopFine'
+  /** Fat, pinched lobes (viền mây). */
+  | 'cloud'
+  /** Arched top (nắp vòm). */
+  | 'archTop'
+  | 'oval'
+  /** Scalloped oval pierced with a ring of holes. */
+  | 'doily'
+  /** Cut corners (bát giác). */
+  | 'octagon'
+  /** Concave corner bites (vé / nhãn). */
+  | 'ticket'
+  /** Hand-torn deckle edge (giấy xé). */
+  | 'deckle'
+  /** Art-deco stepped corners. */
+  | 'stepped';
+
+/** Paper stock, rendered as a texture over the paper colour. */
+export type PaperStock = 'smooth' | 'cotton' | 'linen' | 'pearl' | 'kraft' | 'felt';
+
+/** Border art printed in relief — see geometry/motifs.ts. */
+export type ReliefMotif =
+  /** Flowering vine around the edge. */
+  | 'vineFrame'
+  /** Flowering branches from two opposite corners (mai / đào). */
+  | 'branches'
+  /** Lotus blooms and pads along the bottom edge. */
+  | 'lotusBorder'
+  /** A ring of pearls inside the edge. */
+  | 'pearlBorder';
+
+/** How relief art and relief crests are produced. */
+export interface ReliefSpec {
+  /** Border art; omit for crest-only relief. */
+  motif?: ReliefMotif;
+  /** raised = dập nổi, pressed = dập chìm. */
+  mode: 'raised' | 'pressed';
+  /** blind = paper only, ink = printed colour, foil = metallic foil. */
+  finish: 'blind' | 'ink' | 'foil';
+}
+
+// ── envelope ────────────────────────────────────────────────────────────────
+
+/** Silhouette of the envelope flap. */
+export type EnvelopeFlap =
+  /** Classic V (nắp nhọn). */
+  | 'pointed'
+  /** Rounded arch (nắp vòm). */
+  | 'arch'
+  /** Three-lobed cloud wave (nắp mây). */
+  | 'cloud'
+  /** Square flap with rounded corners (nắp bo góc). */
+  | 'rounded'
+  /** Shallow straight V of a long kraft envelope. */
+  | 'straight'
+  /** Short tuck flap of a pocket envelope with a thumb notch. */
+  | 'tuck';
+
+/** Pattern printed inside the flap and the back panel (giấy lót). */
+export type EnvelopeLiner = 'none' | 'solid' | 'floral' | 'lotus' | 'damask' | 'stripe' | 'sprig' | 'goldFlora' | 'clouds';
+
+export type EnvelopeSeal =
+  | 'none'
+  /** Wax seal with the monogram (sáp niêm). */
+  | 'wax'
+  /** Round monogram sticker. */
+  | 'sticker'
+  /** Twine tied round the envelope (dây gai). */
+  | 'twine'
+  /** Hand-drawn ribbon bow with a wax seal. */
+  | 'bow';
+
+/** Art printed on the envelope's front pocket. */
+export type EnvelopePrint =
+  | 'none'
+  /** The couple's names in the display face. */
+  | 'names'
+  /** Monogram inside a laurel crest. */
+  | 'monogram'
+  /** Fern spray with a script title (kraft style). */
+  | 'fern'
+  /** Double-line frame with cloud-curl corners round the title (thiệp mời). */
+  | 'frame'
+  /** Corner floral sprays. */
+  | 'florals'
+  /** A lotus over the names. */
+  | 'lotus';
+
+export interface EnvelopeSpec {
+  flap: EnvelopeFlap;
+  paper: string;
+  /** Translucent vellum (giấy can): the card shows through. */
+  vellum?: boolean;
+  stock?: PaperStock;
+  liner: EnvelopeLiner;
+  /** Liner ground and pattern colours; defaults derive from the palette. */
+  linerColors?: [string, string];
+  /** Contrasting flap edge (nắp viền màu). */
+  edge?: string;
+  seal: EnvelopeSeal;
+  sealColor?: string;
+  print: EnvelopePrint;
+  /** Ink of the envelope print and guest line. */
+  ink: string;
+  /** Print the envelope art in metallic foil. */
+  foil?: boolean;
+}
+
+// ── pockets & sliders ───────────────────────────────────────────────────────
+
+export type PocketVariant =
+  /** Sleeve with a die-cut window; the card slides up out of it. */
+  | 'sleeve'
+  /** Card whose lower part is a wave-topped pocket holding an insert. */
+  | 'lowerPocket'
+  /** Translucent vellum jacket folded over the card, sealed. */
+  | 'vellumWrap'
+  /** Paper band around the card (đai giấy). */
+  | 'bellyBand';
+
+export type PocketWindow = 'none' | 'arch' | 'rect' | 'circle' | 'shutters';
+
+export interface PocketSpec {
+  variant: PocketVariant;
+  /** Sleeve / pocket / band paper. */
+  paper: string;
+  /** Print on the sleeve / band. */
+  ink: string;
+  window?: PocketWindow;
+  stock?: PaperStock;
+  /** Print the sleeve titles in foil. */
+  foil?: boolean;
+  /** Colours of the insert card, when it differs from the main card. */
+  insert?: Partial<Palette>;
+}
+
+// ── the design ──────────────────────────────────────────────────────────────
+
 export interface InvitationDesign {
-  /** Stable kebab-case id — used in the /wedding/:id URL. */
+  /** Stable kebab-case id — used in the /wedding/:id URL. Never rename. */
   id: string;
   /** Design name — a proper noun, shown as-is in every language. */
   nameVi: string;
-  category: DesignCategory;
+  form: CardForm;
+  style: DesignStyle;
   /** One-line blurb shown on the gallery card, per language. */
   description: LocalizedText;
   palette: Palette;
@@ -126,7 +302,17 @@ export interface InvitationDesign {
   accentStyle?: AccentStyle;
   /** Defaults to 'flat'. */
   finish?: PrintFinish;
+  /** Defaults to 'rect'. */
+  shape?: CardShape;
+  /** Defaults to 'smooth'. */
+  stock?: PaperStock;
+  relief?: ReliefSpec;
+  envelope: EnvelopeSpec;
+  /** Required when form === 'pocket'. */
+  pocket?: PocketSpec;
 }
+
+// ── wedding facts & copy ────────────────────────────────────────────────────
 
 export interface PersonName {
   /** Short display name used on the big script line, e.g. "Vũ". */
@@ -137,6 +323,8 @@ export interface PersonName {
 
 export interface VenueInfo {
   name: LocalizedText;
+  /** Brand name used on envelopes, tickets and covers, e.g. "Riverside Palace". */
+  shortName: string;
   address: LocalizedText;
   lat: number;
   lng: number;
@@ -148,6 +336,8 @@ export interface VenueInfo {
 export interface WeddingConfig {
   groom: PersonName;
   bride: PersonName;
+  /** Calendar date of the reception, ISO "YYYY-MM-DD" — drives short dates. */
+  isoDate: string;
   /** e.g. vi "18 giờ 00" / en "6:00 PM" / th "18:00 น." */
   timeText: LocalizedText;
   /** e.g. vi "Chủ Nhật" / en "Sunday" / th "วันอาทิตย์" */
@@ -178,6 +368,17 @@ export interface InvitationCopy {
   closing: string;
   rsvp: string;
   monogram: string;
+  /** Heading of the announcement face, e.g. "Lễ Thành Hôn". */
+  kicker: string;
+  /** "28 · 03 · 2027" (Thai uses the Buddhist Era year). */
+  shortDate: string;
+  /** "18:00 · Chủ Nhật". */
+  timeWeekday: string;
+  /** "Riverside Palace". */
+  venueShort: string;
+  saveTheDate: string;
+  /** Label before the guest's name on envelopes and sleeves, e.g. "Kính mời". */
+  guestLabel: string;
 }
 
 export interface RouteOption {

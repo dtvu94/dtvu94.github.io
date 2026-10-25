@@ -12,6 +12,17 @@ export interface WeddingUiStrings {
   printLabel: string;
   detailHint: string;
   langGroupLabel: string;
+  /** Filter row headings and the empty-result message. */
+  formRowLabel: string;
+  styleRowLabel: string;
+  emptyLabel: string;
+  resetLabel: string;
+  /** Detail-page stage controls. */
+  stageHint: string;
+  openLabel: string;
+  insideLabel: string;
+  foldLabel: string;
+  closeLabel: string;
 }
 
 export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
@@ -27,6 +38,15 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     printLabel: '🖨️ In thử mẫu này',
     detailHint: 'Nếu em ưng mẫu này, gửi anh đường link của trang này nhé 💌',
     langGroupLabel: 'Ngôn ngữ',
+    formRowLabel: 'Kiểu thiệp',
+    styleRowLabel: 'Phong cách',
+    emptyLabel: 'Chưa có mẫu nào cho lựa chọn này.',
+    resetLabel: 'Xem tất cả',
+    stageHint: 'Bấm vào bao thư để mở thiệp',
+    openLabel: '✉️ Mở thiệp',
+    insideLabel: 'Xem bên trong',
+    foldLabel: 'Cất thiệp lại',
+    closeLabel: 'Cho vào bao',
   },
   en: {
     docTitle: 'Wedding Invitation — Vũ & Thảo',
@@ -40,6 +60,15 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     printLabel: '🖨️ Print this design',
     detailHint: 'If this is the one, send me the link to this page 💌',
     langGroupLabel: 'Language',
+    formRowLabel: 'Format',
+    styleRowLabel: 'Style',
+    emptyLabel: 'No designs for this combination yet.',
+    resetLabel: 'Show all',
+    stageHint: 'Tap the envelope to open it',
+    openLabel: '✉️ Open',
+    insideLabel: 'See inside',
+    foldLabel: 'Put it back',
+    closeLabel: 'Back in the envelope',
   },
   th: {
     docTitle: 'การ์ดแต่งงาน — Vũ & Thảo',
@@ -52,6 +81,15 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     printLabel: '🖨️ พิมพ์การ์ดนี้',
     detailHint: 'ถ้าชอบแบบนี้ ส่งลิงก์หน้านี้มาให้เรานะ 💌',
     langGroupLabel: 'ภาษา',
+    formRowLabel: 'รูปแบบ',
+    styleRowLabel: 'สไตล์',
+    emptyLabel: 'ยังไม่มีแบบสำหรับตัวเลือกนี้',
+    resetLabel: 'ดูทั้งหมด',
+    stageHint: 'แตะที่ซองเพื่อเปิดการ์ด',
+    openLabel: '✉️ เปิดการ์ด',
+    insideLabel: 'ดูด้านใน',
+    foldLabel: 'เก็บการ์ด',
+    closeLabel: 'ใส่กลับในซอง',
   },
 };
 

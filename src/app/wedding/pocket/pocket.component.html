@@ -1,0 +1,71 @@
+@switch (spec.variant) {
+  @case ('sleeve') {
+    <div class="pk__insert">
+      <app-invitation-card [design]="insertDesign" [copy]="copy" />
+    </div>
+    <div class="pk__shadowed">
+      <div class="pk__sleeve" [style.clip-path]="sleeveClip" [style.background-image]="texture"></div>
+    </div>
+    <svg class="pk__art" [attr.viewBox]="'0 0 ' + sleeveW + ' ' + sleeveH" aria-hidden="true">
+      @if (shutters; as s) {
+        <path class="pk__shutter" [attr.d]="s.left" />
+        <path class="pk__shutter" [attr.d]="s.right" />
+        <path class="pk__slats" [attr.d]="s.slats" />
+      }
+      @if (windowFrame; as frame) {
+        <path class="pk__frame" [class.pk__frame--thin]="spec.window === 'rect' || spec.window === 'circle'" [attr.d]="frame" />
+      }
+    </svg>
+    <p class="pk__title" [class.pk__foil]="spec.foil" [style.top.px]="sleeveText.title">{{ copy.saveTheDate }}</p>
+    <p class="pk__names" [style.top.px]="sleeveText.names">{{ copy.coupleLine }}</p>
+    <p class="pk__date" [style.top.px]="sleeveText.date">{{ copy.shortDate }}</p>
+    <p class="pk__guest">
+      <span>{{ copy.guestLabel }}:</span>
+      <span class="pk__guest-line"></span>
+    </p>
+  }
+
+  @case ('lowerPocket') {
+    <div class="pk__base">
+      <app-invitation-card [design]="design" [copy]="copy" part="announce" valign="top" />
+    </div>
+    <div class="pk__insert pk__insert--lower">
+      <app-invitation-card [design]="insertDesign" [copy]="copy" part="invite" />
+    </div>
+    <div class="pk__shadowed pk__shadowed--lower">
+      <div class="pk__lower" [style.clip-path]="lowerPocketClip" [style.background-image]="texture">
+        <p class="pk__lower-kicker" [class.pk__foil]="spec.foil">{{ copy.inviteHeadline }}</p>
+        <p class="pk__guest pk__guest--lower">
+          <span>{{ copy.guestLabel }}:</span>
+          <span class="pk__guest-line"></span>
+        </p>
+      </div>
+    </div>
+  }
+
+  @case ('vellumWrap') {
+    <div class="pk__base">
+      <app-invitation-card [design]="design" [copy]="copy" />
+    </div>
+    <div class="pk__vellum-hinge">
+      <div class="pk__vellum"></div>
+      <svg class="pk__art" [attr.viewBox]="'0 0 ' + cardW + ' ' + cardH" aria-hidden="true">
+        <path class="pk__vellum-tie" d="M0 300H400" />
+        <path class="pk__vellum-bow" [attr.d]="vellumBow" />
+        <path class="pk__vellum-seal" [attr.d]="vellumSeal" />
+        <circle cx="288" cy="300" r="18" class="pk__vellum-ring" />
+        <text x="288" y="300" text-anchor="middle" dominant-baseline="central" class="pk__vellum-text">{{ copy.monogram }}</text>
+      </svg>
+    </div>
+  }
+
+  @case ('bellyBand') {
+    <div class="pk__base">
+      <app-invitation-card [design]="design" [copy]="copy" />
+    </div>
+    <div class="pk__band" [style.background-image]="texture">
+      <p class="pk__band-kicker">{{ copy.kicker }}</p>
+      <p class="pk__band-names" [class.pk__foil]="spec.foil">{{ copy.coupleLine }}</p>
+    </div>
+  }
+}
