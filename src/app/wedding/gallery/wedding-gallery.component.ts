@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { CARD_FORMS, DESIGN_STYLES, formLabel, styleLabel } from '../data/categories';
+import { CARD_FORMS, DESIGN_STYLES, formLabel, hasWeddingPhoto, styleLabel } from '../data/categories';
 import { INVITATION_DESIGNS } from '../data/designs';
 import { buildWording } from '../data/invitation-wording';
 import { WEDDING_UI, formatDateBadge } from '../data/ui-strings';
@@ -38,9 +38,11 @@ export class WeddingGalleryComponent implements OnInit, OnDestroy {
 
   readonly activeForm = signal<Filter<CardForm>>('all');
   readonly activeStyle = signal<Filter<DesignStyle>>('all');
+  /** Only designs with a frame for the couple's photo. */
+  readonly photoOnly = signal(false);
 
   readonly filteredDesigns = computed(() =>
-    this.designs.filter((design) => this.matches(design, this.activeForm(), this.activeStyle())),
+    this.designs.filter((design) => this.matches(design, this.activeForm(), this.activeStyle(), this.photoOnly())),
   );
 
   constructor() {
@@ -64,19 +66,29 @@ export class WeddingGalleryComponent implements OnInit, OnDestroy {
     this.activeStyle.set(style);
   }
 
+  togglePhoto(): void {
+    this.photoOnly.update((on) => !on);
+  }
+
   resetFilters(): void {
     this.activeForm.set('all');
     this.activeStyle.set('all');
+    this.photoOnly.set(false);
   }
 
   /** Designs a format chip would show, given the selected style. */
   formCount(form: Filter<CardForm>): number {
-    return this.designs.filter((design) => this.matches(design, form, this.activeStyle())).length;
+    return this.designs.filter((design) => this.matches(design, form, this.activeStyle(), this.photoOnly())).length;
   }
 
   /** Designs a style chip would show, given the selected format. */
   styleCount(style: Filter<DesignStyle>): number {
-    return this.designs.filter((design) => this.matches(design, this.activeForm(), style)).length;
+    return this.designs.filter((design) => this.matches(design, this.activeForm(), style, this.photoOnly())).length;
+  }
+
+  /** Designs the photo toggle would show, given format and style. */
+  photoCount(): number {
+    return this.designs.filter((design) => this.matches(design, this.activeForm(), this.activeStyle(), true)).length;
   }
 
   formLabelFor(form: CardForm): string {
@@ -87,7 +99,11 @@ export class WeddingGalleryComponent implements OnInit, OnDestroy {
     return styleLabel(style, this.lang());
   }
 
-  private matches(design: InvitationDesign, form: Filter<CardForm>, style: Filter<DesignStyle>): boolean {
-    return (form === 'all' || design.form === form) && (style === 'all' || design.style === style);
+  private matches(design: InvitationDesign, form: Filter<CardForm>, style: Filter<DesignStyle>, photo: boolean): boolean {
+    return (
+      (form === 'all' || design.form === form) &&
+      (style === 'all' || design.style === style) &&
+      (!photo || hasWeddingPhoto(design))
+    );
   }
 }

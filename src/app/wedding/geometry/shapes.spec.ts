@@ -74,6 +74,60 @@ describe('card silhouettes', () => {
   });
 });
 
+/**
+ * Flattens an absolute M/L/H/V/Q/C/Z path into closed polygons (no arcs).
+ */
+function polygons(d: string, steps = 24): Array<Array<[number, number]>> {
+  const out: Array<Array<[number, number]>> = [];
+  let poly: Array<[number, number]> = [];
+  let x = 0;
+  let y = 0;
+  for (const [, cmd, args] of d.matchAll(/([MLHVQCZ])([^MLHVQCZ]*)/g)) {
+    const n = args.trim().split(/[\s,]+/).filter(Boolean).map(Number);
+    if (cmd === 'M') {
+      if (poly.length) out.push(poly);
+      [x, y] = n;
+      poly = [[x, y]];
+    } else if (cmd === 'L') {
+      [x, y] = n;
+      poly.push([x, y]);
+    } else if (cmd === 'H' || cmd === 'V') {
+      if (cmd === 'H') x = n[0];
+      else y = n[0];
+      poly.push([x, y]);
+    } else if (cmd === 'Q' || cmd === 'C') {
+      const pts = [[x, y], ...Array.from({ length: n.length / 2 }, (_, i) => [n[2 * i], n[2 * i + 1]])];
+      for (let i = 1; i <= steps; i++) {
+        const t = i / steps;
+        // de Casteljau
+        let level = pts;
+        while (level.length > 1) {
+          level = level.slice(1).map((p, j) => [level[j][0] + (p[0] - level[j][0]) * t, level[j][1] + (p[1] - level[j][1]) * t]);
+        }
+        poly.push([level[0][0], level[0][1]]);
+      }
+      [x, y] = pts[pts.length - 1] as [number, number];
+    }
+  }
+  if (poly.length) out.push(poly);
+  return out;
+}
+
+/** Ys where a vertical line at x crosses the polygons' edges. */
+function crossings(polys: Array<Array<[number, number]>>, x: number): number[] {
+  const ys: number[] = [];
+  for (const poly of polys) {
+    for (let i = 0; i < poly.length; i++) {
+      const [x0, y0] = poly[i];
+      const [x1, y1] = poly[(i + 1) % poly.length];
+      if ((x0 <= x && x < x1) || (x1 <= x && x < x0)) {
+        ys.push(y0 + ((x - x0) / (x1 - x0)) * (y1 - y0));
+      }
+    }
+  }
+  return ys;
+}
+
 describe('envelope geometry', () => {
   it.each(FLAPS)('%s: flap, pocket and seal fit the envelope', (flap) => {
     const g = envelopeGeometry(flap);
@@ -96,6 +150,23 @@ describe('envelope geometry', () => {
       expect(g.flapDepth).toBeGreaterThanOrEqual(pocketTop - 1);
     }
   });
+
+  // Arc-free outlines only (the arch flap and the tuck notch are elliptic arcs).
+  const ARC_FREE = FLAPS.filter((flap) => !/A/.test(envelopeGeometry(flap).flap + envelopeGeometry(flap).pocket));
+
+  it.each(ARC_FREE)(
+    '%s: the closed flap covers the pocket opening across its whole width',
+    (flap) => {
+      const g = envelopeGeometry(flap);
+      const flapPolys = polygons(g.flap);
+      const pocketPolys = polygons(g.pocket);
+      for (let x = 2; x <= ENV_W - 2; x += 4) {
+        const flapBottom = Math.max(...crossings(flapPolys, x));
+        const pocketTop = Math.min(...crossings(pocketPolys, x));
+        expect(flapBottom).toBeGreaterThanOrEqual(pocketTop - 0.5);
+      }
+    },
+  );
 });
 
 describe('sleeves and pockets', () => {

@@ -276,11 +276,80 @@ export interface PocketSpec {
   /** Print on the sleeve / band. */
   ink: string;
   window?: PocketWindow;
+  /** The window frames the couple's photo instead of the card behind. */
+  windowPhoto?: boolean;
   stock?: PaperStock;
   /** Print the sleeve titles in foil. */
   foil?: boolean;
   /** Colours of the insert card, when it differs from the main card. */
   insert?: Partial<Palette>;
+}
+
+// ── folded cards, pop-ups, passports ────────────────────────────────────────
+
+/** What a single panel of a folded card / passport page prints. */
+export type PanelKind =
+  /** Full invitation (InvitationCard 'full'). */
+  | 'full'
+  /** Announcement: kicker, names, short date, venue (InvitationCard 'announce'). */
+  | 'announce'
+  /** The invitation proper (InvitationCard 'invite'). */
+  | 'invite'
+  /** Month calendar with the day circled. */
+  | 'calendar'
+  /** The couple's photo (placeholder until configured). */
+  | 'photo'
+  /** Venue name, address and a little map. */
+  | 'venue'
+  /** Pattern with a large monogram. */
+  | 'monogram';
+
+/** Frame the couple's photo is cut to. */
+export type PhotoFrame = 'oval' | 'arch' | 'rounded' | 'circle' | 'blob';
+
+export type FoldVariant =
+  /** Gấp đôi: a book-like card, cover hinged on the left. */
+  | 'bifold'
+  /** Gấp cửa: two half-width doors meeting in the middle. */
+  | 'gatefold'
+  /** Gấp ba zic-zac: three equal panels folded like a fan. */
+  | 'accordion';
+
+export interface FoldSpec {
+  variant: FoldVariant;
+  /** Inside panels, left to right — bifold 2, gatefold 3 (door, centre, door), accordion 3. */
+  inside: PanelKind[];
+  /** Front cover (bifold, accordion); gate-fold doors share one face split down the middle. */
+  cover: PanelKind;
+  /** Frame for any 'photo' panel. */
+  photoFrame?: PhotoFrame;
+}
+
+export type PopupScene =
+  /** Wildflower hills in front of the big date. */
+  | 'meadow'
+  /** Lotus pond under a double-happiness seal. */
+  | 'lotus'
+  /** Flower arbour framing the monogram. */
+  | 'arbor'
+  /** City skyline by the river under a moon. */
+  | 'skyline'
+  /** Hearts and tulips. */
+  | 'hearts';
+
+export interface PopupSpec {
+  scene: PopupScene;
+}
+
+export interface PassportSpec {
+  /** Booklet cover colour. */
+  cover: string;
+  /** Foil colour of the cover print. */
+  foil: string;
+  /** Inside page paper. */
+  page: string;
+  /** Accent of the boarding pass band. */
+  ticket: string;
 }
 
 // ── the design ──────────────────────────────────────────────────────────────
@@ -310,6 +379,12 @@ export interface InvitationDesign {
   envelope: EnvelopeSpec;
   /** Required when form === 'pocket'. */
   pocket?: PocketSpec;
+  /** Required when form === 'folded'. */
+  fold?: FoldSpec;
+  /** Required when form === 'popup'. */
+  popup?: PopupSpec;
+  /** Required when form === 'passport'. */
+  passport?: PassportSpec;
 }
 
 // ── wedding facts & copy ────────────────────────────────────────────────────
@@ -350,6 +425,11 @@ export interface WeddingConfig {
   hallText: LocalizedText;
   venue: VenueInfo;
   rsvpNote: LocalizedText;
+  /**
+   * Wedding photos under src/assets/, e.g. 'assets/wedding/anh-cuoi-1.jpg'.
+   * Empty until the photoshoot — every photo frame shows a placeholder.
+   */
+  photos: string[];
 }
 
 /** Computed invitation copy (already in one language) handed to the card. */
@@ -379,6 +459,37 @@ export interface InvitationCopy {
   saveTheDate: string;
   /** Label before the guest's name on envelopes and sleeves, e.g. "Kính mời". */
   guestLabel: string;
+  /** Month heading for the calendar panel, e.g. "Tháng 03 · 2027". */
+  monthTitle: string;
+  /** Weekday initials Monday-first, e.g. ["T2", …, "CN"]. */
+  weekdays: string[];
+  /** Day of month (1-31) of the wedding. */
+  day: number;
+  /** Leading blank cells before day 1 in a Monday-first grid. */
+  monthOffset: number;
+  daysInMonth: number;
+  /** Caption of an empty photo frame. */
+  photoSoon: string;
+  /** Heading of the venue panel, e.g. "Địa điểm". */
+  venueLabel: string;
+  /** Passport / boarding pass labels. */
+  passport: PassportCopy;
+}
+
+export interface PassportCopy {
+  title: string;
+  subtitle: string;
+  boardingPass: string;
+  airline: string;
+  passenger: string;
+  from: string;
+  to: string;
+  date: string;
+  boarding: string;
+  gate: string;
+  seat: string;
+  hall: string;
+  fromPlace: string;
 }
 
 export interface RouteOption {

@@ -1,4 +1,4 @@
-import { CardForm, DesignStyle, FormMeta, StyleMeta } from './wedding.types';
+import { CardForm, DesignStyle, FormMeta, InvitationDesign, StyleMeta } from './wedding.types';
 
 /** Kiểu thiệp — first filter row, in display order. */
 export const CARD_FORMS: FormMeta[] = [
@@ -32,4 +32,12 @@ export function formLabel(form: CardForm, lang: keyof FormMeta['labels']): strin
 
 export function styleLabel(style: DesignStyle, lang: keyof StyleMeta['labels']): string {
   return STYLE_LABELS.get(style)?.[lang] ?? style;
+}
+
+/** Designs with a frame for the couple's photo (shown as a placeholder until WEDDING_CONFIG.photos is filled). */
+export function hasWeddingPhoto(design: InvitationDesign): boolean {
+  if (design.form === 'passport' || design.pocket?.windowPhoto) {
+    return true;
+  }
+  return !!design.fold && [...design.fold.inside, design.fold.cover].includes('photo');
 }

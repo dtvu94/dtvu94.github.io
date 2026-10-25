@@ -121,7 +121,8 @@ export class PocketComponent {
   /** Window frame with a cross mullion in the arch. */
   get windowFrame(): string | null {
     const win = this.window;
-    if (!win || this.spec.window === 'rect' || this.spec.window === 'circle') {
+    // Plain outline for simple windows and for a photo in the window (no mullions across faces).
+    if (!win || this.spec.window === 'rect' || this.spec.window === 'circle' || this.spec.windowPhoto) {
       return win ? win.d : null;
     }
     const { x, y, w } = win.box;

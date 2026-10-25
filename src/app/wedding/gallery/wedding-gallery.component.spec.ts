@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
+import { CARD_FORMS, hasWeddingPhoto } from '../data/categories';
 import { INVITATION_DESIGNS } from '../data/designs';
 import { LanguageToggleComponent } from '../language-toggle/language-toggle.component';
 import { SUITE_DECLARATIONS } from '../wedding.declarations';
@@ -66,12 +67,44 @@ describe('WeddingGalleryComponent', () => {
     expect(root.textContent).toContain('ขอเรียนเชิญ');
   });
 
-  it('only offers formats that have designs', () => {
+  it('offers a chip for every format, each with designs', () => {
     const root: HTMLElement = create().nativeElement;
-    for (const form of new Set(INVITATION_DESIGNS.map((d) => d.form))) {
-      expect(root.querySelector(`button[data-form="${form}"]`)).toBeTruthy();
+    for (const { id } of CARD_FORMS) {
+      expect(INVITATION_DESIGNS.some((d) => d.form === id)).toBe(true);
+      expect(root.querySelector(`button[data-form="${id}"]`)).toBeTruthy();
     }
-    expect(root.querySelector('button[data-form="popup"]')).toBeNull();
+  });
+
+  it('previews folded cards, pop-ups and passports in 3-D, each with its envelope', () => {
+    const root: HTMLElement = create().nativeElement;
+    const count = (form: string) => INVITATION_DESIGNS.filter((d) => d.form === form).length;
+    expect(root.querySelectorAll('app-suite app-folded').length).toBe(count('folded'));
+    expect(root.querySelectorAll('app-suite app-popup').length).toBe(count('popup'));
+    expect(root.querySelectorAll('app-suite app-passport').length).toBe(count('passport'));
+    // Gallery poses: folds ajar, pop-ups standing, passports with the ticket peeking out.
+    expect(root.querySelectorAll('app-folded.fd--ajar').length).toBe(count('folded'));
+    expect(root.querySelectorAll('app-popup.pp--open').length).toBe(count('popup'));
+    expect(root.querySelectorAll('app-passport.ps--peek').length).toBe(count('passport'));
+  });
+
+  it('narrows to designs with a frame for the wedding photo, combined with the rows', () => {
+    const fixture = create();
+    const withPhoto = INVITATION_DESIGNS.filter(hasWeddingPhoto);
+    expect(withPhoto.length).toBeGreaterThanOrEqual(10);
+    const toggle = () => fixture.nativeElement.querySelector('button[data-photo]') as HTMLButtonElement;
+    expect(toggle().textContent).toContain('Có ảnh cưới');
+    expect(toggle().getAttribute('aria-pressed')).toBe('false');
+
+    click(fixture, 'button[data-photo]');
+    expect(toggle().getAttribute('aria-pressed')).toBe('true');
+    expect(suites(fixture)).toBe(withPhoto.length);
+
+    click(fixture, 'button[data-form="folded"]');
+    expect(suites(fixture)).toBe(withPhoto.filter((d) => d.form === 'folded').length);
+    expect(suites(fixture)).toBeGreaterThan(0);
+
+    click(fixture, 'button[data-photo]');
+    expect(suites(fixture)).toBe(INVITATION_DESIGNS.filter((d) => d.form === 'folded').length);
   });
 
   it('filters by format and by style, and combines both rows', () => {

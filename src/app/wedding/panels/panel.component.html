@@ -1,0 +1,52 @@
+@if (cardPart; as part) {
+  <div class="pn__card" [style.transform]="cardScale">
+    <app-invitation-card [design]="design" [copy]="copy" [part]="part" />
+  </div>
+} @else {
+  <div class="pn__paper" [style.background-image]="kind === 'monogram' ? null : texture">
+    @switch (kind) {
+      @case ('calendar') {
+        <p class="pn__kicker">{{ copy.kicker }}</p>
+        <p class="pn__month">{{ copy.monthTitle }}</p>
+        <div class="pn__grid">
+          @for (weekday of copy.weekdays; track $index) {
+            <span class="pn__wd">{{ weekday }}</span>
+          }
+          @for (blank of blanks; track blank) {
+            <span></span>
+          }
+          @for (d of days; track d) {
+            <span class="pn__d" [class.pn__d--on]="d === copy.day">{{ d }}</span>
+          }
+        </div>
+        <p class="pn__time">{{ copy.timeWeekday }}</p>
+        <p class="pn__venue">{{ copy.venueShort }}</p>
+      }
+      @case ('photo') {
+        <app-photo class="pn__photo" [frame]="photoFrame" [index]="photoIndex" [monogram]="copy.monogram" [caption]="copy.photoSoon" />
+        <p class="pn__names">{{ copy.coupleLine }}</p>
+        <p class="pn__date">{{ copy.shortDate }}</p>
+      }
+      @case ('venue') {
+        <p class="pn__kicker">{{ copy.venueLabel }}</p>
+        <svg class="pn__map" viewBox="0 0 200 120" aria-hidden="true">
+          <path class="pn__river" d="M-4 92C40 70 70 104 110 82S170 40 204 52" />
+          <path class="pn__street" d="M20 0L60 120M0 34H200M120 0L150 120M0 108H200" />
+          <path class="pn__pin" d="M118 64c0-9 7-15 14-15s14 6 14 15c0 11-14 24-14 24s-14-13-14-24z" />
+          <circle class="pn__pin-dot" cx="132" cy="63" r="5" />
+        </svg>
+        @for (line of copy.venueLines; track line) {
+          <p class="pn__venue-line">{{ line }}</p>
+        }
+      }
+      @case ('monogram') {
+        <div class="pn__pattern" [style.background]="pattern"></div>
+        <div class="pn__seal">
+          <app-ornament class="pn__ring" ornament="monogramRing" [relief]="design.relief ?? null" [palette]="design.palette" />
+          <p class="pn__monogram">{{ copy.monogram }}</p>
+        </div>
+        <p class="pn__title">{{ copy.titleWord }}</p>
+      }
+    }
+  </div>
+}

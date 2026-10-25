@@ -3,6 +3,19 @@
     <div class="pk__insert">
       <app-invitation-card [design]="insertDesign" [copy]="copy" />
     </div>
+    @if (spec.windowPhoto ? window : null; as win) {
+      <!-- Photo printed on the window's clear film; the sleeve shapes it. -->
+      <app-photo
+        class="pk__window-photo"
+        frame="rounded"
+        [style.left.px]="win.box.x - 8"
+        [style.top.px]="win.box.y - 8"
+        [style.width.px]="win.box.w + 16"
+        [style.height.px]="win.box.h + 16"
+        [monogram]="copy.monogram"
+        [caption]="copy.photoSoon"
+      />
+    }
     <div class="pk__shadowed">
       <div class="pk__sleeve" [style.clip-path]="sleeveClip" [style.background-image]="texture"></div>
     </div>
@@ -13,7 +26,7 @@
         <path class="pk__slats" [attr.d]="s.slats" />
       }
       @if (windowFrame; as frame) {
-        <path class="pk__frame" [class.pk__frame--thin]="spec.window === 'rect' || spec.window === 'circle'" [attr.d]="frame" />
+        <path class="pk__frame" [class.pk__frame--thin]="spec.window === 'rect' || spec.window === 'circle' || spec.windowPhoto" [attr.d]="frame" />
       }
     </svg>
     <p class="pk__title" [class.pk__foil]="spec.foil" [style.top.px]="sleeveText.title">{{ copy.saveTheDate }}</p>

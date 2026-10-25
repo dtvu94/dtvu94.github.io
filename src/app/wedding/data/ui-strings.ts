@@ -17,6 +17,8 @@ export interface WeddingUiStrings {
   styleRowLabel: string;
   emptyLabel: string;
   resetLabel: string;
+  /** Toggle: only designs with a place for the couple's photo. */
+  photoLabel: string;
   /** Detail-page stage controls. */
   stageHint: string;
   openLabel: string;
@@ -42,6 +44,7 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     styleRowLabel: 'Phong cách',
     emptyLabel: 'Chưa có mẫu nào cho lựa chọn này.',
     resetLabel: 'Xem tất cả',
+    photoLabel: 'Có ảnh cưới',
     stageHint: 'Bấm vào bao thư để mở thiệp',
     openLabel: '✉️ Mở thiệp',
     insideLabel: 'Xem bên trong',
@@ -64,6 +67,7 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     styleRowLabel: 'Style',
     emptyLabel: 'No designs for this combination yet.',
     resetLabel: 'Show all',
+    photoLabel: 'With photo',
     stageHint: 'Tap the envelope to open it',
     openLabel: '✉️ Open',
     insideLabel: 'See inside',
@@ -85,6 +89,7 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     styleRowLabel: 'สไตล์',
     emptyLabel: 'ยังไม่มีแบบสำหรับตัวเลือกนี้',
     resetLabel: 'ดูทั้งหมด',
+    photoLabel: 'มีรูปคู่บ่าวสาว',
     stageHint: 'แตะที่ซองเพื่อเปิดการ์ด',
     openLabel: '✉️ เปิดการ์ด',
     insideLabel: 'ดูด้านใน',

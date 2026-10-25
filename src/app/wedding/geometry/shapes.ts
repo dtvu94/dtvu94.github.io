@@ -160,13 +160,16 @@ export interface EnvelopeGeometry {
 
 export function envelopeGeometry(flap: EnvelopeFlap, w = ENV_W, h = ENV_H): EnvelopeGeometry {
   const cx = w / 2;
+  // The V opening bows slightly upward (control above the chord), so every
+  // flap whose edges run straight from the top corners covers it — a
+  // downward bow would leave slivers of the card showing beside the flap.
   const vPocket =
-    `M0 0Q${fmt(w * 0.24)} ${fmt(h * 0.36)} ${fmt(cx)} ${fmt(h * 0.5)}` +
-    `Q${fmt(w * 0.76)} ${fmt(h * 0.36)} ${fmt(w)} 0V${fmt(h)}H0Z`;
+    `M0 0Q${fmt(w * 0.25)} ${fmt(h * 0.22)} ${fmt(cx)} ${fmt(h * 0.5)}` +
+    `Q${fmt(w * 0.75)} ${fmt(h * 0.22)} ${fmt(w)} 0V${fmt(h)}H0Z`;
   const vSeams =
     `M0 ${fmt(h)}Q${fmt(cx)} ${fmt(h * 0.36)} ${fmt(w)} ${fmt(h)}` +
-    `M0 0Q${fmt(w * 0.24)} ${fmt(h * 0.36)} ${fmt(cx)} ${fmt(h * 0.5)}` +
-    `M${fmt(w)} 0Q${fmt(w * 0.76)} ${fmt(h * 0.36)} ${fmt(cx)} ${fmt(h * 0.5)}`;
+    `M0 0Q${fmt(w * 0.25)} ${fmt(h * 0.22)} ${fmt(cx)} ${fmt(h * 0.5)}` +
+    `M${fmt(w)} 0Q${fmt(w * 0.75)} ${fmt(h * 0.22)} ${fmt(cx)} ${fmt(h * 0.5)}`;
 
   switch (flap) {
     case 'pointed': {

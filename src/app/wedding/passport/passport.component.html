@@ -1,0 +1,86 @@
+<div class="ps__stage">
+  <!-- Boarding pass: hidden inside, peeking out, or slid out below. -->
+  <div class="ps__ticket">
+    <div class="ps__band">
+      <span>{{ copy.passport.boardingPass }}</span>
+      <span class="ps__heart">♥</span>
+      <span>{{ copy.passport.airline }}</span>
+    </div>
+    <div class="ps__ticket-body">
+      <div class="ps__fields">
+        <p class="ps__field ps__field--wide">
+          <span class="ps__label">{{ copy.passport.passenger }}</span>
+          <span class="ps__line"></span>
+        </p>
+        <p class="ps__field">
+          <span class="ps__label">{{ copy.passport.from }}</span>
+          <span class="ps__value">{{ copy.passport.fromPlace }}</span>
+        </p>
+        <p class="ps__field ps__field--span2">
+          <span class="ps__label">{{ copy.passport.to }}</span>
+          <span class="ps__value">{{ copy.venueShort }}</span>
+        </p>
+        <p class="ps__field">
+          <span class="ps__label">{{ copy.passport.date }}</span>
+          <span class="ps__value">{{ copy.shortDate }}</span>
+        </p>
+        <p class="ps__field">
+          <span class="ps__label">{{ copy.passport.boarding }}</span>
+          <span class="ps__value">{{ copy.timeWeekday }}</span>
+        </p>
+        <p class="ps__field">
+          <span class="ps__label">{{ copy.passport.gate }}</span>
+          <span class="ps__value">{{ copy.passport.hall }}</span>
+        </p>
+      </div>
+      <div class="ps__stub">
+        <p class="ps__stub-std">{{ copy.saveTheDate }}</p>
+        <p class="ps__field ps__field--wide">
+          <span class="ps__label">{{ copy.passport.seat }}</span>
+          <span class="ps__line"></span>
+        </p>
+        <svg class="ps__barcode" viewBox="0 0 116 34" preserveAspectRatio="none" aria-hidden="true">
+          @for (bar of bars; track $index) {
+            <rect [attr.x]="bar.x" y="0" [attr.width]="bar.w" height="34" />
+          }
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="ps__page ps__page--right">
+    <app-panel [design]="pageDesign" [copy]="copy" kind="invite" [width]="pageW" [height]="pageH" />
+  </div>
+
+  <div class="ps__cover">
+    <div class="ps__face ps__face--front" [style.background-image]="texture">
+      <p class="ps__title">{{ copy.passport.title }}</p>
+      <div class="ps__emblem">
+        <app-ornament class="ps__laurel" ornament="laurel" [relief]="{ mode: 'raised', finish: 'foil' }" [palette]="emblemPalette" />
+        <p class="ps__monogram">{{ copy.monogram }}</p>
+      </div>
+      <p class="ps__names">{{ copy.coupleLine }}</p>
+      <span class="ps__chip" aria-hidden="true"></span>
+    </div>
+    <div class="ps__face ps__face--back">
+      <p class="ps__data-title">{{ copy.passport.subtitle }}</p>
+      <div class="ps__data">
+        <app-photo class="ps__photo" frame="rounded" [monogram]="copy.monogram" [caption]="copy.photoSoon" />
+        <div class="ps__data-fields">
+          <p class="ps__label">{{ copy.kicker }}</p>
+          <p class="ps__data-names">{{ copy.coupleLine }}</p>
+          <p class="ps__label">{{ copy.passport.date }}</p>
+          <p class="ps__value">{{ copy.shortDate }}</p>
+          <p class="ps__label">{{ copy.passport.to }}</p>
+          <p class="ps__value">{{ copy.venueShort }}</p>
+        </div>
+      </div>
+      <div class="ps__stamp">
+        <span>{{ copy.shortDate }}</span>
+        <span class="ps__stamp-plane">✈</span>
+        <span>{{ copy.passport.airline }}</span>
+      </div>
+      <p class="ps__mrz">{{ mrz[0] }}<br />{{ mrz[1] }}</p>
+    </div>
+  </div>
+</div>

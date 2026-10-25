@@ -1,14 +1,14 @@
 import { Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { InvitationCopy, InvitationDesign } from '../data/wedding.types';
-import { CARD_H, CARD_W, SLEEVE_H, SLEEVE_W } from '../geometry/shapes';
+import { PieceKind, SuiteState, hasInside, pieceKind, pieceLayout, piecePoses, pieceTransform } from './piece-layout';
 
 /**
  * The life of a suite on the detail page:
  * sealed → opened (flap up, card rising) → out (card in front of its
- * envelope) → unfolded (card drawn from its sleeve / jacket opened / band
- * slid off), and back again.
+ * envelope) → unfolded (card drawn from its sleeve, folded card opened,
+ * pop-up raised, passport opened…), and back again.
  */
-export type SuiteState = 'sealed' | 'opened' | 'out' | 'unfolded';
+export type { SuiteState } from './piece-layout';
 
 /** Scene size in design pixels — everything is laid out inside it. */
 export const SCENE_W = 640;
@@ -47,21 +47,26 @@ export class SuiteComponent implements OnInit, OnDestroy {
 
   private timers: ReturnType<typeof setTimeout>[] = [];
 
+  get kind(): PieceKind {
+    return pieceKind(this.design);
+  }
+
   get isPocket(): boolean {
-    return this.design.form === 'pocket' && !!this.design.pocket;
+    return this.kind === 'pocket';
   }
 
-  /** Whether the card has an inside to reveal (sleeve, jacket, band…). */
+  /** Whether the piece has an inside to reveal (sleeve, folds, pop-up, passport). */
   get hasInside(): boolean {
-    return this.isPocket;
+    return hasInside(this.kind);
   }
 
-  get pieceWidth(): number {
-    return this.isPocket && this.design.pocket?.variant === 'sleeve' ? SLEEVE_W : CARD_W;
+  /** Poses of the piece's own moving parts in the current state. */
+  get poses() {
+    return piecePoses(this.state(), this.interactive);
   }
 
-  get pieceHeight(): number {
-    return this.isPocket && this.design.pocket?.variant === 'sleeve' ? SLEEVE_H : CARD_H;
+  get pieceTransform(): string {
+    return pieceTransform(pieceLayout(this.design, this.state(), this.interactive));
   }
 
   ngOnInit(): void {

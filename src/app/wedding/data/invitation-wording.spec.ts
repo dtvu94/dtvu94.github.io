@@ -71,6 +71,26 @@ describe('buildWording', () => {
     expect(th.guestLabel).toBe('เรียน');
   });
 
+  it('lays out the wedding month for the calendar panel', () => {
+    // 1 March 2027 is a Monday; the 28th is a Sunday.
+    const vi = buildWording(WEDDING_CONFIG);
+    expect(vi.monthTitle).toBe('Tháng 03 · 2027');
+    expect(vi.weekdays[6]).toBe('CN');
+    expect(vi.day).toBe(28);
+    expect(vi.monthOffset).toBe(0);
+    expect(vi.daysInMonth).toBe(31);
+    expect((vi.monthOffset + vi.day - 1) % 7).toBe(6);
+    expect(buildWording(WEDDING_CONFIG, 'en').monthTitle).toBe('March 2027');
+    expect(buildWording(WEDDING_CONFIG, 'th').monthTitle).toBe('มีนาคม 2570');
+  });
+
+  it('labels the passport and boarding pass in every language', () => {
+    expect(buildWording(WEDDING_CONFIG).passport.airline).toBe('V&T Airlines');
+    expect(buildWording(WEDDING_CONFIG).passport.passenger).toBe('Hành khách');
+    expect(buildWording(WEDDING_CONFIG, 'th').passport.boarding).toBe('เวลาขึ้น');
+    expect(buildWording(WEDDING_CONFIG, 'en').photoSoon).toContain('coming soon');
+  });
+
   it('renders the lunar line only in Vietnamese', () => {
     const config = { ...WEDDING_CONFIG, lunarDateText: 'nhằm ngày 21 tháng 02 năm Đinh Mùi' };
     expect(buildWording(config).lunarLine).toBe('(nhằm ngày 21 tháng 02 năm Đinh Mùi)');

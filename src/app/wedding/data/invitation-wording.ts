@@ -1,4 +1,68 @@
-import { InvitationCopy, Lang, WeddingConfig } from './wedding.types';
+import { InvitationCopy, Lang, PassportCopy, WeddingConfig } from './wedding.types';
+
+const WEEKDAYS: Record<Lang, string[]> = {
+  vi: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+  en: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
+  th: ['จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส', 'อา'],
+};
+
+const MONTHS: Record<'en' | 'th', string[]> = {
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  th: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'],
+};
+
+const PASSPORT: Record<Lang, Omit<PassportCopy, 'airline'>> = {
+  vi: {
+    title: 'WEDDING PASSPORT',
+    subtitle: 'Hộ chiếu đến hôn nhân',
+    boardingPass: 'BOARDING PASS',
+    passenger: 'Hành khách',
+    from: 'Từ',
+    to: 'Đến',
+    date: 'Ngày',
+    boarding: 'Giờ đón',
+    gate: 'Sảnh',
+    seat: 'Bàn',
+    hall: 'Đang cập nhật',
+    fromPlace: 'Tình yêu',
+  },
+  en: {
+    title: 'WEDDING PASSPORT',
+    subtitle: 'Passport to marriage',
+    boardingPass: 'BOARDING PASS',
+    passenger: 'Passenger',
+    from: 'From',
+    to: 'To',
+    date: 'Date',
+    boarding: 'Boarding',
+    gate: 'Hall',
+    seat: 'Table',
+    hall: 'TBA',
+    fromPlace: 'Love',
+  },
+  th: {
+    title: 'WEDDING PASSPORT',
+    subtitle: 'พาสปอร์ตสู่การแต่งงาน',
+    boardingPass: 'BOARDING PASS',
+    passenger: 'ผู้โดยสาร',
+    from: 'จาก',
+    to: 'ถึง',
+    date: 'วันที่',
+    boarding: 'เวลาขึ้น',
+    gate: 'ห้อง',
+    seat: 'โต๊ะ',
+    hall: 'แจ้งภายหลัง',
+    fromPlace: 'ความรัก',
+  },
+};
+
+const VENUE_LABEL: Record<Lang, string> = { vi: 'Địa điểm', en: 'Venue', th: 'สถานที่' };
+
+const PHOTO_SOON: Record<Lang, string> = {
+  vi: 'Ảnh cưới sẽ cập nhật sau',
+  en: 'Wedding photo coming soon',
+  th: 'รูปแต่งงานเร็ว ๆ นี้',
+};
 
 /**
  * Builds the invitation copy from the wedding config for one language.
@@ -15,6 +79,7 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
   const coupleLine = `${config.groom.short} & ${config.bride.short}`;
   const monogram = `${initialOf(config.groom.short)} & ${initialOf(config.bride.short)}`;
   const rsvp = config.rsvpNote[lang];
+  const [year, month, day] = config.isoDate.split('-').map(Number);
   const shared = {
     coupleLine,
     monogram,
@@ -23,6 +88,18 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
     timeWeekday: `${time} · ${weekday}`,
     venueShort: config.venue.shortName,
     saveTheDate: 'Save the Date',
+    monthTitle: monthTitle(year, month, lang),
+    weekdays: WEEKDAYS[lang],
+    day,
+    // Monday-first grid: getUTCDay() is 0 for Sunday.
+    monthOffset: (new Date(Date.UTC(year, month - 1, 1)).getUTCDay() + 6) % 7,
+    daysInMonth: new Date(Date.UTC(year, month, 0)).getUTCDate(),
+    photoSoon: PHOTO_SOON[lang],
+    venueLabel: VENUE_LABEL[lang],
+    passport: {
+      ...PASSPORT[lang],
+      airline: `${initialOf(config.groom.short)}&${initialOf(config.bride.short)} Airlines`,
+    },
   };
 
   switch (lang) {
@@ -80,6 +157,13 @@ export function formatShortDate(isoDate: string, lang: Lang): string {
   const [year, month, day] = isoDate.split('-').map(Number);
   const shownYear = lang === 'th' ? year + 543 : year;
   return `${pad(day)} · ${pad(month)} · ${shownYear}`;
+}
+
+function monthTitle(year: number, month: number, lang: Lang): string {
+  if (lang === 'vi') {
+    return `Tháng ${pad(month)} · ${year}`;
+  }
+  return lang === 'th' ? `${MONTHS.th[month - 1]} ${year + 543}` : `${MONTHS.en[month - 1]} ${year}`;
 }
 
 function pad(value: number): string {

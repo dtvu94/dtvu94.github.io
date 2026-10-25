@@ -1,18 +1,20 @@
+import { VIVID_RED } from './colors';
+import { FOLDED_DESIGNS } from './designs-folded';
+import { PASSPORT_DESIGNS } from './designs-passport';
+import { POPUP_DESIGNS } from './designs-popup';
 import { InvitationDesign } from './wedding.types';
 
 export { CARD_FORMS, DESIGN_STYLES } from './categories';
 
-/** Đỏ tươi — the vivid red shared by the red designs. */
-const VIVID_RED = '#d7151c';
-
 /**
  * The invitation suites. Mỗi mẫu chỉ là dữ liệu — thiệp, bao thư, túi, dập
  * nổi đều được dựng từ palette + font + layout + họa tiết + kiểu thiệp, nên
- * thêm/sửa mẫu chỉ cần thêm/sửa một entry ở đây. Ids are stable URLs — never
+ * thêm/sửa mẫu chỉ cần thêm/sửa một entry ở đây (thiệp gấp, pop-up và hộ
+ * chiếu nằm ở designs-folded/-popup/-passport.ts). Ids are stable URLs — never
  * rename one. Design names are proper nouns (shown unchanged in every
  * language); only the blurbs are localized.
  */
-export const INVITATION_DESIGNS: InvitationDesign[] = [
+const CORE_DESIGNS: InvitationDesign[] = [
   // ══ Dập chìm nổi / Letterpress & emboss ═══════════════════════════════════
   {
     id: 'press-cotton',
@@ -655,6 +657,62 @@ export const INVITATION_DESIGNS: InvitationDesign[] = [
     pocket: { variant: 'sleeve', paper: '#1d1f24', ink: '#e8cf7a', window: 'circle', stock: 'felt', foil: true },
   },
 
+  {
+    id: 'pocket-photo-arch',
+    nameVi: 'Khung Ảnh Vòm',
+    form: 'pocket',
+    style: 'classic',
+    description: {
+      vi: 'Bìa rút khung vòm in ảnh cưới trên cửa sổ trong; rút ra là thiệp mời ngà dát vàng.',
+      en: 'Sleeve with an arched window showing your photo; slide out the gilded ivory invitation.',
+      th: 'ซองสอดหน้าต่างโค้งแสดงรูปคู่ ดึงออกมาเป็นบัตรเชิญสีงาช้างขลิบทอง',
+    },
+    palette: { bg: '#c9bca6', surface: '#fbf8f1', primary: '#4f4234', accent: '#b08d57', ink: '#463c32' },
+    fonts: { display: 'cormorant', body: 'lora', accent: 'pinyonScript' },
+    layout: 'centeredClassic',
+    ornament: 'laurel',
+    ornamentSecondary: 'hairlineFlourish',
+    accentStyle: 'gold',
+    stock: 'cotton',
+    envelope: {
+      flap: 'arch',
+      paper: '#f6efe3',
+      liner: 'goldFlora',
+      linerColors: ['#f3ede0', '#b8955c'],
+      seal: 'wax',
+      sealColor: '#b08d57',
+      print: 'names',
+      ink: '#8a6a3e',
+      foil: true,
+    },
+    pocket: { variant: 'sleeve', paper: '#efe6d6', ink: '#6b5233', window: 'arch', windowPhoto: true, stock: 'linen', foil: true },
+  },
+  {
+    id: 'pocket-photo-circle',
+    nameVi: 'Ô Cửa Tròn',
+    form: 'pocket',
+    style: 'rustic',
+    description: {
+      vi: 'Bìa rút giấy kraft có ô cửa tròn in ảnh cưới; bao thư buộc dây gai mộc mạc.',
+      en: 'Kraft sleeve with a round window holding your photo; the envelope is tied with twine.',
+      th: 'ซองสอดกระดาษคราฟท์หน้าต่างกลมแสดงรูปคู่ ซองผูกเชือกป่าน',
+    },
+    palette: { bg: '#c3cbb0', surface: '#f6f2e6', primary: '#3e4a2c', accent: '#7b8f55', ink: '#3b4231' },
+    fonts: { display: 'lora', body: 'beVietnamPro', accent: 'sacramento' },
+    layout: 'crestTop',
+    ornament: 'leafyWreath',
+    stock: 'cotton',
+    envelope: {
+      flap: 'straight',
+      paper: '#efe7d4',
+      liner: 'sprig',
+      linerColors: ['#f3efe0', '#6f8f5a'],
+      seal: 'twine',
+      print: 'fern',
+      ink: '#3b4a2a',
+    },
+    pocket: { variant: 'sleeve', paper: '#c8a878', ink: '#3b2f22', window: 'circle', windowPhoto: true, stock: 'kraft' },
+  },
   // ══ Cắt bế / Die-cut ══════════════════════════════════════════════════════
   {
     id: 'modern-blush',
@@ -995,7 +1053,66 @@ export const INVITATION_DESIGNS: InvitationDesign[] = [
       foil: true,
     },
   },
+  {
+    id: 'min-ink-arch',
+    nameVi: 'Vòm Mực',
+    form: 'diecut',
+    style: 'minimalist',
+    description: {
+      vi: 'Thiệp cắt bế đỉnh vòm, trắng tinh với chữ đen sắc nét; bao thư đen tuyền.',
+      en: 'Arch-topped die-cut in crisp white with sharp black type, in a jet-black envelope.',
+      th: 'การ์ดไดคัทหัวโค้ง ขาวสะอาด ตัวอักษรดำคมชัด ในซองสีดำสนิท',
+    },
+    palette: { bg: '#e3e0da', surface: '#ffffff', primary: '#151515', accent: '#151515', ink: '#2b2b2b' },
+    fonts: { display: 'playfair', body: 'inter' },
+    layout: 'minimalLine',
+    ornament: 'none',
+    shape: 'archTop',
+    envelope: {
+      flap: 'arch',
+      paper: '#151515',
+      liner: 'solid',
+      linerColors: ['#ffffff', '#ffffff'],
+      seal: 'none',
+      print: 'names',
+      ink: '#ffffff',
+    },
+  },
+  {
+    id: 'deco-octagon-noir',
+    nameVi: 'Bát Giác Đêm',
+    form: 'diecut',
+    style: 'artdeco',
+    description: {
+      vi: 'Thiệp cắt bế bát giác đen tuyền, khung hình học và quạt Art Deco ánh vàng kiểu Gatsby.',
+      en: 'Jet-black octagonal die-cut with gold geometric frames and art-deco fans, Gatsby style.',
+      th: 'การ์ดไดคัทแปดเหลี่ยมสีดำ กรอบเรขาคณิตและพัดอาร์ตเดโคสีทองสไตล์แกตสบี',
+    },
+    palette: { bg: '#d6cfc0', surface: '#141414', primary: '#e9d6a6', accent: '#c9a55a', ink: '#d8cfb8' },
+    fonts: { display: 'playfair', body: 'montserrat' },
+    layout: 'framedBorder',
+    ornament: 'artDecoFan',
+    ornamentSecondary: 'geoFrame',
+    accentStyle: 'gold',
+    shape: 'octagon',
+    stock: 'felt',
+    envelope: {
+      flap: 'pointed',
+      paper: '#1b1b1b',
+      liner: 'damask',
+      linerColors: ['#111111', '#c9a55a'],
+      edge: '#c9a55a',
+      seal: 'wax',
+      sealColor: '#c9a55a',
+      print: 'monogram',
+      ink: '#c9a55a',
+      foil: true,
+    },
+  },
 ];
+
+/** Gallery order: flat-printed forms first, then the dimensional ones. */
+export const INVITATION_DESIGNS: InvitationDesign[] = [...CORE_DESIGNS, ...FOLDED_DESIGNS, ...POPUP_DESIGNS, ...PASSPORT_DESIGNS];
 
 export function getDesignById(id: string): InvitationDesign | undefined {
   return INVITATION_DESIGNS.find((design) => design.id === id);

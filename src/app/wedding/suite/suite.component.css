@@ -1,6 +1,6 @@
-/* A suite scene at SCENE_W × SCENE_H design pixels; FitScale scales it.
-   Envelope layers share one transform (--env-*); the card/pocket moves on
-   its own (--pc-*). Positions per state are custom properties, so every
+/* A suite scene at SCENE_W × SCENE_H design pixels; SceneFrame scales it.
+   Envelope layers share one transform (--env-*, per state below); the
+   piece moves on its own transform from piece-layout.ts. Either way every
    move is a plain transform transition. */
 
 :host {
@@ -17,36 +17,20 @@
   --env-x: 16px;
   --env-y: 214px;
   --env-r: -6deg;
-  --pc-x: 196px;
-  --pc-y: 232px;
-  --pc-r: 3deg;
   --ease: cubic-bezier(0.45, 0.05, 0.3, 1);
-}
-.suite--sleeve {
-  --pc-x: 186px;
-  --pc-y: 214px;
 }
 .suite--unfolded {
   --env-x: -40px;
   --env-y: 286px;
   --env-r: -9deg;
-  --pc-x: 14px;
-  --pc-y: 206px;
-  --pc-r: 0deg;
 }
-/* Inside the envelope: centred, upright, low enough for the card to rise. */
+/* Inside the envelope: centred and upright (the piece rises from it to
+   where its foot clears the front pocket, see piece-layout.ts). */
 .suite--sealed,
 .suite--opened {
   --env-x: 85px;
   --env-y: 400px;
   --env-r: 0deg;
-  --pc-x: calc(85px + (470px - var(--pc-w)) / 2);
-  --pc-y: 414px;
-  --pc-r: 0deg;
-}
-/* Risen until its foot clears the front pocket. */
-.suite--opened {
-  --pc-y: calc(565px - var(--pc-h));
 }
 
 .suite__env,
@@ -109,8 +93,7 @@
 }
 
 .suite__piece {
-  transform: translate(var(--pc-x), var(--pc-y)) rotate(var(--pc-r));
-  transform-origin: 200px 280px;
+  transform-origin: 0 0;
   transition: transform 0.95s var(--ease);
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.16)) drop-shadow(0 12px 22px rgba(0, 0, 0, 0.16));
 }

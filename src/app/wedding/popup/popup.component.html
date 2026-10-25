@@ -1,0 +1,66 @@
+<div class="pp__stage">
+  <div class="pp__bottom" [style.background-image]="texture">
+    <div class="pp__copy">
+      <p class="pp__headline">{{ copy.inviteHeadline }}</p>
+      <p class="pp__guest">
+        <span>{{ copy.guestPrefix }}</span>
+        <span class="pp__dots"></span>
+        <span>{{ copy.guestSuffix }}</span>
+      </p>
+      <p class="pp__date">{{ copy.dateLine }}</p>
+      @for (line of copy.venueLines; track line) {
+        <p class="pp__venue">{{ line }}</p>
+      }
+      <p class="pp__closing">{{ copy.closing }}</p>
+    </div>
+  </div>
+
+  <div class="pp__top">
+    <div class="pp__face pp__face--in" [style.background-image]="texture">
+      <p class="pp__kicker">{{ copy.kicker }}</p>
+      <p class="pp__names">{{ copy.coupleLine }}</p>
+      <p class="pp__short">{{ copy.timeWeekday }}</p>
+    </div>
+    <div class="pp__face pp__face--out" [style.background-image]="texture">
+      <p class="pp__std">{{ copy.saveTheDate }}</p>
+      <p class="pp__cover-names">{{ copy.coupleLine }}</p>
+      <p class="pp__cover-date">{{ copy.shortDate }}</p>
+    </div>
+  </div>
+
+  @for (layer of layers; track $index) {
+    <svg
+      class="pp__layer"
+      [style.top.px]="layer.foot - layer.height"
+      [style.height.px]="layer.height"
+      [style.transition-delay]="delay($index)"
+      [attr.viewBox]="'0 0 400 ' + layer.height"
+      aria-hidden="true"
+    >
+      @for (shape of layer.shapes; track $index) {
+        <path
+          [attr.d]="shape.d"
+          [attr.fill]="shape.fill"
+          [attr.stroke]="shape.stroke ?? null"
+          [attr.stroke-width]="shape.strokeWidth ?? null"
+          [attr.fill-rule]="shape.evenOdd ? 'evenodd' : null"
+          stroke-linecap="round"
+        />
+      }
+      @for (text of layer.texts ?? []; track $index) {
+        <text
+          class="pp__text pp__text--{{ text.font }}"
+          [attr.x]="text.x"
+          [attr.y]="text.y"
+          [attr.font-size]="text.size"
+          [attr.fill]="text.fill"
+          [attr.stroke]="text.stroke ?? null"
+          text-anchor="middle"
+          dominant-baseline="central"
+        >
+          {{ textOf(text) }}
+        </text>
+      }
+    </svg>
+  }
+</div>

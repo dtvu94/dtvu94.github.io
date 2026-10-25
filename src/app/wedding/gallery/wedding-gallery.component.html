@@ -45,6 +45,22 @@
         </button>
       }
     </div>
+    <div class="filter-row">
+      <button
+        type="button"
+        class="chip chip--toggle"
+        data-photo
+        [class.chip--active]="photoOnly()"
+        [attr.aria-pressed]="photoOnly()"
+        (click)="togglePhoto()"
+      >
+        <svg class="chip__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 8h3l1.6-2h6.8L17 8h3v11H4z" />
+          <circle cx="12" cy="13.2" r="3.4" />
+        </svg>
+        {{ ui().photoLabel }} <span class="chip__count">{{ photoCount() }}</span>
+      </button>
+    </div>
   </div>
 
   @if (filteredDesigns().length === 0) {

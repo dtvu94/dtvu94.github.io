@@ -9,11 +9,15 @@ import {
   EnvelopeLiner,
   EnvelopePrint,
   EnvelopeSeal,
+  FoldVariant,
   FontFamilyKey,
   LayoutVariant,
   OrnamentKey,
+  PanelKind,
   PaperStock,
+  PhotoFrame,
   PocketVariant,
+  PopupScene,
   PrintFinish,
 } from './wedding.types';
 
@@ -42,6 +46,11 @@ const LINERS: EnvelopeLiner[] = ['none', 'solid', 'floral', 'lotus', 'damask', '
 const SEALS: EnvelopeSeal[] = ['none', 'wax', 'sticker', 'twine', 'bow'];
 const PRINTS: EnvelopePrint[] = ['none', 'names', 'monogram', 'fern', 'frame', 'florals', 'lotus'];
 const POCKETS: PocketVariant[] = ['sleeve', 'lowerPocket', 'vellumWrap', 'bellyBand'];
+const PANELS: PanelKind[] = ['full', 'announce', 'invite', 'calendar', 'photo', 'venue', 'monogram'];
+const PHOTO_FRAMES: PhotoFrame[] = ['oval', 'arch', 'rounded', 'circle', 'blob'];
+/** Inside panels each fold has, left to right. */
+const FOLD_PANELS: Record<FoldVariant, number> = { bifold: 2, gatefold: 3, accordion: 3 };
+const SCENES: PopupScene[] = ['meadow', 'lotus', 'arbor', 'skyline', 'hearts'];
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 const VIVID_RED = '#d7151c';
 
@@ -74,9 +83,8 @@ function colorDistance(a: string, b: string): number {
 }
 
 describe('INVITATION_DESIGNS', () => {
-  it('contains at least 20 samples (34 exactly)', () => {
-    expect(INVITATION_DESIGNS.length).toBeGreaterThanOrEqual(20);
-    expect(INVITATION_DESIGNS).toHaveLength(34);
+  it('contains about 60 samples (60 exactly)', () => {
+    expect(INVITATION_DESIGNS).toHaveLength(60);
   });
 
   it('has unique ids and keeps every previously shared id', () => {
@@ -88,17 +96,29 @@ describe('INVITATION_DESIGNS', () => {
   });
 
   it('spreads the designs over the planned formats and styles', () => {
-    expect(countBy((d) => d.form)).toEqual({ letterpress: 8, lasercut: 8, pocket: 6, diecut: 12 });
-    expect(countBy((d) => d.style)).toEqual({
-      modern: 6,
-      minimalist: 3,
-      vintage: 4,
-      classic: 5,
-      floral: 5,
-      vietnamese: 7,
-      rustic: 2,
-      artdeco: 2,
+    expect(countBy((d) => d.form)).toEqual({
+      letterpress: 8,
+      lasercut: 8,
+      pocket: 8,
+      diecut: 14,
+      folded: 12,
+      popup: 5,
+      passport: 5,
     });
+    expect(countBy((d) => d.style)).toEqual({
+      modern: 10,
+      minimalist: 6,
+      vintage: 7,
+      classic: 8,
+      floral: 8,
+      vietnamese: 11,
+      rustic: 5,
+      artdeco: 5,
+    });
+    const folded = INVITATION_DESIGNS.filter((d) => d.fold);
+    expect(folded.filter((d) => d.fold!.variant === 'bifold')).toHaveLength(5);
+    expect(folded.filter((d) => d.fold!.variant === 'gatefold')).toHaveLength(3);
+    expect(folded.filter((d) => d.fold!.variant === 'accordion')).toHaveLength(4);
   });
 
   it('uses only known formats, styles, layouts, ornaments, fonts, shapes, stocks and finishes', () => {
@@ -153,6 +173,44 @@ describe('INVITATION_DESIGNS', () => {
     }
   });
 
+  it('gives folded, pop-up and passport designs their spec, and only those', () => {
+    for (const design of INVITATION_DESIGNS) {
+      expect(design.fold !== undefined).toBe(design.form === 'folded');
+      expect(design.popup !== undefined).toBe(design.form === 'popup');
+      expect(design.passport !== undefined).toBe(design.form === 'passport');
+    }
+  });
+
+  it('lists the right number of known panels for each fold', () => {
+    for (const { fold } of INVITATION_DESIGNS) {
+      if (fold) {
+        expect(fold.inside).toHaveLength(FOLD_PANELS[fold.variant]);
+        for (const panel of [...fold.inside, fold.cover]) {
+          expect(PANELS).toContain(panel);
+        }
+        expect(PHOTO_FRAMES).toContain(fold.photoFrame ?? 'rounded');
+      }
+    }
+  });
+
+  it('uses every pop-up scene once', () => {
+    const scenes = INVITATION_DESIGNS.flatMap((d) => (d.popup ? [d.popup.scene] : []));
+    expect([...scenes].sort()).toEqual([...SCENES].sort());
+  });
+
+  it('prints passport pages on the card paper, with foil that stands out on the cover', () => {
+    for (const design of INVITATION_DESIGNS) {
+      if (design.passport) {
+        const { cover, foil, page, ticket } = design.passport;
+        for (const color of [cover, foil, page, ticket]) {
+          expect(color).toMatch(HEX_COLOR);
+        }
+        expect(page).toBe(design.palette.surface);
+        expect(colorDistance(foil, cover)).toBeGreaterThan(60);
+      }
+    }
+  });
+
   it('gives every letterpress design real relief or a pressed finish', () => {
     for (const design of INVITATION_DESIGNS.filter((d) => d.form === 'letterpress')) {
       expect(design.relief !== undefined || (design.finish ?? 'flat') !== 'flat').toBe(true);
@@ -188,8 +246,8 @@ describe('INVITATION_DESIGNS', () => {
     const red = INVITATION_DESIGNS.filter((design) =>
       Object.values(design.palette).some((value) => value.toLowerCase() === VIVID_RED),
     );
-    expect(red.length).toBeGreaterThanOrEqual(6);
-    expect(new Set(red.map((design) => design.form)).size).toBeGreaterThanOrEqual(3);
+    expect(red.length).toBeGreaterThanOrEqual(10);
+    expect(new Set(red.map((design) => design.form)).size).toBeGreaterThanOrEqual(5);
   });
 
   it('uses valid hex colors and non-empty naming in all three languages', () => {

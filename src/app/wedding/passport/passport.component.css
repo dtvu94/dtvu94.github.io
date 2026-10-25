@@ -1,0 +1,329 @@
+/* Passport booklet: pages 300 × 424, cover hinged on the left edge. */
+
+:host {
+  display: block;
+  position: relative;
+  width: 300px;
+  height: 424px;
+  perspective: 1800px;
+  perspective-origin: 30% 40%;
+  font-family: var(--inv-font-body);
+}
+
+.ps__stage {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.ps__page,
+.ps__cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 424px;
+}
+.ps__page--right {
+  border-radius: 0 14px 14px 0;
+  overflow: hidden;
+  background: var(--ps-page);
+  box-shadow: inset 10px 0 14px -10px rgba(0, 0, 0, 0.25);
+}
+.ps__cover {
+  transform-origin: 0 50%;
+  transform-style: preserve-3d;
+  transform: rotateY(0deg) translateZ(1px);
+  transition: transform 1s cubic-bezier(0.45, 0.05, 0.3, 1);
+}
+:host(.ps--open) .ps__cover {
+  transform: rotateY(-180deg) translateZ(1px);
+}
+.ps__face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+.ps__face > p {
+  margin: 0;
+}
+
+/* ── cover ──────────────────────────────────────────────────────────── */
+.ps__face--front {
+  border-radius: 4px 14px 14px 4px;
+  background-color: var(--ps-cover);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40px;
+  box-shadow: inset 6px 0 8px -6px rgba(0, 0, 0, 0.35);
+}
+.ps__title {
+  font-family: var(--inv-font-body);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  line-height: 1.3;
+  text-align: center;
+  max-width: 220px;
+}
+.ps__title,
+.ps__names,
+.ps__monogram {
+  background: linear-gradient(
+    105deg,
+    color-mix(in srgb, var(--ps-foil) 70%, #000000) 0%,
+    var(--ps-foil) 35%,
+    color-mix(in srgb, var(--ps-foil) 45%, #ffffff) 50%,
+    var(--ps-foil) 65%,
+    color-mix(in srgb, var(--ps-foil) 70%, #000000) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.ps__emblem {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  margin: 26px 0 18px;
+}
+.ps__laurel {
+  position: absolute;
+  inset: 0;
+}
+.ps__monogram {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--inv-font-accent);
+  font-size: 30px;
+  white-space: nowrap;
+}
+.ps__names {
+  font-family: var(--inv-font-accent);
+  font-size: 32px;
+}
+.ps__chip {
+  position: absolute;
+  right: 34px;
+  bottom: 34px;
+  width: 30px;
+  height: 22px;
+  border-radius: 4px;
+  background:
+    linear-gradient(90deg, transparent 45%, rgba(0, 0, 0, 0.25) 45%, rgba(0, 0, 0, 0.25) 55%, transparent 55%),
+    linear-gradient(0deg, transparent 45%, rgba(0, 0, 0, 0.25) 45%, rgba(0, 0, 0, 0.25) 55%, transparent 55%),
+    var(--ps-foil);
+}
+
+/* ── data page (inside of the cover) ───────────────────────────────── */
+.ps__face--back {
+  transform: rotateY(180deg);
+  border-radius: 14px 0 0 14px;
+  background: var(--ps-page);
+  color: var(--inv-ink);
+  padding: 26px 22px;
+  box-shadow: inset -10px 0 14px -10px rgba(0, 0, 0, 0.25);
+}
+.ps__data-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ps-ticket);
+  text-align: center;
+}
+.ps__data {
+  display: flex;
+  gap: 14px;
+  margin-top: 20px;
+}
+.ps__photo {
+  flex: 0 0 104px;
+  height: 132px;
+}
+.ps__data-fields {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+}
+.ps__data-fields > p {
+  margin: 0;
+}
+.ps__label {
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.ps__value {
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 4px !important;
+}
+.ps__data-names {
+  font-family: var(--inv-font-accent);
+  font-size: 22px;
+  color: var(--inv-primary);
+  margin-bottom: 4px !important;
+}
+.ps__stamp {
+  position: absolute;
+  right: 26px;
+  bottom: 74px;
+  width: 104px;
+  height: 104px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 2px;
+  border: 2px solid var(--ps-ticket);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 4px var(--ps-page), inset 0 0 0 5px var(--ps-ticket);
+  color: var(--ps-ticket);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  transform: rotate(-14deg);
+  opacity: 0.85;
+}
+.ps__stamp-plane {
+  font-size: 18px;
+}
+.ps__mrz {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  font-family: 'Courier New', monospace;
+  font-size: 9.6px;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* ── boarding pass ──────────────────────────────────────────────────── */
+/* It always stays a hair behind the pages, so it slides out from under the
+   booklet instead of crossing it. */
+.ps__ticket {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 440px;
+  height: 170px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+  color: #2b2b2b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transform-origin: 0 0;
+  transform: translate3d(0, 150px, -2px);
+  opacity: 0;
+  transition:
+    transform 1.1s cubic-bezier(0.45, 0.05, 0.3, 1),
+    opacity 0.35s ease;
+}
+:host(.ps--peek) .ps__ticket {
+  transform: translate3d(28px, 150px, -2px) rotate(-9deg);
+  opacity: 1;
+}
+:host(.ps--open) .ps__ticket {
+  transform: translate3d(-220px, 446px, -2px) rotate(-1.5deg);
+  opacity: 1;
+  transition-delay: 0.2s, 0s;
+}
+.ps__band {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 28px;
+  padding: 0 16px;
+  background: var(--ps-ticket);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  white-space: nowrap;
+}
+.ps__heart {
+  font-size: 12px;
+}
+.ps__ticket-body {
+  display: flex;
+  height: 142px;
+}
+.ps__fields {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.25fr) minmax(0, 0.9fr);
+  gap: 6px 10px;
+  align-content: center;
+  padding: 8px 14px;
+  border-right: 2px dashed rgba(0, 0, 0, 0.15);
+}
+.ps__field {
+  display: grid;
+  align-content: start;
+  gap: 1px;
+  margin: 0;
+}
+.ps__field--span2 {
+  grid-column: span 2;
+}
+.ps__field--wide {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.ps__line {
+  flex: 1;
+  display: block;
+  min-height: 12px;
+  border-bottom: 1px dotted rgba(0, 0, 0, 0.45);
+}
+.ps__ticket .ps__value {
+  font-size: 10.5px;
+  line-height: 1.25;
+  margin: 0 !important;
+  color: var(--ps-ticket);
+}
+.ps__stub {
+  flex: 0 0 112px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  text-align: center;
+}
+.ps__stub > p {
+  margin: 0;
+}
+.ps__stub .ps__field--wide {
+  width: 100%;
+}
+.ps__stub-std {
+  font-family: var(--inv-font-accent);
+  font-size: 19px;
+  line-height: 1.1;
+  color: var(--ps-ticket);
+}
+.ps__barcode {
+  width: 92px;
+  height: 26px;
+  fill: #2b2b2b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps__cover,
+  .ps__ticket {
+    transition-duration: 1ms;
+  }
+}

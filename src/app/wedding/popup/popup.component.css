@@ -1,0 +1,189 @@
+/* Pop-up card: open it is 400 × 560 with the fold at y = 280. */
+
+:host {
+  display: block;
+  position: relative;
+  width: 400px;
+  height: 560px;
+  perspective: 1500px;
+  perspective-origin: 50% 20%;
+  color: var(--inv-ink);
+  font-family: var(--inv-font-body);
+}
+
+.pp__stage {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.pp__bottom,
+.pp__top {
+  position: absolute;
+  left: 0;
+  width: 400px;
+  height: 280px;
+}
+.pp__bottom {
+  top: 280px;
+  background-color: var(--inv-surface);
+  box-shadow: inset 0 14px 18px -14px rgba(0, 0, 0, 0.22);
+}
+.pp__top {
+  top: 0;
+  transform-origin: 50% 100%;
+  transform-style: preserve-3d;
+  /* Open, the back half leans away a little, like a card standing at ~115°. */
+  transform: rotateX(24deg) translateZ(-1px);
+  transition: transform 1.05s cubic-bezier(0.45, 0.05, 0.3, 1);
+}
+:host(.pp--closed) .pp__top {
+  transform: rotateX(-180deg) translateZ(-1px);
+}
+.pp__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  backface-visibility: hidden;
+  background-color: var(--inv-surface);
+  text-align: center;
+}
+.pp__face > p,
+.pp__copy > p {
+  margin: 0;
+}
+.pp__face--in {
+  padding-top: 18px;
+  gap: 2px;
+  box-shadow: inset 0 -14px 18px -14px rgba(0, 0, 0, 0.18);
+}
+.pp__face--out {
+  transform: rotateX(180deg);
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid color-mix(in srgb, var(--inv-accent) 50%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--inv-accent) 35%, transparent);
+  outline-offset: -10px;
+}
+
+.pp__kicker {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--inv-accent);
+}
+.pp__names {
+  font-family: var(--inv-font-accent);
+  font-size: 30px;
+  line-height: 1.15;
+  color: var(--inv-primary);
+}
+.pp__short {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.pp__std {
+  font-family: var(--inv-font-accent);
+  font-size: 40px;
+  line-height: 1.1;
+  color: var(--inv-accent);
+}
+.pp__cover-names {
+  font-family: var(--inv-font-display);
+  font-size: 34px;
+  color: var(--inv-primary);
+}
+.pp__cover-date {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+}
+
+/* Copy on the bottom half, below where the layers stand. */
+.pp__copy {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 18px;
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+.pp__headline {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+}
+.pp__guest {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--inv-primary);
+  margin-bottom: 4px !important;
+}
+.pp__dots {
+  flex: 0 1 100px;
+  border-bottom: 1.5px dotted currentColor;
+  opacity: 0.45;
+}
+.pp__date {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--inv-primary);
+}
+.pp__venue {
+  font-size: 11px;
+  line-height: 1.35;
+}
+.pp__closing {
+  font-size: 9.5px;
+  font-style: italic;
+  opacity: 0.8;
+  margin-top: 2px !important;
+}
+
+/* Standing layers lean towards the viewer a little; they fold flat when
+   the card closes. */
+.pp__layer {
+  position: absolute;
+  left: 0;
+  width: 400px;
+  overflow: visible;
+  transform-origin: 50% 100%;
+  transform: rotateX(-6deg);
+  transition:
+    transform 0.8s cubic-bezier(0.3, 1.3, 0.5, 1),
+    opacity 0.4s ease;
+  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.18));
+}
+:host(.pp--closed) .pp__layer {
+  transform: rotateX(-90deg);
+  opacity: 0;
+  transition:
+    transform 0.5s ease-in,
+    opacity 0.3s ease-in;
+}
+.pp__text {
+  paint-order: stroke;
+  stroke-width: 1.4px;
+  stroke-linejoin: round;
+}
+.pp__text--display {
+  font-family: var(--inv-font-display);
+}
+.pp__text--accent {
+  font-family: var(--inv-font-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp__top,
+  .pp__layer {
+    transition-duration: 1ms !important;
+  }
+}

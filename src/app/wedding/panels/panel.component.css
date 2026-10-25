@@ -1,0 +1,246 @@
+/* A panel of a folded card / passport page. Colours and fonts arrive as
+   --inv-* variables from the host binding. */
+
+:host {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: var(--inv-surface);
+  color: var(--inv-ink);
+  font-family: var(--inv-font-body);
+}
+
+.pn__card {
+  width: 400px;
+  height: 560px;
+  transform-origin: 0 0;
+}
+.pn__card app-invitation-card {
+  display: block;
+  width: 400px;
+  height: 560px;
+}
+
+.pn__paper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 34px 28px;
+  text-align: center;
+  background-color: var(--inv-surface);
+}
+.pn__paper > p {
+  margin: 0;
+}
+
+.pn__kicker {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--inv-accent);
+}
+.pn__month {
+  font-family: var(--inv-font-display);
+  font-size: 28px;
+  color: var(--inv-primary);
+}
+
+/* ── calendar ───────────────────────────────────────────────────────── */
+.pn__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px 4px;
+  width: 100%;
+  max-width: 300px;
+  margin: 8px 0 6px;
+  font-size: 13px;
+}
+.pn__wd {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--inv-accent);
+  padding-bottom: 4px;
+  border-bottom: 1px solid color-mix(in srgb, var(--inv-accent) 45%, transparent);
+}
+.pn__d {
+  position: relative;
+  line-height: 26px;
+}
+.pn__d--on {
+  color: var(--inv-surface);
+  font-weight: 700;
+  z-index: 0;
+}
+/* A heart behind the wedding day. */
+.pn__d--on::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 30px;
+  height: 28px;
+  translate: -50% -48%;
+  z-index: -1;
+  background: var(--inv-primary);
+  clip-path: path('M15 27C6 20 0 14 0 8.2 0 3.5 3.6 0 8 0c3 0 5.6 1.6 7 4 1.4-2.4 4-4 7-4 4.4 0 8 3.5 8 8.2 0 5.8-6 11.8-15 18.8z');
+}
+.pn__time {
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+}
+.pn__venue {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--inv-accent);
+}
+
+/* ── photo ──────────────────────────────────────────────────────────── */
+.pn__photo {
+  width: 100%;
+  flex: 0 1 68%;
+  min-height: 0;
+}
+:host(.pn--photo) .pn__paper {
+  justify-content: flex-start;
+  padding-top: 30px;
+}
+.pn__names {
+  margin-top: 8px !important;
+  font-family: var(--inv-font-accent);
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--inv-primary);
+}
+.pn__date {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+}
+
+/* ── venue ──────────────────────────────────────────────────────────── */
+.pn__map {
+  width: 100%;
+  max-width: 260px;
+  margin: 4px 0 8px;
+}
+.pn__river {
+  fill: none;
+  stroke: color-mix(in srgb, var(--inv-accent) 55%, transparent);
+  stroke-width: 9;
+  stroke-linecap: round;
+}
+.pn__street {
+  fill: none;
+  stroke: color-mix(in srgb, var(--inv-ink) 22%, transparent);
+  stroke-width: 1.2;
+}
+.pn__pin {
+  fill: var(--inv-primary);
+}
+.pn__pin-dot {
+  fill: var(--inv-surface);
+}
+.pn__venue-line {
+  font-size: 12px;
+  line-height: 1.45;
+}
+.pn__venue-line:nth-of-type(2) {
+  font-weight: 600;
+  color: var(--inv-primary);
+}
+
+/* ── monogram ───────────────────────────────────────────────────────── */
+:host(.pn--monogram) .pn__paper {
+  background: none;
+}
+.pn__pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+}
+.pn__seal {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  background: var(--inv-surface);
+  box-shadow: 0 0 0 10px var(--inv-surface);
+}
+.pn__ring {
+  position: absolute;
+  inset: 0;
+}
+.pn__monogram {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  font-family: var(--inv-font-accent);
+  font-size: 40px;
+  white-space: nowrap;
+  color: var(--inv-primary);
+}
+.pn__title {
+  position: relative;
+  margin-top: 18px !important;
+  padding: 4px 14px;
+  background: var(--inv-surface);
+  font-family: var(--inv-font-accent);
+  font-size: 26px;
+  color: var(--inv-accent);
+}
+
+/* ── half-width doors ───────────────────────────────────────────────── */
+:host(.pn--narrow) .pn__paper {
+  padding: 26px 14px;
+  gap: 6px;
+}
+:host(.pn--narrow) .pn__month {
+  font-size: 19px;
+}
+:host(.pn--narrow) .pn__grid {
+  gap: 3px 1px;
+  font-size: 10px;
+}
+:host(.pn--narrow) .pn__wd {
+  font-size: 8px;
+  letter-spacing: 0;
+}
+:host(.pn--narrow) .pn__d {
+  line-height: 19px;
+}
+:host(.pn--narrow) .pn__d--on::before {
+  width: 22px;
+  height: 21px;
+  scale: 0.75;
+}
+:host(.pn--narrow) .pn__names {
+  font-size: 24px;
+}
+:host(.pn--narrow) .pn__kicker,
+:host(.pn--narrow) .pn__venue {
+  letter-spacing: 0.16em;
+  font-size: 9px;
+}
+:host(.pn--narrow) .pn__venue-line {
+  font-size: 10px;
+}
+:host(.pn--narrow) .pn__seal {
+  width: 120px;
+  height: 120px;
+}
+:host(.pn--narrow) .pn__monogram {
+  font-size: 28px;
+}
+:host(.pn--narrow) .pn__title {
+  font-size: 20px;
+}

@@ -1,0 +1,35 @@
+<div class="fd__stage">
+  <div class="fd__base fd__shade--left fd__shade--right">
+    <app-panel [design]="design" [copy]="copy" [kind]="centre" [photoFrame]="fold.photoFrame ?? 'rounded'" [photoIndex]="1" />
+  </div>
+  @for (leaf of leaves; track leaf.side) {
+    <div
+      class="fd__leaf fd__leaf--{{ leaf.side }}"
+      [style.left.px]="leafLeft(leaf)"
+      [style.width.px]="leaf.width"
+      [style.height.px]="panelHeight"
+      [style.transform-origin]="leafOrigin(leaf)"
+      [style.transform]="leafTransform(leaf)"
+    >
+      <div class="fd__face fd__face--front fd__shade--{{ leaf.side === 'left' ? 'right' : 'left' }}">
+        <app-panel
+          [design]="design"
+          [copy]="copy"
+          [kind]="leaf.front"
+          [width]="leaf.width"
+          [photoFrame]="fold.photoFrame ?? 'rounded'"
+          [photoIndex]="leaf.side === 'left' ? 0 : 1"
+        />
+      </div>
+      <div class="fd__face fd__face--back">
+        @if (isPanel(leaf.back)) {
+          <app-panel [design]="design" [copy]="copy" [kind]="leaf.back" [width]="leaf.width" [photoFrame]="fold.photoFrame ?? 'rounded'" />
+        } @else if (leaf.back !== 'blank') {
+          <div class="fd__half" [style.left.px]="coverOffset(leaf.back)">
+            <app-panel [design]="design" [copy]="copy" [kind]="fold.cover" [photoFrame]="fold.photoFrame ?? 'oval'" />
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

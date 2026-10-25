@@ -34,6 +34,11 @@ app-invitation-card {
   transform: translateY(var(--pk-rest, 0px));
 }
 
+.pk__window-photo {
+  position: absolute;
+  z-index: 1;
+}
+
 .pk__shadowed {
   position: absolute;
   inset: 0;

@@ -49,6 +49,10 @@ export const WEDDING_CONFIG: WeddingConfig = {
     lng: 106.6903722,
     mapsShareUrl: 'https://maps.app.goo.gl/hdefzxnNdPnbr4ob6',
   },
+  // Ảnh cưới: chụp cuối tháng 12. Bỏ ảnh vào src/assets/wedding/ rồi điền đường
+  // dẫn ở đây, ví dụ ['assets/wedding/anh-cuoi-1.jpg', 'assets/wedding/anh-cuoi-2.jpg'].
+  // Mọi khung ảnh của các mẫu thiệp sẽ tự dùng ảnh này (ảnh 1 trước, ảnh 2 sau).
+  photos: [],
   rsvpNote: {
     vi: 'Rất hân hạnh được đón tiếp!',
     en: 'We look forward to celebrating with you!',
