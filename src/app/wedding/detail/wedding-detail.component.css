@@ -132,6 +132,110 @@
   font-size: 12px;
 }
 
+/* ── fonts & sizes sheet ────────────────────────────────────────────── */
+.detail__type {
+  margin-top: 56px;
+  padding-top: 36px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.detail--dark .detail__type {
+  border-top-color: rgba(255, 255, 255, 0.16);
+}
+.detail__type .detail__section-sub {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.detail__type-faces {
+  margin: 6px 0 0;
+  font-family: var(--ff-beVietnamPro);
+  font-size: 13.5px;
+}
+.type {
+  display: grid;
+  gap: 10px;
+  max-width: 980px;
+  margin: 0 auto;
+  font-family: var(--ff-beVietnamPro);
+  color: #3a342a;
+}
+.type__piece {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+}
+.detail--dark .type {
+  color: #f0ead9;
+}
+.detail--dark .type__piece {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+.type__summary {
+  padding: 11px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.type__scroll {
+  overflow-x: auto;
+  padding: 0 8px 10px;
+}
+.type__table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 13px;
+}
+.type__table th:nth-child(1) {
+  width: 40%;
+}
+.type__table th:nth-child(2) {
+  width: 19%;
+}
+.type__table th:nth-child(3) {
+  width: 17%;
+}
+.type__table th {
+  padding: 6px 8px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+.type__table td {
+  padding: 7px 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  vertical-align: middle;
+}
+.detail--dark .type__table td {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+/* Each sample in its own face, at a readable size. */
+.type__sample {
+  width: 42%;
+  font-size: 19px;
+  line-height: 1.35;
+}
+.type__sample--script {
+  font-size: 26px;
+  line-height: 1.2;
+}
+.type__font {
+  font-weight: 600;
+}
+.type__size {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.type__logo {
+  font-size: 22px;
+}
+
 /* Online card and directions side by side, tops aligned; the guide starts
    folded so both columns look balanced. */
 .detail__online-grid {
@@ -194,6 +298,7 @@
   .detail__bar,
   .detail__hint,
   .detail__zoom-tip,
+  .detail__type,
   .detail__online {
     display: none;
   }

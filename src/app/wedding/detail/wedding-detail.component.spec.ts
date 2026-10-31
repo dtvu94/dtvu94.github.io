@@ -106,6 +106,23 @@ describe('WeddingDetailComponent', () => {
     expect(root.querySelector('.guide__toggle')?.textContent).toContain('ดูแผนที่และเส้นทาง');
   });
 
+  it('lists the fonts and sizes of every printed piece, the invitation open first', async () => {
+    const fixture = setup('press-cotton');
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const root: HTMLElement = fixture.nativeElement;
+    const sheet = root.querySelector('.detail__type')!;
+    expect(sheet.querySelector('h2')?.textContent).toBe('Font & cỡ chữ');
+    const pieces = Array.from(sheet.querySelectorAll<HTMLDetailsElement>('.type__piece'));
+    const labels = pieces.map((p) => p.querySelector('summary')?.textContent?.trim());
+    // (The envelope back carries only the logo, which has no size without layout.)
+    expect(labels).toEqual(expect.arrayContaining(['Bao thư · mặt trước', 'Thiệp mời', 'Thiệp chỉ đường']));
+    const open = pieces.filter((p) => p.open);
+    expect(open.map((p) => p.querySelector('summary')?.textContent?.trim())).toEqual(['Thiệp mời']);
+    // Without layout every line shares one (unset) style here; real styles are covered in type-spec.spec.
+    expect(open[0].querySelector('.type__sample')?.textContent).toContain('Thiệp Cưới');
+  });
+
   describe('zoom viewer', () => {
     const viewer = (root: HTMLElement) => root.querySelector('app-zoom-viewer');
     const title = (root: HTMLElement) => root.querySelector('.zv__title')?.textContent?.replace(/\s+/g, ' ').trim();

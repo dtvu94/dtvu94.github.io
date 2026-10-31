@@ -21,6 +21,9 @@
   --ff-sacramento: 'Sacramento', 'Charm', 'Be Vietnam Pro', cursive;
   --ff-pinyonScript: 'Pinyon Script', 'Charm', 'Be Vietnam Pro', cursive;
   --ff-parisienne: 'Parisienne', 'Charm', 'Be Vietnam Pro', cursive;
+  /* The couple's handwriting face: Alex Brush (Vietnamese, English), Charm
+     for Thai glyphs. Every design's names and "Thiệp Cưới" use it. */
+  --ff-alexBrush: 'Alex Brush', 'Charm', 'Be Vietnam Pro', cursive;
 }
 
 /* Suites are drawn at fixed design sizes (cards 400×560, scenes 640×820)

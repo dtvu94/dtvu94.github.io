@@ -1,4 +1,16 @@
-import { Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Injector,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { formLabel, styleLabel } from '../data/categories';
@@ -12,6 +24,25 @@ import { LanguageService } from '../language.service';
 import { PaperPiece, paperPieces } from '../paper/paper-suite.component';
 import { isDarkColor } from '../theme';
 import { ZoomItem } from '../zoom/zoom-viewer.component';
+import {
+  TypeSpecPiece,
+  TypeSpecRow,
+  facesUsed,
+  isScriptFace,
+  mainPiece,
+  measureTypography,
+  pxToMm,
+  pxToPt,
+} from './type-spec';
+
+/** Weight names as type foundries and print shops use them. */
+const WEIGHT_NAMES: Record<number, string> = {
+  300: 'Light',
+  400: 'Regular',
+  500: 'Medium',
+  600: 'SemiBold',
+  700: 'Bold',
+};
 
 /** Longest guest name printed on the online card. */
 const GUEST_MAX = 60;
@@ -56,6 +87,9 @@ export class WeddingDetailComponent implements OnInit, OnDestroy {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly language = inject(LanguageService);
+  private readonly injector = inject(Injector);
+
+  @ViewChild('paperSection') private paperSection?: ElementRef<HTMLElement>;
 
   readonly lang = this.language.lang;
   readonly ui = computed(() => WEDDING_UI[this.lang()]);
@@ -77,6 +111,10 @@ export class WeddingDetailComponent implements OnInit, OnDestroy {
   });
   /** Item shown in the zoom viewer, or null when it is closed. */
   readonly zoomIndex = signal<number | null>(null);
+  /** Fonts and sizes of the printed pieces, measured once they are drawn. */
+  readonly typeSpec = signal<TypeSpecPiece[]>([]);
+  readonly faces = computed(() => facesUsed(this.typeSpec()));
+  readonly openPiece = computed(() => mainPiece(this.typeSpec()));
 
   constructor() {
     effect(() => {
@@ -84,6 +122,12 @@ export class WeddingDetailComponent implements OnInit, OnDestroy {
       if (design) {
         this.title.setTitle(`${design.nameVi} — ${this.ui().detailTitleSuffix}`);
       }
+    });
+    // Re-measure the type whenever the pieces are redrawn (design, language).
+    effect(() => {
+      this.design();
+      this.lang();
+      afterNextRender(() => this.measureType(), { injector: this.injector });
     });
   }
 
@@ -117,6 +161,42 @@ export class WeddingDetailComponent implements OnInit, OnDestroy {
   /** Example personalised link shown to the couple. */
   guestExample(design: InvitationDesign): string {
     return `${location.origin}/wedding/${design.id}?${GUEST_PARAM}=Anh Minh`;
+  }
+
+  /** Number in the page's language ("41,4" in Vietnamese). */
+  num(value: number): string {
+    return new Intl.NumberFormat(this.lang(), { maximumFractionDigits: 1 }).format(value);
+  }
+
+  pt(px: number): string {
+    return this.num(pxToPt(px));
+  }
+
+  mm(px: number): string {
+    return this.num(pxToMm(px));
+  }
+
+  readonly isScript = isScriptFace;
+
+  /** "SemiBold 600 · in hoa · giãn chữ 0,3em" */
+  styleOf(row: TypeSpecRow): string {
+    const strings = this.ui().typeSpec;
+    const weight = WEIGHT_NAMES[row.weight] ?? '';
+    return [
+      `${weight} ${row.weight}`.trim(),
+      row.italic ? strings.italic : '',
+      row.upper ? strings.upper : '',
+      row.tracking ? `${strings.tracking} ${this.num(row.tracking)}em` : '',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+  }
+
+  private measureType(): void {
+    const root = this.paperSection?.nativeElement;
+    if (root) {
+      this.typeSpec.set(measureTypography(root));
+    }
   }
 
   openZoom(index: number): void {

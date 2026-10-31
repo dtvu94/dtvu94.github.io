@@ -104,8 +104,8 @@ app-invitation-card {
 }
 .pk__names {
   transform: translateY(-50%);
-  font-family: var(--inv-font-display);
-  font-size: 34px;
+  font-family: var(--inv-font-accent);
+  font-size: 38px;
   line-height: 1.15;
 }
 .pk__date {

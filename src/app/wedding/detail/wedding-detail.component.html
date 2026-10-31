@@ -16,7 +16,7 @@
     </header>
 
     <!-- Thiệp giấy: the printed suite, laid out flat. -->
-    <section class="detail__section detail__paper" aria-labelledby="paper-title">
+    <section #paperSection class="detail__section detail__paper" aria-labelledby="paper-title">
       <header class="detail__section-head">
         <h2 class="detail__section-title" id="paper-title">{{ ui().paperTitle }}</h2>
         <p class="detail__section-sub">{{ ui().paperSub }}</p>
@@ -30,6 +30,57 @@
         (zoom)="openZoom($event)"
       />
     </section>
+
+    <!-- Font & cỡ chữ: every type style of the printed pieces, for the printer. -->
+    @if (typeSpec().length) {
+      <section class="detail__section detail__type" aria-labelledby="type-title">
+        <header class="detail__section-head">
+          <h2 class="detail__section-title" id="type-title">{{ ui().typeSpec.title }}</h2>
+          <p class="detail__section-sub">{{ ui().typeSpec.sub }}</p>
+          <p class="detail__type-faces">
+            {{ ui().typeSpec.fontsUsed }} <strong>{{ faces().join(', ') }}</strong>
+          </p>
+        </header>
+        <div class="type">
+          @for (piece of typeSpec(); track piece.kind) {
+            <details class="type__piece" [open]="piece.kind === openPiece()">
+              <summary class="type__summary">{{ ui().paperLabels[piece.kind] }}</summary>
+              <div class="type__scroll">
+                <table class="type__table">
+                  <thead>
+                    <tr>
+                      <th scope="col">{{ ui().typeSpec.colText }}</th>
+                      <th scope="col">{{ ui().typeSpec.colFont }}</th>
+                      <th scope="col">{{ ui().typeSpec.colSize }}</th>
+                      <th scope="col">{{ ui().typeSpec.colStyle }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of piece.rows; track $index) {
+                      <tr>
+                        @if (row.logo) {
+                          <td><span class="vt-logo type__logo" role="img" [attr.aria-label]="copy().monogram"></span></td>
+                          <td>{{ ui().typeSpec.logo }}</td>
+                          <td class="type__size">{{ ui().typeSpec.height }} {{ num(row.px) }} px · {{ mm(row.px) }} mm</td>
+                          <td></td>
+                        } @else {
+                          <td class="type__sample" [class.type__sample--script]="isScript(row.font)" [style.font-family]="row.stack">
+                            {{ row.sample }}
+                          </td>
+                          <td class="type__font">{{ row.font }}</td>
+                          <td class="type__size">{{ num(row.px) }} px · {{ pt(row.px) }} pt</td>
+                          <td>{{ styleOf(row) }}</td>
+                        }
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          }
+        </div>
+      </section>
+    }
 
     <!-- Thiệp online: the card as sent by link, next to the directions. -->
     <section class="detail__section detail__online" aria-labelledby="online-title">

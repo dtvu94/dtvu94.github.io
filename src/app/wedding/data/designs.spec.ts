@@ -132,9 +132,8 @@ describe('INVITATION_DESIGNS', () => {
       }
       expect(FONTS).toContain(design.fonts.display);
       expect(FONTS).toContain(design.fonts.body);
-      if (design.fonts.accent) {
-        expect(FONTS).toContain(design.fonts.accent);
-      }
+      // The handwritten face is shared by every design (theme.ts).
+      expect(Object.keys(design.fonts).sort()).toEqual(['body', 'display']);
       expect(SHAPES).toContain(design.shape ?? 'rect');
       expect(STOCKS).toContain(design.stock ?? 'smooth');
       expect(FINISHES).toContain(design.finish ?? 'flat');

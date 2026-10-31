@@ -167,10 +167,10 @@
   gap: 6px;
 }
 .inv:is(.inv--laserLace, .inv--laserArch, .inv--laserLattice) .inv__couple {
-  font-size: 34px;
+  font-size: 39px;
 }
 .inv:is(.inv--laserCloud, .inv--laserBranch) .inv__couple {
-  font-size: 30px;
+  font-size: 34px;
 }
 .inv:is(.inv--laserCloud, .inv--laserBranch) :is(.inv__headline, .inv__venue-line, .inv__closing) {
   letter-spacing: 0.08em;

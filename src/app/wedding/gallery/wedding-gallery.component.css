@@ -19,7 +19,7 @@
 }
 .gallery__script {
   margin: 0;
-  font-family: var(--ff-greatVibes);
+  font-family: var(--ff-alexBrush);
   font-size: clamp(36px, 6vw, 54px);
   line-height: 1.1;
   color: #b69256;

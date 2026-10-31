@@ -33,6 +33,28 @@ export interface WeddingUiStrings {
   icsLabel: string;
   /** Zoom viewer on the detail page. */
   zoom: ZoomStrings;
+  /** Fonts and sizes of the printed pieces, for the printer. */
+  typeSpec: TypeSpecStrings;
+}
+
+/** Labels of the "fonts & sizes" sheet on the detail page. */
+export interface TypeSpecStrings {
+  title: string;
+  /** How sizes are given (design px, print pt at 5 × 7 in). */
+  sub: string;
+  /** Lead-in to the list of faces the design uses. */
+  fontsUsed: string;
+  colText: string;
+  colFont: string;
+  colSize: string;
+  colStyle: string;
+  /** Font cell of the logo row. */
+  logo: string;
+  /** "height" — the logo is sized by its height. */
+  height: string;
+  italic: string;
+  upper: string;
+  tracking: string;
 }
 
 /** Labels of the zoom viewer and of the magnifier button on each piece. */
@@ -126,6 +148,20 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
       next: 'Tấm sau',
       hint: 'Cuộn chuột hoặc chụm hai ngón để phóng to · kéo để di chuyển · bấm đúp để phóng nhanh',
     },
+    typeSpec: {
+      title: 'Font & cỡ chữ',
+      sub: 'Đo trực tiếp trên bộ thiệp giấy ở trên, dùng để gửi nhà in. Cỡ chữ ghi theo px thiết kế (thiệp 400 × 560 px) và pt khi in thiệp khổ 5 × 7 inch (12,7 × 17,8 cm); các tấm khác in cùng tỉ lệ.',
+      fontsUsed: 'Font dùng trong mẫu này:',
+      colText: 'Nội dung',
+      colFont: 'Font',
+      colSize: 'Cỡ chữ',
+      colStyle: 'Kiểu',
+      logo: 'Logo V T (vector)',
+      height: 'cao',
+      italic: 'nghiêng',
+      upper: 'in hoa',
+      tracking: 'giãn chữ',
+    },
   },
   en: {
     docTitle: 'Wedding Invitation — Vũ & Thảo',
@@ -179,6 +215,20 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
       next: 'Next piece',
       hint: 'Scroll or pinch to zoom · drag to move · double-tap to zoom quickly',
     },
+    typeSpec: {
+      title: 'Fonts & sizes',
+      sub: 'Measured from the printed suite above, for the print shop. Sizes are in design px (card 400 × 560 px) and in pt for a 5 × 7 in (12.7 × 17.8 cm) invitation; the other pieces print at the same scale.',
+      fontsUsed: 'Fonts in this design:',
+      colText: 'Text',
+      colFont: 'Font',
+      colSize: 'Size',
+      colStyle: 'Style',
+      logo: 'V T logo (vector)',
+      height: 'height',
+      italic: 'italic',
+      upper: 'uppercase',
+      tracking: 'tracking',
+    },
   },
   th: {
     docTitle: 'การ์ดแต่งงาน — Vũ & Thảo',
@@ -230,6 +280,20 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
       prev: 'ชิ้นก่อนหน้า',
       next: 'ชิ้นถัดไป',
       hint: 'เลื่อนเมาส์หรือใช้สองนิ้วเพื่อซูม · ลากเพื่อเลื่อน · แตะสองครั้งเพื่อซูมเร็ว',
+    },
+    typeSpec: {
+      title: 'ฟอนต์และขนาดตัวอักษร',
+      sub: 'วัดจากชุดการ์ดกระดาษด้านบน สำหรับส่งโรงพิมพ์ ขนาดเป็น px ของงานออกแบบ (การ์ด 400 × 560 px) และ pt เมื่อพิมพ์การ์ดขนาด 5 × 7 นิ้ว (12.7 × 17.8 ซม.) ชิ้นอื่นพิมพ์ในสัดส่วนเดียวกัน',
+      fontsUsed: 'ฟอนต์ในแบบนี้:',
+      colText: 'ข้อความ',
+      colFont: 'ฟอนต์',
+      colSize: 'ขนาด',
+      colStyle: 'รูปแบบ',
+      logo: 'โลโก้ V T (เวกเตอร์)',
+      height: 'สูง',
+      italic: 'ตัวเอียง',
+      upper: 'ตัวพิมพ์ใหญ่',
+      tracking: 'ระยะห่างตัวอักษร',
     },
   },
 };

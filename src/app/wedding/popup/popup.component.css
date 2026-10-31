@@ -92,8 +92,8 @@
   color: var(--inv-accent);
 }
 .pp__cover-names {
-  font-family: var(--inv-font-display);
-  font-size: 34px;
+  font-family: var(--inv-font-accent);
+  font-size: 38px;
   color: var(--inv-primary);
 }
 .pp__cover-date {

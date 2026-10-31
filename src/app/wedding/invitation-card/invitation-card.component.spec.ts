@@ -39,7 +39,8 @@ describe('InvitationCardComponent', () => {
     expect(style).toContain('--inv-surface:#fdfbf6');
     expect(style).toContain('--inv-accent:#b69256');
     expect(style).toContain('--inv-font-display:var(--ff-playfair)');
-    expect(style).toContain('--inv-font-accent:var(--ff-greatVibes)');
+    // Handwritten lines use the couple's face on every design.
+    expect(style).toContain('--inv-font-accent:var(--ff-alexBrush)');
   });
 
   it('places the names directly after the event line, completing the sentence', () => {

@@ -77,12 +77,13 @@ export type FontFamilyKey =
   | 'parisienne';
 
 export interface FontPairing {
-  /** Couple names / headline face. */
+  /** Headings and numerals (short date, venue name, panel headings). */
   display: FontFamilyKey;
   /** Paragraphs and details. */
   body: FontFamilyKey;
-  /** Optional flourish face (monogram, "Thiệp Cưới"). Falls back to display. */
-  accent?: FontFamilyKey;
+  /* The handwritten lines — the couple's names, "Thiệp Cưới", guest names —
+     are the same on every design: Alex Brush, with Charm for Thai
+     (--ff-alexBrush, see theme.ts). */
 }
 
 /** Structural template of the card face — see invitation-card.component.html. */

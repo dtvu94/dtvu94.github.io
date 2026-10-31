@@ -18,7 +18,9 @@ export function invitationThemeStyle(design: InvitationDesign): string {
     `--inv-overlay:${palette.overlay ?? palette.accent}`,
     `--inv-font-display:var(--ff-${fonts.display})`,
     `--inv-font-body:var(--ff-${fonts.body})`,
-    `--inv-font-accent:var(--ff-${fonts.accent ?? fonts.display})`,
+    // Handwritten lines (names, "Thiệp Cưới", guest names) on every design:
+    // Alex Brush for Vietnamese and English, Charm for Thai — the couple's pick.
+    '--inv-font-accent:var(--ff-alexBrush)',
   ].join(';');
 }
 

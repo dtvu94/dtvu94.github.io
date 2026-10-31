@@ -101,7 +101,7 @@
           <p class="inv__lunar">{{ copy.lunarLine }}</p>
         }
         <div class="inv__venue">
-          @for (line of copy.venueLines; track line) {
+          @for (line of copy.venueLines; track $index) {
             <p class="inv__venue-line">{{ line }}</p>
           }
         </div>

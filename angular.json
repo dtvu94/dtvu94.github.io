@@ -28,6 +28,7 @@
               "src/assets"
             ],
             "styles": [
+              "src/fonts/fonts.css",
               "src/styles.css",
               "src/app/wedding/wedding-theme.css",
               "src/app/wedding/wedding-finishes.css"
