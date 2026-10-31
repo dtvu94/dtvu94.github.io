@@ -41,36 +41,38 @@
           </g>
         }
         @if (spec.roses; as roses) {
-          <!-- Hoa hồng baby on both sides of the crest. -->
-          @if (roses.kind === 'foil') {
-            <g [attr.filter]="foilRef" [attr.fill]="spec.ink" [attr.stroke]="spec.ink">
-              <path [attr.d]="roseArt.stems" fill="none" stroke-width="1.6" stroke-linecap="round" />
-              <path [attr.d]="roseArt.breathStems" fill="none" stroke-width="0.6" stroke-linecap="round" />
-              <path [attr.d]="roseArt.leaves" stroke="none" />
-              <path [attr.d]="roseArt.lines" fill="none" stroke-width="1.15" stroke-linecap="round" />
-              <path [attr.d]="roseArt.buds" stroke="none" />
-              <path [attr.d]="roseArt.breath" stroke="none" />
-            </g>
-          } @else {
-            <g class="env__roses">
-              <path [attr.d]="roseArt.stems" fill="none" [attr.stroke]="roses.leaf" stroke-width="1.5" stroke-linecap="round" />
-              <path [attr.d]="roseArt.breathStems" fill="none" [attr.stroke]="roses.leaf" stroke-width="0.6" stroke-linecap="round" />
-              <path [attr.d]="roseArt.leaves" [attr.fill]="roses.leaf" />
-              <path [attr.d]="roseArt.petals" [attr.fill]="roses.petal" />
-              <path [attr.d]="roseArt.petalsInner" [attr.fill]="roses.petalInner" />
-              <path [attr.d]="roseArt.lines" fill="none" [attr.stroke]="roses.line" stroke-width="0.8" stroke-linecap="round" />
-              <path [attr.d]="roseArt.buds" [attr.fill]="roses.petalInner" />
-              <path [attr.d]="roseArt.breath" [attr.fill]="roses.breath" />
-            </g>
+          <!-- Hoa hồng baby on both sides of the front. -->
+          @for (side of roseSides; track side.key) {
+            @if (roses.kind === 'foil') {
+              <g [attr.filter]="foilRef" [attr.fill]="spec.ink" [attr.stroke]="spec.ink" [attr.transform]="side.transform">
+                <path [attr.d]="side.art.stems" fill="none" stroke-width="1.6" stroke-linecap="round" />
+                <path [attr.d]="side.art.breathStems" fill="none" stroke-width="0.6" stroke-linecap="round" />
+                <path [attr.d]="side.art.leaves" stroke="none" />
+                <path [attr.d]="side.art.lines" fill="none" stroke-width="1.15" stroke-linecap="round" />
+                <path [attr.d]="side.art.buds" stroke="none" />
+                <path [attr.d]="side.art.breath" stroke="none" />
+              </g>
+            } @else {
+              <g class="env__roses" [attr.transform]="side.transform">
+                <path [attr.d]="side.art.stems" fill="none" [attr.stroke]="roses.leaf" stroke-width="1.5" stroke-linecap="round" />
+                <path [attr.d]="side.art.breathStems" fill="none" [attr.stroke]="roses.leaf" stroke-width="0.6" stroke-linecap="round" />
+                <path [attr.d]="side.art.leaves" [attr.fill]="roses.leaf" />
+                <path [attr.d]="side.art.petals" [attr.fill]="roses.petal" />
+                <path [attr.d]="side.art.petalsInner" [attr.fill]="roses.petalInner" />
+                <path [attr.d]="side.art.lines" fill="none" [attr.stroke]="roses.line" stroke-width="0.8" stroke-linecap="round" />
+                <path [attr.d]="side.art.buds" [attr.fill]="roses.petalInner" />
+                <path [attr.d]="side.art.breath" [attr.fill]="roses.breath" />
+              </g>
+            }
           }
         }
         @if (spec.seal === 'twine') {
           <path class="env__twine" [attr.d]="'M0 ' + twineY + 'H' + w" />
         }
       </svg>
-      @if (spec.print === 'namesHeart') {
+      @if (front.label === 'namesHeart') {
         <!-- "Tuấn Vũ ♡ Nguyễn Thảo" over the date: names and day at a glance. -->
-        <div class="env__hn" [style.top.px]="printY">
+        <div class="env__hn" [style.top.px]="heartY">
           <p class="env__hn-names" [attr.aria-label]="copy.coupleLine">
             <span>{{ copy.coupleNames[0] }}</span>
             <svg class="env__hn-heart" [attr.viewBox]="heartBox" aria-hidden="true"><path [attr.d]="heartPath" /></svg>
@@ -79,14 +81,19 @@
           <p class="env__hn-date">{{ dotDate }}</p>
         </div>
       }
-      @if (spec.print === 'fern') {
+      @if (front.label === 'title') {
         <p class="env__script">{{ copy.titleWord }}</p>
       }
-      @if (spec.print === 'frame') {
+      @if (front.art === 'frame') {
         <p class="env__frame-title">{{ copy.titleWord }}</p>
       }
+      @if (showsLogo) {
+        <p class="env__logo" [style.top.px]="logoY"><span class="vt-logo" role="img" [attr.aria-label]="copy.monogram"></span></p>
+      }
       @if (showsNames) {
-        <p class="env__names" [style.top.px]="namesY">{{ copy.coupleLine }}</p>
+        <p class="env__names" [style.top.px]="namesY">
+          <span class="couple-name">{{ copy.coupleNames[0] }}</span> &amp; <span class="couple-name">{{ copy.coupleNames[1] }}</span>
+        </p>
       }
       <p class="env__guest">
         <span>{{ copy.guestLabel }}:</span>

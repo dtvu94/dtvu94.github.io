@@ -2,6 +2,8 @@
 <div class="online__zoomable" [class.online__zoomable--on]="zoomable" (click)="open()">
   <app-scene-frame class="online__card" [w]="cardW" [h]="cardH">
     <app-invitation-card [design]="design" [copy]="copy" [guest]="guest" />
+    <!-- Anything laid over the card (the editor's stickers), in card pixels. -->
+    <ng-content />
   </app-scene-frame>
   @if (zoomable) {
     <button type="button" class="zoom-btn online__zoom" [attr.aria-label]="ui.zoom.open + ': ' + ui.onlineTitle">

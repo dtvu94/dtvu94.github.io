@@ -4,6 +4,7 @@
   <main class="detail" [attr.lang]="lang()" [class.detail--dark]="isDark" [style.background]="d.palette.bg">
     <nav class="detail__bar">
       <a class="detail__pill" routerLink="/wedding">{{ ui().backToGallery }}</a>
+      <a class="detail__pill" [routerLink]="['/wedding', 'editor']" [queryParams]="{ from: d.id }">{{ ui().customizeLabel }}</a>
       <button type="button" class="detail__pill detail__pill--button" (click)="print()">
         {{ ui().printLabel }}
       </button>

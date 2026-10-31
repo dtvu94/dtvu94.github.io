@@ -1,10 +1,10 @@
 import { Component, HostBinding, Input } from '@angular/core';
-import { EnvelopeSpec, InvitationCopy, InvitationDesign } from '../data/wedding.types';
+import { EnvelopeArt, EnvelopeLabel, EnvelopePrint, EnvelopeSpec, InvitationCopy, InvitationDesign } from '../data/wedding.types';
 import { HEART_FLOURISH_BOX, cornerSpray, curlFrame, drawnBow, fern, heartFlourish, lotusPrint, waxSealPath } from '../geometry/envelope-art';
 import { Motif, mergeMotifs } from '../geometry/motifs';
 import { linerBackground, STOCK_TEXTURE } from '../geometry/patterns';
-import { RoseSpray, envelopeRoses } from '../geometry/rose-spray';
-import { ENV_H, ENV_W, EnvelopeGeometry, envelopeGeometry } from '../geometry/shapes';
+import { RoseSpray, roseSpray } from '../geometry/rose-spray';
+import { ENV_H, EnvelopeGeometry, envelopeGeometry, envelopeSize } from '../geometry/shapes';
 import { svgRef, uniqueSvgId } from '../relief/svg-ref';
 import { invitationThemeStyle } from '../theme';
 
@@ -25,16 +25,59 @@ export type EnvelopeLayer =
 
 const geometryCache = new Map<string, EnvelopeGeometry>();
 
-/** Where the print sits on the front, as fractions of the envelope height. */
-const PRINT_Y: Record<string, number> = { names: 0.44, namesHeart: 0.42, fern: 0.42, frame: 0.36, florals: 0.42, lotus: 0.32 };
+/** Where the art sits on the front, as fractions of the envelope height. */
+const ART_Y: Record<EnvelopeArt, number> = { none: 0.42, fern: 0.42, frame: 0.36, florals: 0.42, lotus: 0.32 };
+
+/** Front decoration and wording of the designs that set only `print`. */
+const PRINT_PARTS: Record<EnvelopePrint, { art: EnvelopeArt; label: EnvelopeLabel }> = {
+  none: { art: 'none', label: 'none' },
+  names: { art: 'none', label: 'names' },
+  namesHeart: { art: 'none', label: 'namesHeart' },
+  fern: { art: 'fern', label: 'title' },
+  frame: { art: 'frame', label: 'names' },
+  florals: { art: 'florals', label: 'names' },
+  lotus: { art: 'lotus', label: 'names' },
+};
+
+/** Decoration and wording of an envelope front: set apart, or from `print`. */
+export function envelopeFront(spec: EnvelopeSpec): { art: EnvelopeArt; label: EnvelopeLabel } {
+  const parts = PRINT_PARTS[spec.print];
+  return { art: spec.art ?? parts.art, label: spec.label ?? parts.label };
+}
+
+/** A rose spray for one side, drawn for one envelope width. */
+interface RoseSide {
+  key: string;
+  art: RoseSpray;
+  /** Scales the spray down on short envelopes, about its outer top corner. */
+  transform: string | null;
+}
+
+const roseCache = new Map<string, RoseSide[]>();
+
+/** Both sprays for a w × h front: sized for 330 px tall, scaled to fit shorter ones. */
+function roseSides(w: number, h: number): RoseSide[] {
+  const key = `${w}x${h}`;
+  let sides = roseCache.get(key);
+  if (!sides) {
+    const k = Math.min(1, h / ENV_H);
+    // Taller fronts keep the sprays at full size, a little lower down.
+    const dy = h > ENV_H ? (h - ENV_H) * 0.35 : 0;
+    const at = (x: number) => (k === 1 && !dy ? null : `translate(${x} ${dy}) scale(${k}) translate(${-x} 0)`);
+    sides = [
+      { key: 'left', art: roseSpray(w, false, 7), transform: at(0) },
+      { key: 'right', art: roseSpray(w, true, 11), transform: at(w) },
+    ];
+    roseCache.set(key, sides);
+  }
+  return sides;
+}
 
 /**
  * One layer of a design's matching envelope, drawn at ENV_W × ENV_H design
  * pixels. Shapes come from geometry/shapes.ts as clip-paths over textured
  * paper; art is inline SVG; the flap swings open in 3-D.
  */
-/** Drawn once: every envelope front uses the same sprays. */
-const ROSES = envelopeRoses(ENV_W);
 const HEART = heartFlourish();
 
 @Component({
@@ -49,11 +92,7 @@ export class EnvelopeComponent {
   @Input() layer: EnvelopeLayer = 'pocket';
   @Input() open = false;
 
-  readonly w = ENV_W;
-  readonly h = ENV_H;
   readonly foilId = uniqueSvgId('env-foil');
-  /** Baby-rose sprays for both sides of the front (same art on every envelope). */
-  readonly roseArt: RoseSpray = ROSES;
   /** The drawn heart between the names on a "namesHeart" front. */
   readonly heartPath = HEART;
   readonly heartBox = `0 0 ${HEART_FLOURISH_BOX.w} ${HEART_FLOURISH_BOX.h}`;
@@ -66,21 +105,43 @@ export class EnvelopeComponent {
     return `env env--${this.layer}${this.spec.vellum ? ' env--vellum' : ''}${this.open ? ' env--open' : ''}`;
   }
 
-  /** Fonts from the design; paper and ink of the envelope itself. */
+  /** Fonts from the design; paper, ink and size of the envelope itself. */
   @HostBinding('attr.style')
   get hostStyle(): string {
-    return `${invitationThemeStyle(this.design)};--env-paper:${this.spec.paper};--env-ink:${this.spec.ink}`;
+    return (
+      `${invitationThemeStyle(this.design)};--env-paper:${this.spec.paper};--env-ink:${this.spec.ink}` +
+      `;width:${this.w}px;height:${this.h}px`
+    );
   }
 
   get spec(): EnvelopeSpec {
     return this.design.envelope;
   }
 
+  get w(): number {
+    return envelopeSize(this.spec).w;
+  }
+
+  get h(): number {
+    return envelopeSize(this.spec).h;
+  }
+
+  /** The front's decoration (`art`) and wording (`label`). */
+  get front(): { art: EnvelopeArt; label: EnvelopeLabel } {
+    return envelopeFront(this.spec);
+  }
+
+  /** Baby-rose sprays for both sides of the front. */
+  get roseSides(): RoseSide[] {
+    return roseSides(this.w, this.h);
+  }
+
   get geo(): EnvelopeGeometry {
-    let geo = geometryCache.get(this.spec.flap);
+    const key = `${this.spec.flap}|${this.w}x${this.h}`;
+    let geo = geometryCache.get(key);
     if (!geo) {
-      geo = envelopeGeometry(this.spec.flap);
-      geometryCache.set(this.spec.flap, geo);
+      geo = envelopeGeometry(this.spec.flap, this.w, this.h);
+      geometryCache.set(key, geo);
     }
     return geo;
   }
@@ -114,30 +175,35 @@ export class EnvelopeComponent {
     return this.spec.sealColor ?? this.design.palette.accent;
   }
 
+  /** Where the decoration sits, in envelope pixels. */
   get printY(): number {
-    return (PRINT_Y[this.spec.print] ?? 0.7) * ENV_H;
+    return ART_Y[this.front.art] * this.h;
   }
 
-  /** Line art for the print, in envelope pixels. */
+  /** Line art for the decoration, in envelope pixels. */
   get printArt(): Motif | null {
-    const cx = ENV_W / 2;
-    const y = this.printY;
-    switch (this.spec.print) {
+    const { w, h } = this;
+    const cx = w / 2;
+    switch (this.front.art) {
       case 'fern':
-        return mergeMotifs(fern({ x: ENV_W - 70, y: ENV_H - 14 }, -1.85, 150, 0.35), fern({ x: ENV_W - 58, y: ENV_H - 16 }, -1.45, 112, -0.3));
+        return mergeMotifs(fern({ x: w - 70, y: h - 14 }, -1.85, 150, 0.35), fern({ x: w - 58, y: h - 16 }, -1.45, 112, -0.3));
       case 'frame':
-        return curlFrame(cx - 128, ENV_H * 0.14, 256, ENV_H * 0.46);
+        return curlFrame(cx - 128, h * 0.14, 256, h * 0.46);
       case 'florals':
-        return mergeMotifs(cornerSpray({ x: 6, y: ENV_H - 6 }, -0.75, 96, 3), cornerSpray({ x: ENV_W - 6, y: ENV_H - 6 }, -2.4, 96, 8));
+        return mergeMotifs(cornerSpray({ x: 6, y: h - 6 }, -0.75, 96, 3), cornerSpray({ x: w - 6, y: h - 6 }, -2.4, 96, 8));
       case 'lotus':
-        return lotusPrint({ x: cx, y }, 30);
+        return lotusPrint({ x: cx, y: this.printY }, 30);
       default:
         return null;
     }
   }
 
   get showsNames(): boolean {
-    return this.spec.print !== 'none' && this.spec.print !== 'fern' && this.spec.print !== 'namesHeart';
+    return this.front.label === 'names' || this.front.label === 'logoNames';
+  }
+
+  get showsLogo(): boolean {
+    return this.front.label === 'logo' || this.front.label === 'logoNames';
   }
 
   /** "28.03.2027" (Buddhist year in Thai), under the names on a "namesHeart" front. */
@@ -145,11 +211,28 @@ export class EnvelopeComponent {
     return this.copy.shortDate.split(' · ').join('.');
   }
 
+  /** Below a lotus or inside a frame, the wording moves down; else mid-front. */
+  private get labelSlot(): number | null {
+    const { art } = this.front;
+    return art === 'lotus' ? 0.56 : art === 'frame' ? 0.45 : null;
+  }
+
   get namesY(): number {
-    if (this.spec.print === 'lotus') {
-      return ENV_H * 0.56;
+    const slot = this.labelSlot;
+    if (this.front.label === 'logoNames') {
+      return (slot ?? 0.52) * this.h;
     }
-    return this.spec.print === 'frame' ? ENV_H * 0.45 : this.printY;
+    return (slot ?? (this.front.art === 'florals' ? 0.42 : 0.44)) * this.h;
+  }
+
+  get heartY(): number {
+    const slot = this.labelSlot;
+    return (slot === null ? 0.42 : slot + 0.02) * this.h;
+  }
+
+  /** The logo alone mid-front, or above the names. */
+  get logoY(): number {
+    return this.front.label === 'logoNames' ? this.namesY - 58 : (this.labelSlot ?? 0.42) * this.h;
   }
 
   /** A coloured edge band on the front, matching the flap's edge. */
@@ -167,6 +250,6 @@ export class EnvelopeComponent {
   }
 
   get twineY(): number {
-    return ENV_H * 0.66;
+    return this.h * 0.66;
   }
 }

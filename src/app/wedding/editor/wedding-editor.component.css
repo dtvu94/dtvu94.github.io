@@ -1,0 +1,518 @@
+/* Tự thiết kế thiệp — page chrome. The pieces themselves bring their own
+   colours; the editor stays a quiet warm grey around them. */
+
+:host {
+  --ed-bg: #f6f3ed;
+  --ed-panel: #fffdf9;
+  --ed-text: #2a2722;
+  --ed-muted: #6b6255;
+  --ed-line: #e2dbcf;
+  --ed-chip: #ffffff;
+  --ed-accent: #a3743a;
+  --ed-accent-soft: #f4e8d6;
+  --ed-thumb: #c9bfae;
+  display: block;
+  min-height: 100vh;
+  background: var(--ed-bg);
+  color: var(--ed-text);
+  font-family: var(--ff-beVietnamPro);
+}
+
+.ed {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 28px 20px 64px;
+}
+
+/* ── head ───────────────────────────────────────────────────────────── */
+.ed__head {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.ed__back {
+  justify-self: start;
+  font-size: 13px;
+  color: var(--ed-muted);
+  text-decoration: none;
+}
+.ed__back:hover {
+  color: var(--ed-accent);
+}
+.ed__title {
+  margin: 0;
+  font-family: var(--ff-playfair);
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 600;
+}
+.ed__badge {
+  vertical-align: middle;
+  margin-left: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--ed-accent-soft);
+  color: var(--ed-accent);
+  font-family: var(--ff-beVietnamPro);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ed__intro {
+  margin: 0;
+  max-width: 72ch;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ed-muted);
+}
+.ed__lang-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: 13px;
+  color: var(--ed-muted);
+}
+app-language-toggle.ed__lang {
+  position: static;
+}
+.ed__modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+.ed__mode {
+  display: grid;
+  gap: 2px;
+  min-width: 200px;
+  padding: 10px 16px;
+  border: 1.5px solid var(--ed-line);
+  border-radius: 12px;
+  background: var(--ed-panel);
+  color: var(--ed-text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.ed__mode small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ed-muted);
+}
+.ed__mode--on {
+  border-color: var(--ed-accent);
+  background: var(--ed-accent-soft);
+}
+
+/* ── two columns: stage (sticky) and options ────────────────────────── */
+.ed__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: 24px;
+  align-items: start;
+}
+.ed__stage {
+  position: sticky;
+  top: 12px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.ed__view {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.ed__stage-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.ed__stage-title {
+  margin: 0 auto 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ed-muted);
+}
+.ed__faces {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: #ebe5da;
+}
+.ed__face {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ed-text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.ed__face--on {
+  background: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+.ed__face:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ed__overview-btn,
+.ed__btn {
+  padding: 8px 14px;
+  border: 1px solid var(--ed-line);
+  border-radius: 999px;
+  background: var(--ed-panel);
+  color: var(--ed-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ed__overview-btn {
+  border-color: var(--ed-accent);
+  color: var(--ed-accent);
+}
+.ed__btn--danger {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+.ed__canvas {
+  /* Room left for the bar above and the sticker tray below. */
+  --stage-h: max(300px, calc(100vh - 400px));
+  padding: 28px;
+  border-radius: 16px;
+  transition: background 0.3s;
+}
+
+/* ── overview ───────────────────────────────────────────────────────── */
+.ed__overview {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 26px;
+}
+.ed__ov-piece {
+  margin: 0;
+  width: calc(var(--w) * 0.5px);
+  max-width: 100%;
+  display: grid;
+  gap: 8px;
+}
+.ed__ov-piece--online {
+  width: 220px;
+}
+.ed__ov-piece figcaption {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ed-muted);
+  mix-blend-mode: multiply;
+}
+.ed__ov-sticker {
+  position: absolute;
+}
+
+/* ── sticker tray ───────────────────────────────────────────────────── */
+.ed__tray {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--ed-line);
+  border-radius: 14px;
+  background: var(--ed-panel);
+}
+.ed__tray-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.ed__tray-title span {
+  font-weight: 400;
+  color: var(--ed-muted);
+}
+.ed__tray-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.ed__tray-item {
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 6px;
+  width: 78px;
+  height: 78px;
+  border: 1px solid var(--ed-line);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--ed-text);
+  font: inherit;
+  font-size: 11px;
+  cursor: grab;
+}
+.ed__tray-item:hover {
+  border-color: var(--ed-accent);
+}
+.ed__tray-art {
+  pointer-events: none;
+}
+.ed__sel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--ed-line);
+}
+.ed__range {
+  display: grid;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--ed-muted);
+}
+.ed__range input {
+  width: 130px;
+  accent-color: var(--ed-accent);
+}
+.ed__sel-colors {
+  display: flex;
+  gap: 6px;
+}
+.ed__swatch {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.ed__swatch--on {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: 2px;
+}
+
+/* ── options panel ──────────────────────────────────────────────────── */
+.ed__panel {
+  min-width: 0;
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--ed-line);
+  border-radius: 16px;
+  background: var(--ed-panel);
+}
+.ed__start {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+.ed__start .ed__field {
+  flex: 1 1 180px;
+}
+.ed__tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #efe9df;
+}
+.ed__tab {
+  flex: 1;
+  padding: 9px 6px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--ed-text);
+  font: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.ed__tab--on {
+  background: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+.ed__sec {
+  display: grid;
+  gap: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ed-line);
+}
+.ed__sec h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.ed__hint {
+  margin: -6px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ed-muted);
+}
+.ed__colors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+.ed__color {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+}
+.ed__color input {
+  width: 34px;
+  height: 34px;
+  padding: 2px;
+  border: 1px solid var(--ed-line);
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+}
+.ed__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ed-accent);
+  font: inherit;
+  font-size: 12.5px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.ed__check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.ed__check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ed-accent);
+}
+.ed__palettes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+  gap: 6px;
+  max-height: 156px;
+  overflow-y: auto;
+  padding: 2px;
+}
+.ed__palette {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  height: 30px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 7px;
+  cursor: pointer;
+}
+.ed__palette--on {
+  outline: 2px solid var(--ed-accent);
+  outline-offset: 2px;
+}
+.ed__panel > *,
+.ed__sec > * {
+  min-width: 0;
+}
+.ed__fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+}
+.ed__field {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ed-muted);
+}
+.ed__field--wide {
+  grid-column: 1 / -1;
+}
+.ed__field :is(input, select) {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 1px solid var(--ed-line);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ed-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* ── phones and narrow windows: the piece on top, options below ─────── */
+/* One column: the piece stays pinned on top while the options scroll by. */
+@media (max-width: 980px) {
+  .ed__body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+  .ed__stage {
+    display: contents;
+  }
+  .ed__view {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    gap: 8px;
+    margin: 0 -20px;
+    padding: 8px 20px 10px;
+    background: var(--ed-bg);
+    box-shadow: 0 6px 10px -8px rgba(0, 0, 0, 0.25);
+  }
+  /* The overview is long: it scrolls with the page. */
+  .ed__view--overview {
+    position: static;
+    box-shadow: none;
+  }
+  .ed__canvas {
+    --stage-h: 30vh;
+    padding: 10px;
+    border-radius: 12px;
+  }
+  .ed__stage-title {
+    font-size: 11.5px;
+  }
+  .ed__face,
+  .ed__overview-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+@media (max-width: 560px) {
+  .ed {
+    padding: 20px 14px 48px;
+  }
+  .ed__view {
+    margin: 0 -14px;
+    padding: 6px 14px 8px;
+  }
+  .ed__mode {
+    min-width: 0;
+    flex: 1;
+  }
+  .ed__fields {
+    grid-template-columns: 1fr;
+  }
+}

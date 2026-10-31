@@ -1,0 +1,36 @@
+<div class="stage" [style.width]="width">
+  <app-scene-frame [w]="piece.w" [h]="piece.h">
+    <app-paper-art class="stage__art" [design]="design" [copy]="copy" [piece]="piece" />
+    <div
+      #layer
+      class="stage__layer"
+      [class.stage__layer--edit]="editable && face"
+      [style.width.px]="piece.w"
+      [style.height.px]="piece.h"
+      (dragover)="onDragOver($event)"
+      (drop)="onDrop($event)"
+      (pointerdown)="onLayerDown($event)"
+    >
+      @for (s of faceStickers; track s.id) {
+        <div
+          class="stage__sticker"
+          [class.stage__sticker--on]="editable && s.id === selectedId"
+          [style.left.%]="s.x * 100"
+          [style.top.%]="s.y * 100"
+          [style.transform]="'translate(-50%, -50%) rotate(' + s.rotate + 'deg)'"
+          [attr.tabindex]="editable ? 0 : null"
+          [attr.role]="editable ? 'button' : null"
+          [attr.aria-label]="editable ? 'Hình dán (kéo để di chuyển, phím mũi tên để chỉnh, Delete để xóa)' : null"
+          (pointerdown)="onGrab($event, s)"
+          (pointermove)="onDrag($event)"
+          (pointerup)="onRelease($event)"
+          (pointercancel)="onRelease($event)"
+          (focus)="editable && select.emit(s.id)"
+          (keydown)="editable && onKey($event, s)"
+        >
+          <app-editor-sticker [kind]="s.kind" [palette]="design.palette" [color]="s.color" [size]="s.size" />
+        </div>
+      }
+    </div>
+  </app-scene-frame>
+</div>

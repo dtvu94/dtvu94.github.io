@@ -10,6 +10,9 @@ export interface WeddingUiStrings {
   backHome: string;
   backToGallery: string;
   printLabel: string;
+  /** Link to the design editor (gallery) and to it from one design (detail page). */
+  editorLink: string;
+  customizeLabel: string;
   detailHint: string;
   langGroupLabel: string;
   /** Filter row headings and the empty-result message. */
@@ -106,6 +109,8 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     backHome: '← Về trang chủ',
     backToGallery: '← Tất cả mẫu thiệp',
     printLabel: '🖨️ In thử mẫu này',
+    editorLink: '✏️ Tự thiết kế thiệp (thử nghiệm)',
+    customizeLabel: '✏️ Tùy chỉnh mẫu này',
     detailHint: 'Nếu em ưng mẫu này, gửi anh đường link của trang này nhé 💌',
     langGroupLabel: 'Ngôn ngữ',
     formRowLabel: 'Kiểu thiệp',
@@ -173,6 +178,8 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     backHome: '← Back to home',
     backToGallery: '← All designs',
     printLabel: '🖨️ Print this design',
+    editorLink: '✏️ Design your own (beta)',
+    customizeLabel: '✏️ Customize this design',
     detailHint: 'If this is the one, send me the link to this page 💌',
     langGroupLabel: 'Language',
     formRowLabel: 'Format',
@@ -239,6 +246,8 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     backHome: '← กลับหน้าหลัก',
     backToGallery: '← การ์ดทั้งหมด',
     printLabel: '🖨️ พิมพ์การ์ดนี้',
+    editorLink: '✏️ ออกแบบการ์ดเอง (ทดลอง)',
+    customizeLabel: '✏️ ปรับแต่งแบบนี้',
     detailHint: 'ถ้าชอบแบบนี้ ส่งลิงก์หน้านี้มาให้เรานะ 💌',
     langGroupLabel: 'ภาษา',
     formRowLabel: 'รูปแบบ',

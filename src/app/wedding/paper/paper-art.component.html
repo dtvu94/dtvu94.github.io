@@ -4,14 +4,14 @@
       <app-envelope [design]="design" [copy]="copy" layer="front" />
     }
     @case ('envelopeBack') {
-      <div class="pa__stack">
+      <div class="pa__stack" [style.width.px]="envW" [style.height.px]="envH">
         <app-envelope [design]="design" [copy]="copy" layer="back" />
         <app-envelope [design]="design" [copy]="copy" layer="pocket" />
         <app-envelope [design]="design" [copy]="copy" layer="flap" />
       </div>
     }
     @case ('envelopeOpen') {
-      <div class="pa__stack">
+      <div class="pa__stack" [style.width.px]="envW" [style.height.px]="envH">
         <app-envelope [design]="design" [copy]="copy" layer="flap" [open]="true" />
         <app-envelope [design]="design" [copy]="copy" layer="back" />
         <app-envelope [design]="design" [copy]="copy" layer="pocket" />

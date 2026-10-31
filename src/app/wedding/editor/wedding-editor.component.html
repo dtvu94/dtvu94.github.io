@@ -1,0 +1,331 @@
+@let s = state();
+@let d = design();
+<main class="ed" [attr.lang]="lang()">
+  <header class="ed__head">
+    <a class="ed__back" routerLink="/wedding">← Bộ sưu tập mẫu</a>
+    <h1 class="ed__title">Tự thiết kế thiệp <span class="ed__badge">Thử nghiệm</span></h1>
+    <p class="ed__intro">
+      Chọn loại thiệp, rồi từng phần — bao thư, thiệp mời, thiệp đường đi — và chỉnh kiểu dáng, màu, trang trí, chữ. Kéo hình dán
+      vào thiệp để trang trí thêm. Mọi thay đổi tự lưu trên trình duyệt này.
+    </p>
+    <div class="ed__lang-row">
+      <span>Ngôn ngữ trên thiệp</span>
+      <!-- In the page flow here, not pinned over the pieces like on the other pages. -->
+      <app-language-toggle class="ed__lang" />
+    </div>
+    <div class="ed__modes" role="group" aria-label="Loại thiệp">
+      <button type="button" class="ed__mode" [class.ed__mode--on]="s.mode === 'paper'" [attr.aria-pressed]="s.mode === 'paper'" (click)="setMode('paper')">
+        Thiệp giấy
+        <small>Bao thư · thiệp mời · thiệp đường đi</small>
+      </button>
+      <button type="button" class="ed__mode" [class.ed__mode--on]="s.mode === 'online'" [attr.aria-pressed]="s.mode === 'online'" (click)="setMode('online')">
+        Thiệp online
+        <small>Thiệp mời · đường đi</small>
+      </button>
+    </div>
+  </header>
+
+  <div class="ed__body">
+    <!-- ── what is being edited ───────────────────────────────────────── -->
+    <section class="ed__stage" aria-label="Xem trước">
+      <div class="ed__view" [class.ed__view--overview]="s.overview">
+      <div class="ed__stage-bar">
+        <p class="ed__stage-title">{{ s.overview ? 'Xem tổng quát' : stage().title }}</p>
+        @if (!s.overview && s.tab === 'envelope' && s.mode === 'paper') {
+          <div class="ed__faces" role="group" aria-label="Mặt bao thư">
+            <button type="button" class="ed__face" [class.ed__face--on]="stage().piece.kind === 'envelopeFront'" (click)="setEnvelopeFace('envelopeFront')">Mặt trước</button>
+            <button type="button" class="ed__face" [class.ed__face--on]="stage().piece.kind === 'envelopeBack'" (click)="setEnvelopeFace('envelopeBack')">Mặt sau</button>
+            <button
+              type="button"
+              class="ed__face"
+              [class.ed__face--on]="stage().piece.kind === 'envelopeOpen'"
+              [disabled]="s.envelope.liner === 'none'"
+              [attr.title]="s.envelope.liner === 'none' ? 'Chọn giấy lót để xem bên trong' : null"
+              (click)="setEnvelopeFace('envelopeOpen')"
+            >
+              Bên trong
+            </button>
+          </div>
+        }
+        <button type="button" class="ed__overview-btn" [attr.aria-pressed]="s.overview" (click)="toggleOverview()">
+          {{ s.overview ? 'Quay lại chỉnh sửa' : 'Xem tổng quát' }}
+        </button>
+      </div>
+
+      <div class="ed__canvas" [style.background]="s.palette.bg">
+        @if (s.overview) {
+          <div class="ed__overview">
+            @if (s.mode === 'online') {
+              <figure class="ed__ov-piece ed__ov-piece--online">
+                <app-online-card [design]="d" [copy]="copy()" [lang]="lang()" [ui]="ui()">
+                  @for (st of s.stickers; track st.id) {
+                    @if (st.face === 'card') {
+                      <div class="ed__ov-sticker" [style.left.%]="st.x * 100" [style.top.%]="st.y * 100" [style.transform]="'translate(-50%, -50%) rotate(' + st.rotate + 'deg)'">
+                        <app-editor-sticker [kind]="st.kind" [palette]="d.palette" [color]="st.color" [size]="st.size" />
+                      </div>
+                    }
+                  }
+                </app-online-card>
+                <figcaption>Thiệp mời online</figcaption>
+              </figure>
+            }
+            @for (p of overviewPieces(); track p.kind) {
+              <figure class="ed__ov-piece" [style.--w]="p.w">
+                <app-editor-stage [design]="d" [copy]="copy()" [piece]="p" [face]="stickerFace(p.kind)" [stickers]="s.stickers" />
+                <figcaption>{{ pieceTitle(p.kind) }}</figcaption>
+              </figure>
+            }
+          </div>
+        } @else {
+          <app-editor-stage
+            [design]="d"
+            [copy]="copy()"
+            [piece]="stage().piece"
+            [face]="stage().face"
+            [stickers]="s.stickers"
+            [selectedId]="selectedId()"
+            [editable]="true"
+            [fitHeight]="true"
+            (add)="addSticker($event)"
+            (move)="moveSticker($event)"
+            (select)="selectedId.set($event)"
+            (remove)="removeSticker($event)"
+          />
+        }
+      </div>
+      </div>
+
+      <!-- ── stickers ───────────────────────────────────────────────────── -->
+      @if (!s.overview && stage().face) {
+        <div class="ed__tray">
+          <p class="ed__tray-title">
+            Hình dán <span>kéo vào thiệp, hoặc bấm để thêm vào giữa · {{ faceCount() }} trên mặt này</span>
+          </p>
+          <div class="ed__tray-list">
+            @for (m of opt.STICKERS; track m.kind) {
+              <button
+                type="button"
+                class="ed__tray-item"
+                draggable="true"
+                [attr.aria-label]="'Thêm ' + m.label"
+                (dragstart)="onTrayDragStart($event, m.kind)"
+                (click)="addSticker({ kind: m.kind, x: 0.5, y: 0.5 })"
+              >
+                <app-editor-sticker class="ed__tray-art" [kind]="m.kind" [palette]="s.palette" [color]="'accent'" [size]="m.kind === 'hairlineFlourish' ? 60 : 34" />
+                <span>{{ m.label }}</span>
+              </button>
+            }
+          </div>
+          @if (selected(); as st) {
+            <div class="ed__sel" aria-label="Hình dán đang chọn">
+              <label class="ed__range">
+                Kích thước
+                <input type="range" min="16" max="320" [value]="st.size" (input)="updateSticker(st.id, { size: +valueOf($event) })" />
+              </label>
+              <label class="ed__range">
+                Xoay
+                <input type="range" min="-180" max="180" [value]="st.rotate" (input)="updateSticker(st.id, { rotate: +valueOf($event) })" />
+              </label>
+              <div class="ed__sel-colors" role="group" aria-label="Màu hình dán">
+                @for (col of opt.STICKER_COLORS; track col.value) {
+                  <button
+                    type="button"
+                    class="ed__swatch"
+                    [class.ed__swatch--on]="st.color === col.value"
+                    [style.background]="opt.stickerInk(col.value, s.palette)"
+                    [attr.aria-label]="col.label"
+                    [attr.title]="col.label"
+                    (click)="setStickerColor(col.value)"
+                  ></button>
+                }
+              </div>
+              <button type="button" class="ed__btn" (click)="duplicateSticker()">Nhân bản</button>
+              <button type="button" class="ed__btn ed__btn--danger" (click)="removeSticker()">Xóa</button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- ── options ─────────────────────────────────────────────────────── -->
+    <aside class="ed__panel">
+      <div class="ed__start">
+        <label class="ed__field">
+          <span>Bắt đầu từ mẫu có sẵn</span>
+          <select (change)="startFromId(valueOf($event))">
+            @for (m of designs; track m.id) {
+              <option [value]="m.id" [selected]="m.id === s.from">{{ m.nameVi }}</option>
+            }
+          </select>
+        </label>
+        <button type="button" class="ed__btn" [class.ed__btn--danger]="confirmReset()" (click)="reset()">
+          {{ confirmReset() ? 'Bấm lần nữa để xóa hết' : 'Làm lại từ đầu' }}
+        </button>
+      </div>
+
+      <nav class="ed__tabs" role="tablist" aria-label="Phần thiệp">
+        @for (t of tabs(); track t.value) {
+          <button type="button" role="tab" class="ed__tab" [class.ed__tab--on]="s.tab === t.value" [attr.aria-selected]="s.tab === t.value" (click)="setTab(t.value)">
+            {{ t.label }}
+          </button>
+        }
+      </nav>
+
+      @switch (s.tab) {
+        @case ('envelope') {
+          <!-- Envelope: shape, paper, front, back and inside. -->
+          <section class="ed__sec">
+            <h2>Kiểu dáng</h2>
+            <app-editor-choices legend="Khổ bao thư" [choices]="opt.ENVELOPE_SIZES" [value]="s.envelope.size" (pick)="setEnvelope('size', $event)" />
+            <app-editor-choices legend="Nắp" [choices]="opt.FLAPS" [value]="s.envelope.flap" (pick)="setEnvelope('flap', $event)" />
+          </section>
+          <section class="ed__sec">
+            <h2>Màu & giấy</h2>
+            <div class="ed__colors">
+              <label class="ed__color"><input type="color" [value]="s.envelope.paper" (input)="setEnvelope('paper', valueOf($event))" />Giấy</label>
+              <label class="ed__color"><input type="color" [value]="s.envelope.ink" (input)="setEnvelope('ink', valueOf($event))" />Mực in</label>
+              <label class="ed__color">
+                <input type="color" [value]="s.envelope.edge || s.envelope.ink" (input)="setEnvelope('edge', valueOf($event))" />Viền
+              </label>
+              @if (s.envelope.edge) {
+                <button type="button" class="ed__link" (click)="setEnvelope('edge', '')">Bỏ viền</button>
+              }
+            </div>
+            <label class="ed__check"><input type="checkbox" [checked]="s.envelope.foil" (change)="setEnvelope('foil', checkedOf($event))" />In nhũ kim (ánh kim loại)</label>
+            <app-editor-choices legend="Chất giấy" [choices]="opt.STOCKS" [value]="s.envelope.stock" (pick)="setEnvelope('stock', $event)" />
+          </section>
+          <section class="ed__sec">
+            <h2>Mặt trước</h2>
+            <app-editor-choices legend="Chữ / logo" [choices]="opt.LABELS" [value]="s.envelope.label" (pick)="setEnvelope('label', $event)" />
+            <app-editor-choices legend="Hoa hồng baby hai bên" [choices]="opt.ROSES" [value]="s.envelope.roses" (pick)="setEnvelope('roses', $event)" />
+            <app-editor-choices legend="Họa tiết in" [choices]="opt.ARTS" [value]="s.envelope.art" (pick)="setEnvelope('art', $event)" />
+          </section>
+          <section class="ed__sec">
+            <h2>Mặt sau & bên trong</h2>
+            <app-editor-choices legend="Niêm phong" [choices]="opt.SEALS" [value]="s.envelope.seal" (pick)="setEnvelope('seal', $event)" />
+            <label class="ed__color ed__color--inline"><input type="color" [value]="s.envelope.sealColor" (input)="setEnvelope('sealColor', valueOf($event))" />Màu sáp / tem</label>
+            <app-editor-choices legend="Giấy lót bên trong" [choices]="opt.LINERS" [value]="s.envelope.liner" (pick)="setEnvelope('liner', $event)" />
+            @if (s.envelope.liner !== 'none') {
+              <div class="ed__colors">
+                <label class="ed__color"><input type="color" [value]="s.envelope.linerBg" (input)="setEnvelope('linerBg', valueOf($event))" />Nền lót</label>
+                <label class="ed__color"><input type="color" [value]="s.envelope.linerInk" (input)="setEnvelope('linerInk', valueOf($event))" />Hoa văn lót</label>
+              </div>
+            }
+          </section>
+        }
+
+        @case ('card') {
+          <!-- Invitation card: layout, shape, colours, type, decoration, paper. -->
+          <section class="ed__sec">
+            <h2>Bố cục & hình dạng</h2>
+            <app-editor-choices legend="Bố cục" [choices]="opt.LAYOUTS" [value]="s.card.layout" (pick)="setCard('layout', $event)" />
+            <app-editor-choices legend="Hình dạng (cắt bế)" [choices]="opt.CARD_SHAPES" [value]="s.card.shape" (pick)="setCard('shape', $event)" />
+          </section>
+          <section class="ed__sec">
+            <h2>Màu sắc</h2>
+            <p class="ed__hint">Màu dùng chung cho thiệp mời và thiệp đường đi.</p>
+            <div class="ed__palettes" role="group" aria-label="Bảng màu có sẵn">
+              @for (p of opt.PALETTES; track p.label) {
+                <button type="button" class="ed__palette" [class.ed__palette--on]="isPalette(p.palette)" [attr.title]="p.label" [attr.aria-label]="'Bảng màu ' + p.label" (click)="applyPalette(p.palette)">
+                  <span [style.background]="p.palette.surface"></span>
+                  <span [style.background]="p.palette.primary"></span>
+                  <span [style.background]="p.palette.accent"></span>
+                </button>
+              }
+            </div>
+            <div class="ed__colors">
+              @for (slot of opt.PALETTE_SLOTS; track slot.value) {
+                <label class="ed__color"><input type="color" [value]="s.palette[slot.value]" (input)="setPaletteColor(slot.value, valueOf($event))" />{{ slot.label }}</label>
+              }
+            </div>
+            <label class="ed__check">
+              <input type="checkbox" [checked]="s.card.accentStyle === 'gold'" (change)="setCard('accentStyle', checkedOf($event) ? 'gold' : 'flat')" />Họa tiết ánh vàng kim
+            </label>
+          </section>
+          <section class="ed__sec">
+            <h2>Chữ</h2>
+            <p class="ed__hint">Tên, “Thiệp Cưới” và các câu mời luôn viết tay (Alex Brush, tiếng Thái dùng Charm).</p>
+            <div class="ed__fields">
+              <label class="ed__field">
+                <span>Font tiêu đề & số</span>
+                <select (change)="setFont('display', valueOf($event))">
+                  @for (f of opt.FONTS; track f.value) {
+                    <option [value]="f.value" [selected]="f.value === s.fonts.display">{{ f.label }}</option>
+                  }
+                </select>
+              </label>
+              <label class="ed__field">
+                <span>Font nội dung</span>
+                <select (change)="setFont('body', valueOf($event))">
+                  @for (f of opt.FONTS; track f.value) {
+                    <option [value]="f.value" [selected]="f.value === s.fonts.body">{{ f.label }}</option>
+                  }
+                </select>
+              </label>
+            </div>
+          </section>
+          <section class="ed__sec">
+            <h2>Trang trí</h2>
+            <app-editor-choices legend="Họa tiết chính" [choices]="opt.ORNAMENTS" [value]="s.card.ornament" (pick)="setCard('ornament', $event)" />
+            <app-editor-choices legend="Họa tiết phụ" [choices]="opt.ORNAMENTS" [value]="s.card.ornamentSecondary" (pick)="setCard('ornamentSecondary', $event)" />
+            <app-editor-choices legend="Dập nổi / ép kim" [choices]="opt.RELIEFS" [value]="s.card.relief" (pick)="setCard('relief', $event)" />
+            @if (s.card.relief !== 'off') {
+              <app-editor-choices legend="Kiểu dập" [choices]="opt.RELIEF_MODES" [value]="s.card.reliefMode" (pick)="setCard('reliefMode', $event)" />
+              <app-editor-choices legend="Lớp phủ" [choices]="opt.RELIEF_FINISHES" [value]="s.card.reliefFinish" (pick)="setCard('reliefFinish', $event)" />
+            }
+          </section>
+          <section class="ed__sec">
+            <h2>Giấy & kỹ thuật in</h2>
+            <app-editor-choices legend="Chất giấy" [choices]="opt.STOCKS" [value]="s.card.stock" (pick)="setCard('stock', $event)" />
+            <app-editor-choices legend="Kỹ thuật in chữ" [choices]="opt.FINISHES" [value]="s.card.finish" (pick)="setCard('finish', $event)" />
+          </section>
+        }
+
+        @case ('directions') {
+          <section class="ed__sec">
+            <h2>Thiệp đường đi</h2>
+            <p class="ed__hint">Dùng màu và chất giấy của thiệp mời. Bản đồ vẽ tay và mã QR mở Google Maps.</p>
+            <app-editor-choices legend="Hình dạng" [choices]="opt.DIRECTION_SHAPES" [value]="s.directions.shape" (pick)="setDirections('shape', $event)" />
+            <app-editor-choices legend="Khung" [choices]="opt.DIRECTION_FRAMES" [value]="s.directions.frame" (pick)="setDirections('frame', $event)" />
+            <app-editor-choices legend="Bố cục" [choices]="opt.MAP_SIDES" [value]="s.directions.mapSide" (pick)="setDirections('mapSide', $event)" />
+          </section>
+        }
+
+        @case ('content') {
+          <!-- The wedding facts, typed once. -->
+          <section class="ed__sec">
+            <h2>Cô dâu & chú rể</h2>
+            <div class="ed__fields">
+              <label class="ed__field"><span>Tên chú rể</span><input [value]="s.content.groom" (input)="setContent('groom', valueOf($event))" /></label>
+              <label class="ed__field"><span>Tên cô dâu</span><input [value]="s.content.bride" (input)="setContent('bride', valueOf($event))" /></label>
+            </div>
+            <p class="ed__hint">Logo V T lấy chữ cái đầu của tên gọi (chữ cuối của tên).</p>
+          </section>
+          <section class="ed__sec">
+            <h2>Cha mẹ hai bên</h2>
+            <div class="ed__fields">
+              <label class="ed__field"><span>Ba chú rể</span><input [value]="s.content.groomFather" (input)="setContent('groomFather', valueOf($event))" /></label>
+              <label class="ed__field"><span>Mẹ chú rể</span><input [value]="s.content.groomMother" (input)="setContent('groomMother', valueOf($event))" /></label>
+              <label class="ed__field"><span>Ba cô dâu</span><input [value]="s.content.brideFather" (input)="setContent('brideFather', valueOf($event))" /></label>
+              <label class="ed__field"><span>Mẹ cô dâu</span><input [value]="s.content.brideMother" (input)="setContent('brideMother', valueOf($event))" /></label>
+            </div>
+          </section>
+          <section class="ed__sec">
+            <h2>Thời gian & địa điểm</h2>
+            <div class="ed__fields">
+              <label class="ed__field"><span>Ngày</span><input type="date" [value]="s.content.date" (input)="setContent('date', valueOf($event))" /></label>
+              <label class="ed__field"><span>Giờ</span><input type="time" [value]="s.content.time" (input)="setContent('time', valueOf($event))" /></label>
+              <label class="ed__field"><span>Sảnh</span><input [value]="s.content.hall" (input)="setContent('hall', valueOf($event))" /></label>
+              <label class="ed__field"><span>Tên ngắn nhà hàng</span><input [value]="s.content.venueShort" (input)="setContent('venueShort', valueOf($event))" /></label>
+              <label class="ed__field ed__field--wide"><span>Tên đầy đủ</span><input [value]="s.content.venueName" (input)="setContent('venueName', valueOf($event))" /></label>
+              <label class="ed__field ed__field--wide"><span>Địa chỉ</span><input [value]="s.content.address" (input)="setContent('address', valueOf($event))" /></label>
+            </div>
+            <p class="ed__hint">
+              Ngày giờ tự viết ra tiếng Anh và tiếng Thái (đổi ngôn ngữ thiệp ở đầu trang). Tên nhà hàng và địa chỉ mới giữ nguyên chữ đã gõ ở mọi ngôn ngữ; bản đồ vẽ tay vẫn là Riverside Palace.
+            </p>
+          </section>
+        }
+      }
+    </aside>
+  </div>
+</main>

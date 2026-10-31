@@ -1,5 +1,6 @@
 import { Component, HostBinding, Input } from '@angular/core';
 import { InvitationCopy, InvitationDesign } from '../data/wedding.types';
+import { envelopeSize } from '../geometry/shapes';
 import { PocketInsert, pocketInsert } from '../pocket/pocket.component';
 import { PaperPiece } from './paper-suite.component';
 
@@ -27,6 +28,15 @@ export class PaperArtComponent {
   @HostBinding('style.height.px')
   get height(): number {
     return this.piece.h;
+  }
+
+  /** The envelope body, for the stacked back and open views. */
+  get envW(): number {
+    return envelopeSize(this.design.envelope).w;
+  }
+
+  get envH(): number {
+    return envelopeSize(this.design.envelope).h;
   }
 
   get insert(): PocketInsert {

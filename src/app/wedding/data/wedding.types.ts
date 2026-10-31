@@ -234,8 +234,38 @@ export type EnvelopePrint =
   /** A lotus over the names. */
   | 'lotus';
 
+/** Envelope proportions: 470 × 330, 400 × 400 or a long 500 × 260 (see shapes.ts). */
+export type EnvelopeSize = 'standard' | 'square' | 'long';
+
+/** Decoration printed on the envelope front, apart from any names or logo. */
+export type EnvelopeArt =
+  | 'none'
+  /** Fern spray in the lower right corner. */
+  | 'fern'
+  /** Double-line frame with cloud-curl corners and the title inside. */
+  | 'frame'
+  /** Floral sprays in the two lower corners. */
+  | 'florals'
+  /** A lotus bloom with its pads. */
+  | 'lotus';
+
+/** What the envelope front says: names, logo, both, or a script title. */
+export type EnvelopeLabel =
+  | 'none'
+  | 'names'
+  /** "Tuấn Vũ ♡ Nguyễn Thảo" with the date beneath. */
+  | 'namesHeart'
+  /** The couple's V T logo. */
+  | 'logo'
+  /** The logo above the names. */
+  | 'logoNames'
+  /** "Thiệp Cưới" in script, set at a slant (kraft style). */
+  | 'title';
+
 export interface EnvelopeSpec {
   flap: EnvelopeFlap;
+  /** Defaults to 'standard'. */
+  size?: EnvelopeSize;
   paper: string;
   /** Translucent vellum (giấy can): the card shows through. */
   vellum?: boolean;
@@ -254,6 +284,12 @@ export interface EnvelopeSpec {
   foil?: boolean;
   /** Sprays of baby roses (hoa hồng baby) on both sides of the front. */
   roses?: EnvelopeRoses;
+  /**
+   * Front decoration and wording chosen separately (the editor's pieces);
+   * when unset, both follow `print`.
+   */
+  art?: EnvelopeArt;
+  label?: EnvelopeLabel;
 }
 
 /** Baby-rose sprays in the envelope's foil ink, or in their own colours. */
@@ -357,6 +393,19 @@ export interface PopupSpec {
   scene: PopupScene;
 }
 
+/** Silhouette of the directions card. */
+export type DirectionsShape = 'rect' | 'rounded' | 'ticket' | 'scallop' | 'deckle';
+
+/** The printed directions card's own look; every field is optional. */
+export interface DirectionsSpec {
+  /** Defaults to 'rect'. */
+  shape?: DirectionsShape;
+  /** Printed frame: a fine line (default), a double line, corner flowers or none. */
+  frame?: 'line' | 'double' | 'corners' | 'none';
+  /** Which side the sketch map sits on; defaults to 'left'. */
+  mapSide?: 'left' | 'right';
+}
+
 export interface PassportSpec {
   /** Booklet cover colour. */
   cover: string;
@@ -401,6 +450,8 @@ export interface InvitationDesign {
   popup?: PopupSpec;
   /** Required when form === 'passport'. */
   passport?: PassportSpec;
+  /** Look of the printed directions card; defaults to a plain framed card. */
+  directions?: DirectionsSpec;
 }
 
 // ── wedding facts & copy ────────────────────────────────────────────────────

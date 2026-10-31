@@ -39,6 +39,21 @@
   line-height: 1.6;
   color: #5a544a;
 }
+.gallery__editor {
+  justify-self: center;
+  margin-top: 6px;
+  padding: 9px 18px;
+  border: 1px solid #b69256;
+  border-radius: 999px;
+  color: #8a6a32;
+  font-family: var(--ff-beVietnamPro);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.gallery__editor:hover {
+  background: #f1e6d3;
+}
 .gallery__meta {
   margin: 4px auto 0;
   font-family: var(--ff-beVietnamPro);

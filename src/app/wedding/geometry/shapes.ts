@@ -1,4 +1,4 @@
-import { CardShape, EnvelopeFlap, PocketWindow } from '../data/wedding.types';
+import { CardShape, DirectionsShape, EnvelopeFlap, EnvelopeSize, EnvelopeSpec, PocketWindow } from '../data/wedding.types';
 import {
   Point,
   circlePath,
@@ -37,9 +37,9 @@ function rectCorners(d: number, w = CARD_W, h = CARD_H): Point[] {
   ];
 }
 
-function scallopRect(pitch: number, roundness = 1): string {
+function scallopRect(pitch: number, roundness = 1, w = CARD_W, h = CARD_H): string {
   const depth = scallopDepth(pitch, roundness);
-  return scallopLoop(subdivide(rectCorners(depth), pitch), { roundness });
+  return scallopLoop(subdivide(rectCorners(depth, w, h), pitch), { roundness });
 }
 
 function ellipsePoints(c: Point, rx: number, ry: number, pitch: number): Point[] {
@@ -53,14 +53,14 @@ function ellipsePoints(c: Point, rx: number, ry: number, pitch: number): Point[]
   });
 }
 
-function deckle(seed: number): string {
+function deckle(seed: number, w = CARD_W, h = CARD_H): string {
   const rand = seededRandom(seed);
   const pts: Point[] = [];
   const jag = () => 1 + rand() * 4.5;
-  for (let x = 0; x < CARD_W; x += 5) pts.push({ x, y: jag() });
-  for (let y = 0; y < CARD_H; y += 5) pts.push({ x: CARD_W - jag(), y });
-  for (let x = CARD_W; x > 0; x -= 5) pts.push({ x, y: CARD_H - jag() });
-  for (let y = CARD_H; y > 0; y -= 5) pts.push({ x: jag(), y });
+  for (let x = 0; x < w; x += 5) pts.push({ x, y: jag() });
+  for (let y = 0; y < h; y += 5) pts.push({ x: w - jag(), y });
+  for (let x = w; x > 0; x -= 5) pts.push({ x, y: h - jag() });
+  for (let y = h; y > 0; y -= 5) pts.push({ x: jag(), y });
   return `M${pts.map(pt).join('L')}Z`;
 }
 
@@ -74,9 +74,7 @@ function stepped(step: number): string {
   );
 }
 
-function ticket(r: number): string {
-  const w = CARD_W;
-  const h = CARD_H;
+function ticket(r: number, w = CARD_W, h = CARD_H): string {
   const a = `A${r} ${r} 0 0 0`;
   return `M${r} 0H${w - r}${a} ${w} ${r}V${h - r}${a} ${w - r} ${h}H${r}${a} 0 ${h - r}V${r}${a} ${r} 0Z`;
 }
@@ -144,6 +142,17 @@ export function clipPathCss(shape: CardShape): string {
 /** Envelope body in design pixels (C6-like proportions). */
 export const ENV_W = 470;
 export const ENV_H = 330;
+
+/** Envelope bodies the editor offers: C6-like, square, and a long DL-like one. */
+export const ENVELOPE_SIZES: Record<EnvelopeSize, { w: number; h: number }> = {
+  standard: { w: ENV_W, h: ENV_H },
+  square: { w: 400, h: 400 },
+  long: { w: 500, h: 260 },
+};
+
+export function envelopeSize(spec: Pick<EnvelopeSpec, 'size'>): { w: number; h: number } {
+  return ENVELOPE_SIZES[spec.size ?? 'standard'];
+}
 
 export interface EnvelopeGeometry {
   /** Outer face of the closed flap, hanging from the top edge (y = 0). */
@@ -301,4 +310,22 @@ export function lowerPocketPath(top: number): string {
     `C${fmt(w * 0.7)} ${fmt(top - 8)} ${fmt(w * 0.84)} ${fmt(top + 34)} ${fmt(w)} ${fmt(top + 8)}` +
     `V${fmt(h)}H0Z`
   );
+}
+
+// ── directions card ─────────────────────────────────────────────────────────
+
+/** Directions card silhouettes at their own size (480 × 320 landscape). */
+export function directionsSilhouette(shape: DirectionsShape, w: number, h: number): Silhouette {
+  switch (shape) {
+    case 'rounded':
+      return { d: roundedRectPath(0, 0, w, h, 18), evenOdd: false, inset: NONE };
+    case 'ticket':
+      return { d: ticket(24, w, h), evenOdd: false, inset: { top: 4, side: 10, bottom: 4 } };
+    case 'scallop':
+      return { d: scallopRect(18, 1, w, h), evenOdd: false, inset: { top: 6, side: 6, bottom: 6 } };
+    case 'deckle':
+      return { d: deckle(41, w, h), evenOdd: false, inset: NONE };
+    default:
+      return { d: rectPath(0, 0, w, h), evenOdd: false, inset: NONE };
+  }
 }

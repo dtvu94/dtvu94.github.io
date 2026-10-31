@@ -1,4 +1,15 @@
-<article class="dc" [style.background-image]="texture">
+<article
+  class="dc dc--frame-{{ frame }}"
+  [class.dc--map-right]="spec.mapSide === 'right'"
+  [style.background-image]="texture"
+  [style.clip-path]="clip"
+  [style.padding]="padding"
+>
+  @if (frame === 'corners') {
+    @for (corner of ['tl', 'tr', 'br', 'bl']; track corner) {
+      <app-ornament class="dc__corner dc__corner--{{ corner }}" ornament="floralCorner" aria-hidden="true" />
+    }
+  }
   <!-- Labels are HTML over the SVG drawing: Chrome can keep SVG text at a
        stale scale inside a scaled frame (giant glyphs after navigation). -->
   <div class="dc__map" role="img" [attr.aria-label]="copy.mapCard.title">

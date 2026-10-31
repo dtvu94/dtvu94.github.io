@@ -18,13 +18,53 @@
   color: var(--inv-ink);
   font-family: var(--inv-font-body);
 }
-/* Fine printed frame, like the invitation's. */
+/* Fine printed frame, like the invitation's (or a double line, or none). */
 .dc::after {
   content: '';
   position: absolute;
   inset: 8px;
   border: 1px solid color-mix(in srgb, var(--inv-accent) 55%, transparent);
   pointer-events: none;
+}
+.dc--frame-double::after {
+  border: 3px double color-mix(in srgb, var(--inv-accent) 70%, transparent);
+}
+.dc--frame-none::after,
+.dc--frame-corners::after {
+  display: none;
+}
+.dc--map-right {
+  flex-direction: row-reverse;
+}
+.dc--map-right .dc__copy {
+  padding: 10px 0 0 6px;
+}
+/* Corner flowers, the invitation's floral corner turned to each corner. */
+.dc__corner {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  pointer-events: none;
+  opacity: 0.9;
+}
+.dc__corner--tl {
+  left: 4px;
+  top: 4px;
+}
+.dc__corner--tr {
+  right: 4px;
+  top: 4px;
+  transform: scaleX(-1);
+}
+.dc__corner--br {
+  right: 4px;
+  bottom: 4px;
+  transform: scale(-1, -1);
+}
+.dc__corner--bl {
+  left: 4px;
+  bottom: 4px;
+  transform: scaleY(-1);
 }
 .dc p {
   margin: 0;

@@ -1,5 +1,9 @@
 import { WeddingDetailComponent } from './detail/wedding-detail.component';
 import { DirectionsGuideComponent } from './directions-guide/directions-guide.component';
+import { EditorChoicesComponent } from './editor/editor-choices.component';
+import { EditorStageComponent } from './editor/editor-stage.component';
+import { EditorStickerComponent } from './editor/editor-sticker.component';
+import { WeddingEditorComponent } from './editor/wedding-editor.component';
 import { EnvelopeComponent } from './envelope/envelope.component';
 import { FoldedComponent } from './folded/folded.component';
 import { WeddingGalleryComponent } from './gallery/wedding-gallery.component';
@@ -49,9 +53,13 @@ export const SUITE_DECLARATIONS = [
   ZoomViewerComponent,
 ];
 
+/** The design editor (/wedding/editor) and its parts. */
+export const EDITOR_DECLARATIONS = [WeddingEditorComponent, EditorChoicesComponent, EditorStageComponent, EditorStickerComponent];
+
 /** Everything the lazy wedding feature declares. */
 export const WEDDING_DECLARATIONS = [
   ...SUITE_DECLARATIONS,
+  ...EDITOR_DECLARATIONS,
   WeddingGalleryComponent,
   WeddingDetailComponent,
   DirectionsGuideComponent,

@@ -80,6 +80,7 @@
 
 .env__names,
 .env__hn,
+.env__logo,
 .env__script,
 .env__frame-title,
 .env__guest {
@@ -115,6 +116,30 @@
 }
 .env__front--roses .env__hn-names {
   font-size: 24px;
+}
+/* With roses, the wording keeps between the sprays (two lines if need be). */
+.env__front--roses :is(.env__hn, .env__names) {
+  left: 104px;
+  right: 104px;
+}
+.env__front--roses .env__hn-names {
+  flex-wrap: wrap;
+}
+.env__front--roses .env__names {
+  white-space: normal;
+  text-wrap: balance;
+  font-size: 28px;
+}
+.env__logo {
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  text-align: center;
+  font-size: 54px;
+  line-height: 1;
+}
+.env__front--roses .env__logo {
+  font-size: 44px;
 }
 .env__hn-heart {
   flex: none;

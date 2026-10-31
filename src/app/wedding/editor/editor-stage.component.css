@@ -1,0 +1,33 @@
+:host {
+  display: block;
+}
+.stage {
+  margin: 0 auto;
+}
+.stage__art {
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.16)) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.14));
+}
+.stage__layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.stage__sticker {
+  position: absolute;
+  touch-action: none;
+}
+.stage__layer--edit .stage__sticker {
+  cursor: grab;
+}
+.stage__layer--edit .stage__sticker:active {
+  cursor: grabbing;
+}
+.stage__sticker:focus {
+  outline: none;
+}
+/* The selected sticker: a dashed box that reads on any paper. */
+.stage__sticker--on {
+  outline: 2px dashed #2f7cf6 !important;
+  outline-offset: 6px;
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.35);
+}

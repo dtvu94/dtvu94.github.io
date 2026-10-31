@@ -19,6 +19,8 @@ The site is published via the GitHub Actions workflow at `.github/workflows/stat
 
 ## Architecture
 
+The wedding design editor at `/wedding/editor` (`src/app/wedding/editor/`, experimental) builds a suite from separate pieces — envelope, invitation card, directions card, palette, fonts, wedding facts, stickers — and `toDesign()` in `editor-state.ts` turns them into an ordinary `InvitationDesign`, so the same renderers as the ready-made designs draw it. Its state lives only in localStorage (`wedding-editor-v1`). Optional `EnvelopeSpec.size/art/label` and `InvitationDesign.directions` exist for it; ready-made designs leave them unset and render as before.
+
 Angular 21 SPA using the new `@angular/build:application` builder (esbuild-based). Still uses the classic NgModule bootstrap (`AppModule` in `src/app/app.module.ts`), not standalone components — the v19 migration explicitly set `standalone: false` on `AppComponent` to preserve this. Currently a skeleton: empty `Routes` array in `app-routing.module.ts` and a single `AppComponent`. Component selector prefix is `app` (set in `angular.json`).
 
 ## Testing
