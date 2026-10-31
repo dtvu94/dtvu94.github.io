@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CalendarLinks, calendarLinks } from '../data/calendar';
 import { MAPS_LINKS } from '../data/directions';
 import { WeddingUiStrings } from '../data/ui-strings';
@@ -25,6 +25,9 @@ export class OnlineCardComponent {
   @Input({ required: true }) ui!: WeddingUiStrings;
   /** Guest's name from the link, or '' for a blank dotted line. */
   @Input() guest = '';
+  /** Whether a click on the card opens it in the zoom viewer (via `zoom`). */
+  @Input() zoomable = false;
+  @Output() readonly zoom = new EventEmitter<void>();
 
   readonly cardW = CARD_W;
   readonly cardH = CARD_H;
@@ -41,6 +44,12 @@ export class OnlineCardComponent {
       this.cache = { key, links: calendarLinks(WEDDING_CONFIG, this.lang, venue, details, page) };
     }
     return this.cache.links;
+  }
+
+  open(): void {
+    if (this.zoomable) {
+      this.zoom.emit();
+    }
   }
 
   private cache?: { key: string; links: CalendarLinks };

@@ -58,3 +58,36 @@
     }
   }
 }
+
+/* Round magnifier button laid over a printed piece or the online card
+   (detail page): opens the zoom viewer. */
+.zoom-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 50%;
+  background: #ffffff;
+  color: #4a4032;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: zoom-in;
+  transition: transform 0.15s ease;
+}
+.zoom-btn:hover,
+.zoom-btn:focus-visible {
+  transform: scale(1.08);
+}
+.zoom-btn:focus-visible {
+  outline: 2px solid #b69256;
+  outline-offset: 2px;
+}
+.zoom-btn svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}

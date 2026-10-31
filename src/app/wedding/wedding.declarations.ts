@@ -9,6 +9,7 @@ import { OnlineCardComponent } from './online/online-card.component';
 import { OrnamentComponent } from './ornaments/ornament.component';
 import { PanelComponent } from './panels/panel.component';
 import { DirectionsCardComponent } from './paper/directions-card.component';
+import { PaperArtComponent } from './paper/paper-art.component';
 import { PaperSuiteComponent } from './paper/paper-suite.component';
 import { PhotoComponent } from './panels/photo.component';
 import { PassportComponent } from './passport/passport.component';
@@ -18,6 +19,7 @@ import { ReliefFilterComponent } from './relief/relief-filter.component';
 import { ReliefComponent } from './relief/relief.component';
 import { SceneFrameComponent } from './suite/scene-frame.component';
 import { SuiteComponent } from './suite/suite.component';
+import { ZoomViewerComponent } from './zoom/zoom-viewer.component';
 
 /*
  * Declaration lists, kept apart from WeddingModule so specs can declare the
@@ -41,8 +43,10 @@ export const SUITE_DECLARATIONS = [
   SuiteComponent,
   SceneFrameComponent,
   DirectionsCardComponent,
+  PaperArtComponent,
   PaperSuiteComponent,
   OnlineCardComponent,
+  ZoomViewerComponent,
 ];
 
 /** Everything the lazy wedding feature declares. */

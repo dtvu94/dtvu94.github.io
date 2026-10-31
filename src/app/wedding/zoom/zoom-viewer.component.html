@@ -1,0 +1,48 @@
+<div #dialog class="zv" role="dialog" aria-modal="true" tabindex="-1" [attr.aria-label]="strings.dialog + ': ' + item.label">
+  <!-- The stage takes every gesture; the art is drawn at its design size and
+       placed with one transform. -->
+  <div #stage class="zv__stage">
+    <div #canvas class="zv__canvas" [style.width.px]="item.w" [style.height.px]="item.h">
+      <ng-container *ngTemplateOutlet="art; context: artContext" />
+    </div>
+  </div>
+
+  <header class="zv__top">
+    <p class="zv__title">
+      @if (items.length > 1) {
+        <span class="zv__count">{{ index + 1 }} / {{ items.length }}</span>
+      }
+      {{ item.label }}
+    </p>
+    <button type="button" class="zv__btn" [attr.aria-label]="strings.close" [title]="strings.close" (click)="close()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+    </button>
+  </header>
+
+  <footer class="zv__bottom">
+    <div class="zv__bar">
+      @if (items.length > 1) {
+        <button type="button" class="zv__btn" [attr.aria-label]="strings.prev" [title]="strings.prev" (click)="go(-1)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+        </button>
+        <span class="zv__sep" aria-hidden="true"></span>
+      }
+      <button type="button" class="zv__btn" [attr.aria-label]="strings.zoomOut" [title]="strings.zoomOut" (click)="zoomOut()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12" /></svg>
+      </button>
+      <button type="button" class="zv__level" [attr.aria-label]="strings.fit" [title]="strings.fit" (click)="reset()">
+        <span #level aria-hidden="true">100%</span>
+      </button>
+      <button type="button" class="zv__btn" [attr.aria-label]="strings.zoomIn" [title]="strings.zoomIn" (click)="zoomIn()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12M12 6v12" /></svg>
+      </button>
+      @if (items.length > 1) {
+        <span class="zv__sep" aria-hidden="true"></span>
+        <button type="button" class="zv__btn" [attr.aria-label]="strings.next" [title]="strings.next" (click)="go(1)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+        </button>
+      }
+    </div>
+    <p class="zv__hint">{{ strings.hint }}</p>
+  </footer>
+</div>

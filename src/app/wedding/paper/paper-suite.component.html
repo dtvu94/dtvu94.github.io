@@ -1,59 +1,22 @@
 <div class="paper">
-  @for (p of pieces; track p.kind) {
+  @for (p of pieces; track p.kind; let i = $index) {
     <figure class="paper__piece paper__piece--{{ p.kind }}" [style.--w]="p.w">
-      <app-scene-frame class="paper__frame" [w]="p.w" [h]="p.h">
-        <div class="paper__art" [style.left.px]="-p.ox" [style.top.px]="-p.oy">
-          @switch (p.kind) {
-            @case ('envelopeFront') {
-              <app-envelope [design]="design" [copy]="copy" layer="front" />
-            }
-            @case ('envelopeBack') {
-              <div class="paper__stack">
-                <app-envelope [design]="design" [copy]="copy" layer="back" />
-                <app-envelope [design]="design" [copy]="copy" layer="pocket" />
-                <app-envelope [design]="design" [copy]="copy" layer="flap" />
-              </div>
-            }
-            @case ('envelopeOpen') {
-              <div class="paper__stack">
-                <app-envelope [design]="design" [copy]="copy" layer="flap" [open]="true" />
-                <app-envelope [design]="design" [copy]="copy" layer="back" />
-                <app-envelope [design]="design" [copy]="copy" layer="pocket" />
-              </div>
-            }
-            @case ('pocket') {
-              <app-pocket [design]="design" [copy]="copy" />
-            }
-            @case ('insert') {
-              <app-invitation-card [design]="insert.design" [copy]="copy" [part]="insert.part" />
-            }
-            @case ('foldClosed') {
-              <app-folded [design]="design" [copy]="copy" pose="closed" />
-            }
-            @case ('foldFlat') {
-              <app-folded [design]="design" [copy]="copy" pose="flat" />
-            }
-            @case ('popupClosed') {
-              <app-popup [design]="design" [copy]="copy" [open]="false" />
-            }
-            @case ('popupOpen') {
-              <app-popup [design]="design" [copy]="copy" [open]="true" />
-            }
-            @case ('passportClosed') {
-              <app-passport [design]="design" [copy]="copy" pose="closed" />
-            }
-            @case ('passportOpen') {
-              <app-passport [design]="design" [copy]="copy" pose="open" />
-            }
-            @case ('directions') {
-              <app-directions-card [design]="design" [copy]="copy" />
-            }
-            @default {
-              <app-invitation-card [design]="design" [copy]="copy" />
-            }
-          }
-        </div>
-      </app-scene-frame>
+      <!-- A click anywhere on the piece opens it in the zoom viewer; the
+           button is the keyboard and screen-reader way in (its click
+           bubbles up to the same handler). -->
+      <div class="paper__zoomable" [class.paper__zoomable--on]="zoomLabel" (click)="open(i)">
+        <app-scene-frame class="paper__frame" [w]="p.w" [h]="p.h">
+          <app-paper-art class="paper__art" [design]="design" [copy]="copy" [piece]="p" />
+        </app-scene-frame>
+        @if (zoomLabel) {
+          <button type="button" class="zoom-btn paper__zoom" [attr.aria-label]="zoomLabel + ': ' + labels[p.kind]">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="10.5" cy="10.5" r="6.5" />
+              <path d="M15.4 15.4 21 21M10.5 7.6v5.8M7.6 10.5h5.8" />
+            </svg>
+          </button>
+        }
+      </div>
       <figcaption class="paper__label">{{ labels[p.kind] }}</figcaption>
     </figure>
   }

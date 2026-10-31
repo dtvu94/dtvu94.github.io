@@ -1,0 +1,28 @@
+/* One printed piece at its own design size; spreads reach left of 0, so
+   the art is shifted by the piece's origin. */
+
+:host {
+  display: block;
+  position: relative;
+}
+
+.pa__art {
+  position: absolute;
+}
+
+.pa__stack {
+  position: relative;
+  width: 470px;
+  height: 330px;
+}
+.pa__stack > * {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+app-invitation-card {
+  display: block;
+  width: 400px;
+  height: 560px;
+}

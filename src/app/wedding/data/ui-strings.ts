@@ -31,6 +31,27 @@ export interface WeddingUiStrings {
   mapsLabel: string;
   googleCalendarLabel: string;
   icsLabel: string;
+  /** Zoom viewer on the detail page. */
+  zoom: ZoomStrings;
+}
+
+/** Labels of the zoom viewer and of the magnifier button on each piece. */
+export interface ZoomStrings {
+  /** Magnifier button on a piece ("Phóng to: <piece>"). */
+  open: string;
+  /** One line under the printed-suite heading saying pieces can be zoomed. */
+  tip: string;
+  /** Dialog name ("Xem chi tiết: <piece>"). */
+  dialog: string;
+  zoomIn: string;
+  zoomOut: string;
+  /** Resets to the whole piece on screen. */
+  fit: string;
+  close: string;
+  prev: string;
+  next: string;
+  /** How to zoom and move, under the controls. */
+  hint: string;
 }
 
 /** The printed pieces of a suite, as laid out on the detail page. */
@@ -93,6 +114,18 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     mapsLabel: '📍 Mở Google Maps',
     googleCalendarLabel: '📅 Lưu vào Google Calendar',
     icsLabel: '🗓️ Lưu vào lịch điện thoại',
+    zoom: {
+      open: 'Phóng to',
+      tip: 'Bấm vào từng tấm để phóng to, xem kỹ chi tiết.',
+      dialog: 'Xem chi tiết',
+      zoomIn: 'Phóng to',
+      zoomOut: 'Thu nhỏ',
+      fit: 'Vừa màn hình',
+      close: 'Đóng',
+      prev: 'Tấm trước',
+      next: 'Tấm sau',
+      hint: 'Cuộn chuột hoặc chụm hai ngón để phóng to · kéo để di chuyển · bấm đúp để phóng nhanh',
+    },
   },
   en: {
     docTitle: 'Wedding Invitation — Vũ & Thảo',
@@ -134,6 +167,18 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     mapsLabel: '📍 Open Google Maps',
     googleCalendarLabel: '📅 Add to Google Calendar',
     icsLabel: '🗓️ Add to phone calendar',
+    zoom: {
+      open: 'Zoom in',
+      tip: 'Tap any piece to zoom in and check the details.',
+      dialog: 'Detail view',
+      zoomIn: 'Zoom in',
+      zoomOut: 'Zoom out',
+      fit: 'Fit to screen',
+      close: 'Close',
+      prev: 'Previous piece',
+      next: 'Next piece',
+      hint: 'Scroll or pinch to zoom · drag to move · double-tap to zoom quickly',
+    },
   },
   th: {
     docTitle: 'การ์ดแต่งงาน — Vũ & Thảo',
@@ -174,6 +219,18 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     mapsLabel: '📍 เปิด Google Maps',
     googleCalendarLabel: '📅 บันทึกใน Google Calendar',
     icsLabel: '🗓️ บันทึกในปฏิทินโทรศัพท์',
+    zoom: {
+      open: 'ขยาย',
+      tip: 'แตะการ์ดแต่ละชิ้นเพื่อขยายดูรายละเอียด',
+      dialog: 'ดูรายละเอียด',
+      zoomIn: 'ขยาย',
+      zoomOut: 'ย่อ',
+      fit: 'พอดีหน้าจอ',
+      close: 'ปิด',
+      prev: 'ชิ้นก่อนหน้า',
+      next: 'ชิ้นถัดไป',
+      hint: 'เลื่อนเมาส์หรือใช้สองนิ้วเพื่อซูม · ลากเพื่อเลื่อน · แตะสองครั้งเพื่อซูมเร็ว',
+    },
   },
 };
 

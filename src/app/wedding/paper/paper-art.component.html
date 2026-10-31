@@ -1,0 +1,51 @@
+<div class="pa__art" [style.left.px]="-piece.ox" [style.top.px]="-piece.oy">
+  @switch (piece.kind) {
+    @case ('envelopeFront') {
+      <app-envelope [design]="design" [copy]="copy" layer="front" />
+    }
+    @case ('envelopeBack') {
+      <div class="pa__stack">
+        <app-envelope [design]="design" [copy]="copy" layer="back" />
+        <app-envelope [design]="design" [copy]="copy" layer="pocket" />
+        <app-envelope [design]="design" [copy]="copy" layer="flap" />
+      </div>
+    }
+    @case ('envelopeOpen') {
+      <div class="pa__stack">
+        <app-envelope [design]="design" [copy]="copy" layer="flap" [open]="true" />
+        <app-envelope [design]="design" [copy]="copy" layer="back" />
+        <app-envelope [design]="design" [copy]="copy" layer="pocket" />
+      </div>
+    }
+    @case ('pocket') {
+      <app-pocket [design]="design" [copy]="copy" />
+    }
+    @case ('insert') {
+      <app-invitation-card [design]="insert.design" [copy]="copy" [part]="insert.part" />
+    }
+    @case ('foldClosed') {
+      <app-folded [design]="design" [copy]="copy" pose="closed" />
+    }
+    @case ('foldFlat') {
+      <app-folded [design]="design" [copy]="copy" pose="flat" />
+    }
+    @case ('popupClosed') {
+      <app-popup [design]="design" [copy]="copy" [open]="false" />
+    }
+    @case ('popupOpen') {
+      <app-popup [design]="design" [copy]="copy" [open]="true" />
+    }
+    @case ('passportClosed') {
+      <app-passport [design]="design" [copy]="copy" pose="closed" />
+    }
+    @case ('passportOpen') {
+      <app-passport [design]="design" [copy]="copy" pose="open" />
+    }
+    @case ('directions') {
+      <app-directions-card [design]="design" [copy]="copy" />
+    }
+    @default {
+      <app-invitation-card [design]="design" [copy]="copy" />
+    }
+  }
+</div>

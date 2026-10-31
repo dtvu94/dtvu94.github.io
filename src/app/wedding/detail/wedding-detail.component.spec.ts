@@ -106,6 +106,81 @@ describe('WeddingDetailComponent', () => {
     expect(root.querySelector('.guide__toggle')?.textContent).toContain('ดูแผนที่และเส้นทาง');
   });
 
+  describe('zoom viewer', () => {
+    const viewer = (root: HTMLElement) => root.querySelector('app-zoom-viewer');
+    const title = (root: HTMLElement) => root.querySelector('.zv__title')?.textContent?.replace(/\s+/g, ' ').trim();
+    const transform = (root: HTMLElement) => (root.querySelector('.zv__canvas') as HTMLElement).style.transform;
+    const press = (key: string) => document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+
+    it('opens a printed piece from its magnifier button, steps through the pieces and closes on Esc', () => {
+      const fixture = setup('press-red-foil');
+      const root: HTMLElement = fixture.nativeElement;
+      const buttons = root.querySelectorAll<HTMLButtonElement>('.paper__zoom');
+      expect(buttons.length).toBe(root.querySelectorAll('.paper__piece').length);
+      expect(buttons[0].getAttribute('aria-label')).toBe('Phóng to: Bao thư · mặt trước');
+      expect(viewer(root)).toBeNull();
+
+      root.querySelector<HTMLButtonElement>('.paper__piece--card .paper__zoom')!.click();
+      fixture.detectChanges();
+      const count = fixture.componentInstance.zoomItems().length;
+      const cardAt = fixture.componentInstance.zoomItems().findIndex((item) => item.key === 'card');
+      expect(title(root)).toBe(`${cardAt + 1} / ${count} Thiệp mời`);
+      expect(root.querySelector('.zv')?.getAttribute('aria-label')).toBe('Xem chi tiết: Thiệp mời');
+      // The same art as on the page, drawn at its design size.
+      expect(root.querySelector('.zv__canvas app-paper-art app-invitation-card')).toBeTruthy();
+      expect(document.documentElement.style.overflow).toBe('hidden');
+
+      root.querySelector<HTMLButtonElement>('.zv__btn[aria-label="Tấm sau"]')!.click();
+      fixture.detectChanges();
+      expect(title(root)).toContain('Thiệp chỉ đường');
+      expect(root.querySelector('.zv__canvas app-directions-card')).toBeTruthy();
+
+      press('Escape');
+      fixture.detectChanges();
+      expect(viewer(root)).toBeNull();
+      expect(document.documentElement.style.overflow).toBe('');
+    });
+
+    it('zooms in and out with the buttons and keys, never below the whole piece', () => {
+      const fixture = setup('press-red-foil');
+      const root: HTMLElement = fixture.nativeElement;
+      root.querySelector<HTMLElement>('.paper__piece--envelopeFront .paper__zoomable')!.click();
+      fixture.detectChanges();
+      const level = () => root.querySelector('.zv__level')?.textContent?.trim();
+      const fitted = transform(root);
+      expect(level()).toBe('100%');
+
+      root.querySelector<HTMLButtonElement>('.zv__btn[aria-label="Phóng to"]')!.click();
+      expect(level()).toBe('150%');
+      press('+');
+      expect(level()).toBe('225%');
+      expect(transform(root)).not.toBe(fitted);
+      press('0');
+      expect(level()).toBe('100%');
+      expect(transform(root)).toBe(fitted);
+      root.querySelector<HTMLButtonElement>('.zv__btn[aria-label="Thu nhỏ"]')!.click();
+      expect(level()).toBe('100%');
+    });
+
+    it('wraps around from the last piece, the online card with the guest’s name', () => {
+      const fixture = setup('press-red-foil', { khach: 'Anh Minh' });
+      const root: HTMLElement = fixture.nativeElement;
+      root.querySelector<HTMLButtonElement>('.online__zoom')!.click();
+      fixture.detectChanges();
+      const count = fixture.componentInstance.zoomItems().length;
+      expect(title(root)).toBe(`${count} / ${count} Thiệp online`);
+      expect(root.querySelector('.zv__canvas .inv__guest-name')?.textContent?.trim()).toBe('Anh Minh');
+
+      root.querySelector<HTMLButtonElement>('.zv__btn[aria-label="Tấm sau"]')!.click();
+      fixture.detectChanges();
+      expect(title(root)).toBe(`1 / ${count} Bao thư · mặt trước`);
+
+      root.querySelector<HTMLButtonElement>('.zv__top .zv__btn')!.click();
+      fixture.detectChanges();
+      expect(viewer(root)).toBeNull();
+    });
+  });
+
   it('redirects to the gallery for an unknown id', () => {
     TestBed.configureTestingModule({
       declarations: [WeddingDetailComponent, DirectionsGuideComponent, LanguageToggleComponent, ...SUITE_DECLARATIONS],

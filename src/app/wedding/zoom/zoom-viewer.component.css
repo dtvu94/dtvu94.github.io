@@ -1,0 +1,174 @@
+/* Full-screen, dark, so every paper colour reads; bars float over the art. */
+
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: block;
+}
+
+.zv {
+  position: absolute;
+  inset: 0;
+  background: #1a1814;
+  color: #f3ede0;
+  font-family: var(--ff-beVietnamPro);
+  outline: none;
+}
+
+.zv__stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.zv__stage:active {
+  cursor: grabbing;
+}
+
+/* No will-change: the art is re-rasterised at each new scale, so it stays sharp. */
+.zv__canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+.zv__canvas--ease {
+  transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+/* ── bars ───────────────────────────────────────────────────────────── */
+.zv__top,
+.zv__bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+.zv__top > *,
+.zv__bar {
+  pointer-events: auto;
+}
+
+.zv__top {
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px 10px 18px;
+  background: linear-gradient(rgba(26, 24, 20, 0.9), rgba(26, 24, 20, 0));
+}
+.zv__title {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.zv__count {
+  margin-right: 8px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.65;
+}
+
+.zv__bottom {
+  bottom: 0;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 18px 12px 14px;
+  background: linear-gradient(rgba(26, 24, 20, 0), rgba(26, 24, 20, 0.9) 45%);
+}
+.zv__bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.zv__sep {
+  width: 1px;
+  height: 22px;
+  margin: 0 4px;
+  background: rgba(255, 255, 255, 0.18);
+}
+.zv__hint {
+  margin: 0;
+  max-width: 560px;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  opacity: 0.7;
+}
+
+/* ── buttons ────────────────────────────────────────────────────────── */
+.zv__btn,
+.zv__level {
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.zv__btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  flex: 0 0 40px;
+}
+.zv__top .zv__btn {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+}
+.zv__level {
+  min-width: 62px;
+  font: 600 13px/1 var(--ff-beVietnamPro);
+  font-variant-numeric: tabular-nums;
+}
+.zv__btn:hover,
+.zv__level:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.zv__btn:focus-visible,
+.zv__level:focus-visible {
+  outline: 2px solid #e2c48a;
+  outline-offset: 1px;
+}
+.zv__btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Thai runs taller. */
+.zv:lang(th) .zv__hint {
+  line-height: 1.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zv__canvas--ease {
+    transition: none;
+  }
+}
+
+@media print {
+  :host {
+    display: none;
+  }
+}

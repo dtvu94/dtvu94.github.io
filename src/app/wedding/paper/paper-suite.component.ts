@@ -1,9 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { InvitationCopy, InvitationDesign } from '../data/wedding.types';
 import { PaperPieceKind } from '../data/ui-strings';
 import { foldBounds } from '../folded/fold-geometry';
 import { CARD_H, CARD_W, ENV_H, ENV_W, SLEEVE_H, SLEEVE_W, envelopeGeometry } from '../geometry/shapes';
-import { PocketInsert, pocketInsert } from '../pocket/pocket.component';
 import { pieceKind } from '../suite/piece-layout';
 import { DIRECTIONS_CARD_H, DIRECTIONS_CARD_W } from './directions-card.component';
 
@@ -55,7 +54,8 @@ export function paperPieces(design: InvitationDesign): PaperPiece[] {
 /**
  * Thiệp giấy — the printed suite laid out flat, piece by piece, like a
  * product photo: envelope front and back (and its liner), the invitation
- * in every part it has, and the directions card. Static, no motion.
+ * in every part it has, and the directions card. Static, no motion;
+ * each piece can be opened in the zoom viewer to check its details.
  */
 @Component({
   selector: 'app-paper-suite',
@@ -67,6 +67,10 @@ export class PaperSuiteComponent {
   @Input({ required: true }) design!: InvitationDesign;
   @Input({ required: true }) copy!: InvitationCopy;
   @Input({ required: true }) labels!: Record<PaperPieceKind, string>;
+  /** Label of the per-piece zoom button ("Phóng to"); '' leaves the pieces static. */
+  @Input() zoomLabel = '';
+  /** Index (in paperPieces order) of the piece to show in the zoom viewer. */
+  @Output() readonly zoom = new EventEmitter<number>();
 
   get pieces(): PaperPiece[] {
     if (this.cache?.design !== this.design) {
@@ -75,8 +79,10 @@ export class PaperSuiteComponent {
     return this.cache.pieces;
   }
 
-  get insert(): PocketInsert {
-    return pocketInsert(this.design);
+  open(index: number): void {
+    if (this.zoomLabel) {
+      this.zoom.emit(index);
+    }
   }
 
   private cache?: { design: InvitationDesign; pieces: PaperPiece[] };

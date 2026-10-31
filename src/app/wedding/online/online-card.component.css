@@ -4,8 +4,21 @@
   gap: 18px;
 }
 
-.online__card {
+.online__zoomable {
+  position: relative;
+  width: 100%;
   max-width: 420px;
+}
+.online__zoomable--on {
+  cursor: zoom-in;
+}
+.online__zoom {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+}
+
+.online__card {
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.14)) drop-shadow(0 14px 26px rgba(0, 0, 0, 0.16));
 }
 
@@ -48,4 +61,7 @@
 .online__btn--primary:focus-visible {
   color: #ffffff;
   background: #a17f47;
+}
+.online__zoomable--on:hover .online__zoom {
+  transform: scale(1.08);
 }

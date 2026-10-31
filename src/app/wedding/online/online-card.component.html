@@ -1,6 +1,17 @@
-<app-scene-frame class="online__card" [w]="cardW" [h]="cardH">
-  <app-invitation-card [design]="design" [copy]="copy" [guest]="guest" />
-</app-scene-frame>
+<!-- Click the card (or its magnifier button) to check it in the zoom viewer. -->
+<div class="online__zoomable" [class.online__zoomable--on]="zoomable" (click)="open()">
+  <app-scene-frame class="online__card" [w]="cardW" [h]="cardH">
+    <app-invitation-card [design]="design" [copy]="copy" [guest]="guest" />
+  </app-scene-frame>
+  @if (zoomable) {
+    <button type="button" class="zoom-btn online__zoom" [attr.aria-label]="ui.zoom.open + ': ' + ui.onlineTitle">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="10.5" cy="10.5" r="6.5" />
+        <path d="M15.4 15.4 21 21M10.5 7.6v5.8M7.6 10.5h5.8" />
+      </svg>
+    </button>
+  }
+</div>
 
 <div class="online__actions">
   <a class="online__btn online__btn--primary" [href]="mapsUrl" target="_blank" rel="noopener">{{ ui.mapsLabel }}</a>

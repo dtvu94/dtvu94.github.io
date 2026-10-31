@@ -20,8 +20,15 @@
       <header class="detail__section-head">
         <h2 class="detail__section-title" id="paper-title">{{ ui().paperTitle }}</h2>
         <p class="detail__section-sub">{{ ui().paperSub }}</p>
+        <p class="detail__zoom-tip">{{ ui().zoom.tip }}</p>
       </header>
-      <app-paper-suite [design]="d" [copy]="copy()" [labels]="ui().paperLabels" />
+      <app-paper-suite
+        [design]="d"
+        [copy]="copy()"
+        [labels]="ui().paperLabels"
+        [zoomLabel]="ui().zoom.open"
+        (zoom)="openZoom($event)"
+      />
     </section>
 
     <!-- Thiệp online: the card as sent by link, next to the directions. -->
@@ -36,9 +43,37 @@
         }
       </header>
       <div class="detail__online-grid">
-        <app-online-card class="detail__online-card" [design]="d" [copy]="copy()" [lang]="lang()" [ui]="ui()" [guest]="guest()" />
+        <app-online-card
+          class="detail__online-card"
+          [design]="d"
+          [copy]="copy()"
+          [lang]="lang()"
+          [ui]="ui()"
+          [guest]="guest()"
+          [zoomable]="true"
+          (zoom)="openZoom(zoomItems().length - 1)"
+        />
         <app-directions-guide class="detail__guide" [design]="d" [collapsible]="true" />
       </div>
     </section>
+
+    <!-- Zoom viewer: any printed piece or the online card, up close. -->
+    @if (zoomIndex() !== null) {
+      <app-zoom-viewer
+        [items]="zoomItems()"
+        [index]="zoomIndex()!"
+        [art]="zoomArt"
+        [strings]="ui().zoom"
+        (indexChange)="zoomIndex.set($event)"
+        (closed)="zoomIndex.set(null)"
+      />
+    }
+    <ng-template #zoomArt let-item>
+      @if (item.piece) {
+        <app-paper-art [design]="d" [copy]="copy()" [piece]="item.piece" />
+      } @else {
+        <app-invitation-card class="detail__zoom-card" [design]="d" [copy]="copy()" [guest]="guest()" />
+      }
+    </ng-template>
   </main>
 }
