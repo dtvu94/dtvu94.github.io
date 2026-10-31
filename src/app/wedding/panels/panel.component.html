@@ -43,7 +43,7 @@
         <div class="pn__pattern" [style.background]="pattern"></div>
         <div class="pn__seal">
           <app-ornament class="pn__ring" ornament="monogramRing" [relief]="design.relief ?? null" [palette]="design.palette" />
-          <p class="pn__monogram">{{ copy.monogram }}</p>
+          <p class="pn__monogram"><span class="vt-logo" role="img" [attr.aria-label]="copy.monogram"></span></p>
         </div>
         <p class="pn__title">{{ copy.titleWord }}</p>
       }

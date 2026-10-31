@@ -19,7 +19,7 @@ import { WEDDING_CONFIG } from '../data/wedding-config';
           <path d="M4 8h3l1.6-2h6.8L17 8h3v11H4z" />
           <circle cx="12" cy="13.2" r="3.4" />
         </svg>
-        <p class="ph__monogram">{{ monogram }}</p>
+        <p class="ph__monogram"><span class="vt-logo" role="img" [attr.aria-label]="monogram"></span></p>
         <p class="ph__caption">{{ caption }}</p>
       </div>
     }

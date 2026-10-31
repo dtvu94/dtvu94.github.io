@@ -103,7 +103,7 @@ describe('folded cards, pop-ups and passports', () => {
     it('frames the photo placeholder until wedding photos are configured', () => {
       const root: HTMLElement = render('fold-sage-gate', { piece: 'panel', kind: 'photo' }).nativeElement;
       expect(root.querySelector('img')).toBeNull();
-      expect(root.querySelector('.ph__monogram')?.textContent).toContain('V & T');
+      expect(root.querySelector('.ph__monogram .vt-logo')?.getAttribute('aria-label')).toBe('V & T');
       expect(root.querySelector('.ph__caption')?.textContent?.trim()).not.toBe('');
     });
 
@@ -153,7 +153,7 @@ describe('folded cards, pop-ups and passports', () => {
       const root: HTMLElement = render('passport-red', { piece: 'passport' }).nativeElement;
       // The couple's laurel + monogram crest — never a national emblem.
       expect(root.querySelector('.ps__face--front app-ornament.ps__laurel svg')).toBeTruthy();
-      expect(root.querySelector('.ps__face--front .ps__monogram')?.textContent).toContain('V & T');
+      expect(root.querySelector('.ps__face--front .ps__monogram .vt-logo')?.getAttribute('aria-label')).toBe('V & T');
       expect(root.querySelector('.ps__title')?.textContent?.trim()).not.toBe('');
       const mrz = root.querySelector('.ps__mrz')?.textContent ?? '';
       expect(mrz).toContain('VU<<THAO');

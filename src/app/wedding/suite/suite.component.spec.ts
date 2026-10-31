@@ -70,7 +70,7 @@ describe('suite pieces', () => {
 
     it('prints a monogram crest, a fern or a framed title on the front as the design asks', () => {
       const front = (id: string) => render(id, { piece: 'envelope', layer: 'front' });
-      expect(front('press-cotton').querySelector('.env__monogram')?.textContent).toContain('V & T');
+      expect(front('press-cotton').querySelector('.env__monogram .vt-logo')?.getAttribute('aria-label')).toBe('V & T');
       expect(front('rustic-kraft').querySelector('.env__script')?.textContent).toContain('Thiệp Cưới');
       expect(front('vn-hy-do').querySelector('.env__frame-title')).toBeTruthy();
     });
@@ -85,7 +85,7 @@ describe('suite pieces', () => {
       const closed = render('press-cotton', { piece: 'envelope', layer: 'flap' });
       expect(closed.querySelector('.env__hinge--open')).toBeNull();
       expect(closed.querySelector('.env__wax')?.getAttribute('fill')).toBe('#24304d');
-      expect(closed.querySelector('.env__seal-text')?.textContent).toContain('V & T');
+      expect(closed.querySelector('.env__seal-text .vt-logo')).toBeTruthy();
       expect(render('press-cotton', { piece: 'envelope', layer: 'flap', open: true }).querySelector('.env__hinge--open')).toBeTruthy();
 
       expect(render('press-red-ink', { piece: 'envelope', layer: 'flap' }).querySelector('.env__sticker-ring')).toBeTruthy();

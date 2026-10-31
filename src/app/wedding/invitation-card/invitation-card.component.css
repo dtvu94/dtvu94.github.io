@@ -446,7 +446,10 @@
 .inv--gold .inv__title,
 .inv--gold .inv__monogram,
 .inv--gold .inv__band-title {
-  background: linear-gradient(105deg, #8a6a1f 0%, #d4af37 35%, #f3dc8a 50%, #c9a227 65%, #8a6a1f 100%);
+  --inv-gold: linear-gradient(105deg, #8a6a1f 0%, #d4af37 35%, #f3dc8a 50%, #c9a227 65%, #8a6a1f 100%);
+  /* The V T logo is a mask, not glyphs: it takes the foil as its paint. */
+  --vt-logo-paint: var(--inv-gold);
+  background: var(--inv-gold);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

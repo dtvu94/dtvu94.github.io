@@ -196,3 +196,8 @@
     transition-duration: 1ms !important;
   }
 }
+
+/* The V T logo on the moon / in the arbour, a touch larger than type. */
+.pp__text .vt-logo {
+  font-size: 1.2em;
+}

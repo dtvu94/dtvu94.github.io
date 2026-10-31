@@ -42,7 +42,7 @@
   <div class="inv__content">
     @if (design.layout === 'splitVertical' && showsHeader) {
       <aside class="inv__side">
-        <p class="inv__monogram">{{ copy.monogram }}</p>
+        <p class="inv__monogram"><span class="vt-logo" role="img" [attr.aria-label]="copy.monogram"></span></p>
         @if (crestOrnament; as crest) {
           <app-ornament class="inv__side-ornament" [ornament]="crest" [relief]="relief" [palette]="design.palette" aria-hidden="true" />
         }
@@ -73,7 +73,7 @@
             }
             <p class="inv__title">{{ copy.titleWord }}</p>
           } @else if (design.layout === 'bandedHeader') {
-            <p class="inv__monogram inv__monogram--band">{{ copy.monogram }}</p>
+            <p class="inv__monogram inv__monogram--band"><span class="vt-logo" role="img" [attr.aria-label]="copy.monogram"></span></p>
           }
         }
 
@@ -120,7 +120,7 @@
   <div class="inv__crest" [class.inv__crest--monogram]="crestHoldsMonogram" [class.inv__crest--laser]="crestIsLaserCut">
     <app-ornament class="inv__crest-art" [ornament]="crest" [relief]="relief" [palette]="design.palette" aria-hidden="true" />
     @if (crestHoldsMonogram) {
-      <p class="inv__monogram inv__monogram--crest">{{ copy.monogram }}</p>
+      <p class="inv__monogram inv__monogram--crest"><span class="vt-logo" role="img" [attr.aria-label]="copy.monogram"></span></p>
     }
   </div>
 </ng-template>

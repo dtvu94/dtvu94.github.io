@@ -74,12 +74,15 @@
 }
 
 /* Gold foil type is a gradient clipped to the glyphs, which text-shadow
-   would paint over — shade it with filter drop-shadows instead. */
-.inv--fin-letterpress.inv--gold :is(.inv__title, .inv__monogram, .inv__band-title) {
+   would paint over — shade it with filter drop-shadows instead. The V T
+   logo (a mask, not glyphs) is shaded the same way in every colour. */
+.inv--fin-letterpress.inv--gold :is(.inv__title, .inv__band-title),
+.inv--fin-letterpress .inv__monogram {
   text-shadow: none;
   filter: drop-shadow(0 -0.5px 0 var(--fin-lo)) drop-shadow(0 1px 0 var(--fin-hi));
 }
-.inv--fin-emboss.inv--gold :is(.inv__title, .inv__monogram, .inv__band-title) {
+.inv--fin-emboss.inv--gold :is(.inv__title, .inv__band-title),
+.inv--fin-emboss .inv__monogram {
   text-shadow: none;
   filter: drop-shadow(0 -0.6px 0 var(--fin-hi)) drop-shadow(0 1px 0.8px var(--fin-lo));
 }

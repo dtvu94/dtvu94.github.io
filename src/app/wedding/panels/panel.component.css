@@ -244,3 +244,8 @@
 :host(.pn--narrow) .pn__title {
   font-size: 20px;
 }
+
+/* The V T logo fills the seal a little more than a line of type would. */
+.pn__monogram .vt-logo {
+  font-size: 1.3em;
+}

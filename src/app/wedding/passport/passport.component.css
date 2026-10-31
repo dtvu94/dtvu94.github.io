@@ -71,7 +71,7 @@
 .ps__title,
 .ps__names,
 .ps__monogram {
-  background: linear-gradient(
+  --ps-foil-paint: linear-gradient(
     105deg,
     color-mix(in srgb, var(--ps-foil) 70%, #000000) 0%,
     var(--ps-foil) 35%,
@@ -79,6 +79,9 @@
     var(--ps-foil) 65%,
     color-mix(in srgb, var(--ps-foil) 70%, #000000) 100%
   );
+  /* The V T logo is a mask: it takes the same foil as its paint. */
+  --vt-logo-paint: var(--ps-foil-paint);
+  background: var(--ps-foil-paint);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -101,6 +104,9 @@
   font-family: var(--inv-font-accent);
   font-size: 30px;
   white-space: nowrap;
+}
+.ps__monogram .vt-logo {
+  font-size: 1.1em;
 }
 .ps__names {
   font-family: var(--inv-font-accent);

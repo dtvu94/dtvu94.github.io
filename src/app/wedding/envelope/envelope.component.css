@@ -215,7 +215,8 @@
   font-family: var(--inv-font-accent);
   font-size: 15px;
   color: rgba(255, 255, 255, 0.82);
-  text-shadow: 0 0 1px rgba(0, 0, 0, 0.25);
+  /* Pressed into the wax: the logo is a mask, so shade it with a filter. */
+  filter: drop-shadow(0 -0.5px 0 rgba(0, 0, 0, 0.28)) drop-shadow(0 0.6px 0 rgba(255, 255, 255, 0.35));
 }
 .env__seal-text--small {
   font-size: 10px;

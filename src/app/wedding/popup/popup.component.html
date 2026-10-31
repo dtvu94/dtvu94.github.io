@@ -51,8 +51,13 @@
           [style.font-size.px]="text.size"
           [style.color]="text.fill"
           [style.--pp-stroke]="text.stroke ?? null"
-          >{{ textOf(text) }}</span
         >
+          @if (text.content === 'monogram') {
+            <span class="vt-logo" role="img" [attr.aria-label]="copy.monogram"></span>
+          } @else {
+            {{ textOf(text) }}
+          }
+        </span>
       }
     </div>
   }

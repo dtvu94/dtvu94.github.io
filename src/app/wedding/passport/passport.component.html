@@ -57,7 +57,7 @@
       <p class="ps__title">{{ copy.passport.title }}</p>
       <div class="ps__emblem">
         <app-ornament class="ps__laurel" ornament="laurel" [relief]="{ mode: 'raised', finish: 'foil' }" [palette]="emblemPalette" />
-        <p class="ps__monogram">{{ copy.monogram }}</p>
+        <p class="ps__monogram"><span class="vt-logo" role="img" [attr.aria-label]="copy.monogram"></span></p>
       </div>
       <p class="ps__names">{{ copy.coupleLine }}</p>
       <span class="ps__chip" aria-hidden="true"></span>

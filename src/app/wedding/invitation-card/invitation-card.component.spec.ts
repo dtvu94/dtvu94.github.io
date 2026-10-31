@@ -136,7 +136,7 @@ describe('InvitationCardComponent', () => {
   it('cuts the monogram through the laser doily crest', () => {
     const crest = render('laser-jade-doily').querySelector('.inv__crest');
     expect(crest?.classList.contains('inv__crest--laser')).toBe(true);
-    expect(crest?.querySelector('.inv__monogram--crest')?.textContent).toContain('V & T');
+    expect(crest?.querySelector('.inv__monogram--crest .vt-logo')?.getAttribute('aria-label')).toBe('V & T');
     expect(crest?.querySelector('app-ornament path[fill-rule="evenodd"]')).toBeTruthy();
   });
 

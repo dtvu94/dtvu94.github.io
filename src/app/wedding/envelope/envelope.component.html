@@ -45,7 +45,7 @@
         }
       </svg>
       @if (spec.print === 'monogram') {
-        <p class="env__monogram" [style.top.px]="printY">{{ copy.monogram }}</p>
+        <p class="env__monogram" [style.top.px]="printY"><span class="vt-logo" role="img" [attr.aria-label]="copy.monogram"></span></p>
       }
       @if (spec.print === 'fern') {
         <p class="env__script">{{ copy.titleWord }}</p>
@@ -112,8 +112,8 @@
           [style.left.px]="geo.sealAt.x"
           [style.top.px]="geo.sealAt.y"
           aria-hidden="true"
-          >{{ copy.monogram }}</span
-        >
+          ><span class="vt-logo"></span
+        ></span>
       }
     </div>
   }
