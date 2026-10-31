@@ -1,6 +1,8 @@
 import { WeddingDetailComponent } from './detail/wedding-detail.component';
 import { DirectionsGuideComponent } from './directions-guide/directions-guide.component';
 import { EditorChoicesComponent } from './editor/editor-choices.component';
+import { EditorDesignsComponent } from './editor/editor-designs.component';
+import { EditorPrintComponent } from './editor/editor-print.component';
 import { EditorStageComponent } from './editor/editor-stage.component';
 import { EditorStickerComponent } from './editor/editor-sticker.component';
 import { WeddingEditorComponent } from './editor/wedding-editor.component';
@@ -54,7 +56,7 @@ export const SUITE_DECLARATIONS = [
 ];
 
 /** The design editor (/wedding/editor) and its parts. */
-export const EDITOR_DECLARATIONS = [WeddingEditorComponent, EditorChoicesComponent, EditorStageComponent, EditorStickerComponent];
+export const EDITOR_DECLARATIONS = [WeddingEditorComponent, EditorChoicesComponent, EditorStageComponent, EditorStickerComponent, EditorPrintComponent, EditorDesignsComponent];
 
 /** Everything the lazy wedding feature declares. */
 export const WEDDING_DECLARATIONS = [

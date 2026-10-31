@@ -107,6 +107,25 @@ describe('editor state', () => {
     expect(photo.text).toBeUndefined();
   });
 
+  it('refuses values the renderers do not draw (a tampered link, an old save)', () => {
+    const d = defaultEditorState();
+    const saved = {
+      ...d,
+      mode: 'print',
+      palette: { ...d.palette, surface: 'red', overlay: '#123456' },
+      fonts: { display: 'comic', body: 'lora' },
+      envelope: { ...d.envelope, flap: 'nope', size: 'round', paper: '#abcdef', edge: '' },
+      directions: { ...d.directions, zoom: 99, map: 'tiles' },
+    };
+    const state = restoreEditorState(JSON.stringify(saved));
+    expect(state.mode).toBe('paper');
+    expect(state.palette.surface).toBe(d.palette.surface);
+    expect(state.palette.overlay).toBe('#123456');
+    expect(state.fonts).toEqual({ display: d.fonts.display, body: 'lora' });
+    expect(state.envelope).toEqual(expect.objectContaining({ flap: d.envelope.flap, size: 'round', paper: '#abcdef', edge: '' }));
+    expect(state.directions).toEqual(expect.objectContaining({ zoom: d.directions.zoom, map: 'tiles' }));
+  });
+
   it('saves to and loads from localStorage', () => {
     localStorage.removeItem(EDITOR_STORAGE_KEY);
     expect(loadEditorState()).toEqual(defaultEditorState());

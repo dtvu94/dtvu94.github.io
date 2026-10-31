@@ -92,6 +92,34 @@ describe('WeddingEditorComponent', () => {
     expect(saved()?.stickers).toHaveLength(1);
   });
 
+  it('undoes from the toolbar, keeps phương án, and prints one page per piece', () => {
+    const { root, click, component } = setup();
+    click('.ed__tab', 'Thiệp mời');
+    click('.ch__item', 'Khung vòm');
+    expect(root.querySelector('app-editor-stage .inv')?.className).toContain('inv--archFrame');
+    click('.ed__tool', 'Hoàn tác');
+    expect(root.querySelector('app-editor-stage .inv')?.className).not.toContain('inv--archFrame');
+    click('.ed__tool', 'Làm lại');
+    expect(root.querySelector('app-editor-stage .inv')?.className).toContain('inv--archFrame');
+
+    click('.ds__actions button', 'Nhân bản');
+    expect(component.store.book().items).toHaveLength(2);
+    expect(Array.from(root.querySelectorAll('.ds__field option')).map((o) => o.textContent?.trim())).toEqual(['Phương án 1', 'Phương án 1 (bản sao)']);
+    click('.ds__actions button', 'So sánh');
+    expect(root.querySelectorAll('.ed__compare .ed__cmp-col')).toHaveLength(2);
+    click('.ed__overview-btn', 'Đóng so sánh');
+
+    click('.ed__tool', 'Xuất PDF');
+    const pages = root.querySelectorAll('app-editor-print .ed-print__page');
+    expect(pages).toHaveLength(4);
+    expect(root.querySelector('.ed-print__page--2 .ed-print__label')?.textContent).toContain('127 × 177.8 mm');
+    const printCss = Array.from(document.head.querySelectorAll('style')).find((s) => s.textContent?.includes('@page ed0'));
+    expect(printCss?.textContent).toContain('@page ed2{size:147mm 197.8mm;margin:0}');
+    click('.pr__btn', 'Đóng');
+    expect(root.querySelector('app-editor-print')).toBeNull();
+    expect(Array.from(document.head.querySelectorAll('style')).some((s) => s.textContent?.includes('@page ed0'))).toBe(false);
+  });
+
   it('starts from the design in ?from= and asks twice before starting over', () => {
     const { root, click, component } = setup({ from: 'vn-luc-binh' });
     expect(component.state().from).toBe('vn-luc-binh');

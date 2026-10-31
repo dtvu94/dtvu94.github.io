@@ -322,3 +322,12 @@
     transition: none;
   }
 }
+
+/* Printers ignore backface-visibility: a closed flap prints its outside only,
+   an open one its lining only. */
+@media print {
+  :host(:not(.env--open)) .env__face--in,
+  :host(.env--open) :is(.env__face--out, .env__seal, .env__seal-text) {
+    display: none;
+  }
+}

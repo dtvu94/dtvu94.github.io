@@ -28,9 +28,25 @@
   <div class="ed__body">
     <!-- ── what is being edited ───────────────────────────────────────── -->
     <section class="ed__stage" aria-label="Xem trước">
-      <div class="ed__view" [class.ed__view--overview]="s.overview">
+      <div class="ed__view" [class.ed__view--overview]="s.overview || compareId()">
+      <div class="ed__tools" role="toolbar" aria-label="Công cụ">
+        <button type="button" class="ed__tool" [disabled]="!store.canUndo()" (click)="undo()" title="Hoàn tác (Ctrl/⌘ + Z)">↶ <span class="ed__tl">Hoàn tác</span></button>
+        <button type="button" class="ed__tool" [disabled]="!store.canRedo()" (click)="redo()" title="Làm lại (Ctrl/⌘ + Shift + Z)">↷ <span class="ed__tl">Làm lại</span></button>
+        <span class="ed__tools-gap"></span>
+        <button type="button" class="ed__tool" (click)="copyShareLink()" title="Chia sẻ link">🔗 <span class="ed__tl">Chia sẻ link</span></button>
+        <button type="button" class="ed__tool" (click)="exportPdf()" title="Xuất PDF">⬇ <span class="ed__tl">Xuất PDF</span></button>
+      </div>
+      @if (notice()) {
+        <p class="ed__notice" role="status">{{ notice() }}</p>
+      }
+      @if (shareUrl()) {
+        <label class="ed__field">
+          <span>Link chia sẻ</span>
+          <input readonly [value]="shareUrl()" (focus)="$any($event.target).select()" />
+        </label>
+      }
       <div class="ed__stage-bar">
-        <p class="ed__stage-title">{{ s.overview ? 'Xem tổng quát' : stage().title }}</p>
+        <p class="ed__stage-title">{{ compareId() ? 'So sánh phương án' : s.overview ? 'Xem tổng quát' : stage().title }}</p>
         @if (!s.overview && s.tab === 'envelope' && s.mode === 'paper') {
           <div class="ed__faces" role="group" aria-label="Mặt bao thư">
             <button type="button" class="ed__face" [class.ed__face--on]="stage().piece.kind === 'envelopeFront'" (click)="setEnvelopeFace('envelopeFront')">Mặt trước</button>
@@ -47,13 +63,43 @@
             </button>
           </div>
         }
-        <button type="button" class="ed__overview-btn" [attr.aria-pressed]="s.overview" (click)="toggleOverview()">
-          {{ s.overview ? 'Quay lại chỉnh sửa' : 'Xem tổng quát' }}
-        </button>
+        @if (compareId()) {
+          <button type="button" class="ed__overview-btn" (click)="compareId.set(null)">Đóng so sánh</button>
+        } @else {
+          <button type="button" class="ed__overview-btn" [attr.aria-pressed]="s.overview" (click)="toggleOverview()">
+            {{ s.overview ? 'Quay lại chỉnh sửa' : 'Xem tổng quát' }}
+          </button>
+        }
       </div>
 
       <div class="ed__canvas" [style.background]="s.palette.bg">
-        @if (s.overview) {
+        @if (compared(); as other) {
+          <!-- Two phương án side by side: the open one, and the one picked here. -->
+          <div class="ed__compare">
+            <section class="ed__cmp-col">
+              <h3 class="ed__cmp-name">{{ store.active().name }} <small>(đang mở)</small></h3>
+              @for (p of comparePieces(); track p.kind) {
+                <app-editor-stage [design]="d" [copy]="copy()" [piece]="p" [face]="stickerFace(p.kind)" [stickers]="s.stickers" />
+              }
+            </section>
+            <section class="ed__cmp-col">
+              <label class="ed__field">
+                <span class="sr-only">Phương án so sánh</span>
+                <select (change)="compareId.set(valueOf($event))">
+                  @for (item of store.book().items; track item.id) {
+                    @if (item.id !== store.active().id) {
+                      <option [value]="item.id" [selected]="item.id === other.entry.id">{{ item.name }}</option>
+                    }
+                  }
+                </select>
+              </label>
+              @for (p of other.pieces; track p.kind) {
+                <app-editor-stage [design]="other.design" [copy]="other.copy" [piece]="p" [face]="stickerFace(p.kind)" [stickers]="other.entry.state.stickers" />
+              }
+              <button type="button" class="ed__btn" (click)="openDesign(other.entry.id)">Mở phương án này để sửa</button>
+            </section>
+          </div>
+        } @else if (s.overview) {
           <div class="ed__overview">
             @if (s.mode === 'online') {
               <figure class="ed__ov-piece ed__ov-piece--online">
@@ -97,6 +143,7 @@
             [selectedId]="selectedId()"
             [editable]="true"
             [fitHeight]="true"
+            [snap]="snap()"
             (add)="addSticker($event)"
             (move)="moveSticker($event)"
             (select)="selectedId.set($event)"
@@ -109,9 +156,14 @@
       <!-- ── stickers ───────────────────────────────────────────────────── -->
       @if (!s.overview && stage().face) {
         <div class="ed__tray">
-          <p class="ed__tray-title">
-            Hình dán <span>kéo vào thiệp, hoặc bấm để thêm vào giữa · {{ faceCount() }} trên mặt này</span>
-          </p>
+          <div class="ed__tray-head">
+            <p class="ed__tray-title">
+              Hình dán <span>kéo vào thiệp, hoặc bấm để thêm vào giữa · {{ faceCount() }} trên mặt này</span>
+            </p>
+            <label class="ed__check ed__check--small" title="Giữ phím Alt khi kéo để tạm tắt">
+              <input type="checkbox" [checked]="snap()" (change)="snap.set(checkedOf($event))" />Hít vào đường căn
+            </label>
+          </div>
           <div class="ed__tray-list">
             @for (m of opt.STICKERS; track m.kind) {
               <button
@@ -172,6 +224,8 @@
               <button type="button" class="ed__btn" [attr.aria-pressed]="!!st.locked" (click)="updateSticker(st.id, { locked: !st.locked })">
                 {{ st.locked ? '🔒 Đã khóa' : 'Khóa vị trí' }}
               </button>
+              <button type="button" class="ed__btn" (click)="moveLayer(1)" title="Đưa lên trên cùng">⇡ Lên trên</button>
+              <button type="button" class="ed__btn" (click)="moveLayer(-1)" title="Đưa xuống dưới cùng">⇣ Xuống dưới</button>
               <button type="button" class="ed__btn" (click)="duplicateSticker()">Nhân bản</button>
               <button type="button" class="ed__btn ed__btn--danger" (click)="removeSticker()">Xóa</button>
             </div>
@@ -182,6 +236,7 @@
 
     <!-- ── options ─────────────────────────────────────────────────────── -->
     <aside class="ed__panel">
+      <app-editor-designs (opened)="onDesignOpened()" (compare)="startCompare()" />
       <div class="ed__start">
         <label class="ed__field">
           <span>Bắt đầu từ mẫu có sẵn</span>
@@ -414,4 +469,8 @@
     </aside>
   </div>
   <input #photoInput class="ed__file" type="file" accept="image/*" (change)="onPhotoChosen($event)" />
+
+  @if (printing()) {
+    <app-editor-print [design]="d" [copy]="copy()" [pages]="printPages()" [stickers]="s.stickers" (closed)="printing.set(false)" />
+  }
 </main>

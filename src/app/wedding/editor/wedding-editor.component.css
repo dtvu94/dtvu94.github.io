@@ -36,9 +36,6 @@
   color: var(--ed-muted);
   text-decoration: none;
 }
-.ed__back:hover {
-  color: var(--ed-accent);
-}
 .ed__title {
   margin: 0;
   font-family: var(--ff-playfair);
@@ -161,12 +158,14 @@ app-language-toggle.ed__lang {
   font-weight: 600;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
+.ed__tool:disabled,
 .ed__face:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 .ed__overview-btn,
-.ed__btn {
+.ed__btn,
+.ed__tool {
   padding: 8px 14px;
   border: 1px solid var(--ed-line);
   border-radius: 999px;
@@ -190,7 +189,54 @@ app-language-toggle.ed__lang {
   --stage-h: max(300px, calc(100vh - 400px));
   padding: 28px;
   border-radius: 16px;
-  transition: background 0.3s;
+}
+
+/* ── tools, messages, phương án ─────────────────────────────────────── */
+.ed__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ed__tools-gap {
+  flex: 1;
+}
+.ed__notice {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #e8f2e3;
+  color: #2f5a24;
+  font-size: 13px;
+}
+.ed__compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.ed__cmp-col {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-width: 0;
+}
+.ed__cmp-name {
+  margin: 0;
+  font-size: 14px;
+  text-align: center;
+}
+.ed__cmp-name small {
+  font-weight: 400;
+  color: var(--ed-muted);
+}
+.ed__tray-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 14px;
+}
+.ed__check--small {
+  font-size: 12px;
+  color: var(--ed-muted);
 }
 
 /* ── overview ───────────────────────────────────────────────────────── */
@@ -218,7 +264,6 @@ app-language-toggle.ed__lang {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ed-muted);
-  mix-blend-mode: multiply;
 }
 .ed__ov-sticker {
   position: absolute;
@@ -263,9 +308,6 @@ app-language-toggle.ed__lang {
   font: inherit;
   font-size: 11px;
   cursor: grab;
-}
-.ed__tray-item:hover {
-  border-color: var(--ed-accent);
 }
 .ed__tray-art {
   pointer-events: none;
@@ -542,6 +584,10 @@ app-language-toggle.ed__lang {
   .ed__view {
     margin: 0 -14px;
     padding: 6px 14px 8px;
+  }
+  /* Icons only on phones: one short row. */
+  .ed__tl {
+    display: none;
   }
   .ed__mode {
     min-width: 0;

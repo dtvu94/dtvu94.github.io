@@ -498,18 +498,128 @@ const STICKER_COLORS: readonly StickerColor[] = ['accent', 'primary', 'ink', 'wh
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 /** Keeps the keys of `defaults`, taking each value from `saved` only when it has the same type. */
-function mergeSection<T extends object>(defaults: T, saved: unknown): T {
+/** Accepts a saved value for one field (beyond having the right type). */
+type Rule = (value: unknown) => boolean;
+type Rules<T> = Partial<Record<keyof T, Rule>>;
+
+const oneOf =
+  (...values: readonly string[]): Rule =>
+  (value) =>
+    values.includes(value as string);
+const HEX = /^#[0-9a-f]{6}$/i;
+const hex: Rule = (value) => HEX.test(value as string);
+const hexOrNone: Rule = (value) => value === '' || hex(value);
+const between =
+  (min: number, max: number): Rule =>
+  (value) =>
+    Number.isFinite(value) && (value as number) >= min && (value as number) <= max;
+
+/**
+ * Keeps the keys of `defaults`, taking each value from `saved` only when it
+ * has the same type and passes its rule (a known choice, a #rrggbb colour…):
+ * a tampered link or an old save can't hand the renderers a value they
+ * don't draw.
+ */
+function mergeSection<T extends object>(defaults: T, saved: unknown, rules: Rules<T> = {}): T {
   const out = { ...defaults };
   if (saved && typeof saved === 'object') {
     for (const key of Object.keys(defaults) as (keyof T)[]) {
       const value = (saved as Record<keyof T, unknown>)[key];
-      if (value !== undefined && typeof value === typeof defaults[key]) {
+      const rule = rules[key];
+      if (value !== undefined && typeof value === typeof defaults[key] && (!rule || rule(value))) {
         out[key] = value as T[keyof T];
       }
     }
   }
   return out;
 }
+
+const FONT_KEYS = ['inter', 'beVietnamPro', 'montserrat', 'playfair', 'cormorant', 'lora', 'dancingScript', 'greatVibes', 'sacramento', 'pinyonScript', 'parisienne'];
+const ORNAMENT_KEYS = [
+  'none',
+  'floralCorner',
+  'lotus',
+  'rings',
+  'artDecoFan',
+  'leafyWreath',
+  'botanicalSprig',
+  'geoFrame',
+  'hairlineFlourish',
+  'watercolorBlob',
+  'monogramRing',
+  'grandAmpersand',
+  'laserDoily',
+  'laurel',
+];
+const STOCK_KEYS = ['smooth', 'cotton', 'linen', 'pearl', 'kraft', 'felt'];
+
+const STATE_RULES: Rules<EditorState> = {
+  mode: oneOf('paper', 'online'),
+  tab: oneOf('envelope', 'card', 'directions', 'content'),
+  envelopeFace: oneOf('envelopeFront', 'envelopeBack', 'envelopeOpen'),
+};
+const PALETTE_RULES: Rules<Palette> = { bg: hex, surface: hex, primary: hex, accent: hex, ink: hex, overlay: hex };
+const FONT_RULES: Rules<FontPairing> = { display: oneOf(...FONT_KEYS), body: oneOf(...FONT_KEYS) };
+const CARD_RULES: Rules<EditorCard> = {
+  layout: oneOf(
+    'centeredClassic',
+    'framedBorder',
+    'splitVertical',
+    'minimalLine',
+    'crestTop',
+    'bandedHeader',
+    'archFrame',
+    'editorialAsym',
+    'laserLace',
+    'laserArch',
+    'laserLattice',
+    'laserBranch',
+    'laserCloud',
+  ),
+  shape: oneOf('rect', 'rounded', 'scallop', 'scallopFine', 'cloud', 'archTop', 'oval', 'doily', 'octagon', 'ticket', 'deckle', 'stepped'),
+  stock: oneOf(...STOCK_KEYS),
+  finish: oneOf('flat', 'letterpress', 'emboss'),
+  ornament: oneOf(...ORNAMENT_KEYS),
+  ornamentSecondary: oneOf(...ORNAMENT_KEYS),
+  accentStyle: oneOf('gold', 'flat'),
+  relief: oneOf('off', 'crest', 'vineFrame', 'branches', 'lotusBorder', 'pearlBorder'),
+  reliefMode: oneOf('raised', 'pressed'),
+  reliefFinish: oneOf('blind', 'ink', 'foil'),
+};
+const ENVELOPE_RULES: Rules<EditorEnvelope> = {
+  size: oneOf('standard', 'square', 'long', 'round'),
+  opening: oneOf('flap', 'sleeve', 'open'),
+  flap: oneOf('pointed', 'arch', 'cloud', 'rounded', 'straight', 'tuck'),
+  paper: hex,
+  ink: hex,
+  stock: oneOf(...STOCK_KEYS),
+  liner: oneOf('none', 'solid', 'floral', 'lotus', 'damask', 'stripe', 'sprig', 'goldFlora', 'clouds'),
+  linerBg: hex,
+  linerInk: hex,
+  seal: oneOf('none', 'wax', 'sticker', 'twine', 'bow'),
+  sealColor: hex,
+  art: oneOf('none', 'fern', 'frame', 'florals', 'lotus'),
+  label: oneOf('none', 'names', 'namesHeart', 'logo', 'logoNames', 'title'),
+  roses: oneOf('none', 'foil', 'blush', 'ivory'),
+  edge: hexOrNone,
+};
+const DIRECTIONS_RULES: Rules<EditorDirections> = {
+  shape: oneOf('rect', 'rounded', 'ticket', 'scallop', 'deckle'),
+  frame: oneOf('line', 'double', 'corners', 'none'),
+  mapSide: oneOf('left', 'right'),
+  map: oneOf('sketch', 'tiles', 'image'),
+  zoom: between(2, 19),
+};
+/** The laser jacket's colour is optional: kept when the saved palette has a valid one. */
+function withOverlay(palette: Palette, saved: unknown): Palette {
+  const overlay = (saved as Partial<Palette> | undefined)?.overlay;
+  return typeof overlay === 'string' && hex(overlay) ? { ...palette, overlay } : palette;
+}
+
+const short: Rule = (value) => (value as string).length <= 200;
+const CONTENT_RULES: Rules<EditorContent> = Object.fromEntries(
+  (Object.keys(defaultContent()) as (keyof EditorContent)[]).map((key) => [key, short]),
+) as Rules<EditorContent>;
 
 function validSticker(raw: unknown): Sticker | null {
   if (!raw || typeof raw !== 'object') {
@@ -566,15 +676,15 @@ export function restoreEditorState(raw: string | null): EditorState {
   if (!saved || saved.v !== 1) {
     return defaults;
   }
-  const base = mergeSection(defaults, saved);
+  const base = mergeSection(defaults, saved, STATE_RULES);
   return {
     ...base,
-    palette: mergeSection(defaults.palette, saved.palette),
-    fonts: mergeSection(defaults.fonts, saved.fonts),
-    card: mergeSection(defaults.card, saved.card),
-    envelope: mergeSection(defaults.envelope, saved.envelope),
-    directions: mergeSection(defaults.directions, saved.directions),
-    content: mergeSection(defaults.content, saved.content),
+    palette: withOverlay(mergeSection(defaults.palette, saved.palette, PALETTE_RULES), saved.palette),
+    fonts: mergeSection(defaults.fonts, saved.fonts, FONT_RULES),
+    card: mergeSection(defaults.card, saved.card, CARD_RULES),
+    envelope: mergeSection(defaults.envelope, saved.envelope, ENVELOPE_RULES),
+    directions: mergeSection(defaults.directions, saved.directions, DIRECTIONS_RULES),
+    content: mergeSection(defaults.content, saved.content, CONTENT_RULES),
     stickers: Array.isArray(saved.stickers) ? saved.stickers.map(validSticker).filter((s): s is Sticker => !!s) : [],
   };
 }

@@ -1,0 +1,34 @@
+<div class="ed-print" role="dialog" aria-label="Bản in PDF">
+  <div class="ed-print__bar">
+    <p><strong>Bản in</strong> · {{ pages.length }} trang, đúng khổ in, lề xén {{ bleedMm }} mm</p>
+    <button type="button" class="pr__btn pr__btn--primary" (click)="print()">In / Lưu PDF</button>
+    <button type="button" class="pr__btn" (click)="closed.emit()">Đóng</button>
+  </div>
+  <p class="ed-print__hint">
+    Trong hộp thoại in: chọn “Lưu dưới dạng PDF”, Lề “Không”, bật “Đồ họa nền”, tắt “Đầu trang và chân trang”. Dùng Chrome hoặc Edge để mỗi trang
+    đúng khổ của nó. Màu tràn ra ngoài đường cắt là lề xén; dấu cắt nằm ở bốn góc.
+  </p>
+  <div class="ed-print__pages">
+    @for (page of pages; track page.piece.kind; let i = $index) {
+      <section class="ed-print__page ed-print__page--{{ i }}" [style.width.mm]="page.pageW" [style.height.mm]="page.pageH">
+        @if (page.bleed) {
+          <div
+            class="ed-print__bleed"
+            [style.left.mm]="marginMm - bleedMm"
+            [style.top.mm]="marginMm - bleedMm"
+            [style.width.mm]="page.w + 2 * bleedMm"
+            [style.height.mm]="page.h + 2 * bleedMm"
+            [style.background]="page.bleed"
+          ></div>
+        }
+        <div class="ed-print__piece" [style.left.mm]="marginMm" [style.top.mm]="marginMm" [style.width.mm]="page.w">
+          <app-editor-stage [design]="design" [copy]="copy" [piece]="page.piece" [face]="page.face" [stickers]="stickers" />
+        </div>
+        <svg class="ed-print__marks" [attr.viewBox]="'0 0 ' + page.pageW + ' ' + page.pageH" aria-hidden="true">
+          <path [attr.d]="page.marks" />
+        </svg>
+        <p class="ed-print__label">{{ page.title }} · {{ page.w }} × {{ page.h }} mm</p>
+      </section>
+    }
+  </div>
+</div>

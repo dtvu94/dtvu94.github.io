@@ -28,6 +28,34 @@
 .stage__sticker:focus {
   outline: none;
 }
+/* While dragging: a faint 10 % grid, and magenta guides where the sticker snaps. */
+.stage__grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(47, 124, 246, 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(47, 124, 246, 0.16) 1px, transparent 1px);
+  background-size: 10% 10%;
+}
+.stage__guide {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  background: #e0218a;
+}
+.stage__guide--v {
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  transform: translateX(-50%);
+}
+.stage__guide--h {
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  transform: translateY(-50%);
+}
 /* The selected sticker: a dashed box that reads on any paper. */
 .stage__sticker--on {
   outline: 2px dashed #2f7cf6 !important;

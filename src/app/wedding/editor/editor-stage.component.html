@@ -11,6 +11,15 @@
       (drop)="onDrop($event)"
       (pointerdown)="onLayerDown($event)"
     >
+      @if (dragging && snap) {
+        <div class="stage__grid" aria-hidden="true"></div>
+      }
+      @if (guideX !== null) {
+        <div class="stage__guide stage__guide--v" [style.left.%]="guideX * 100" aria-hidden="true"></div>
+      }
+      @if (guideY !== null) {
+        <div class="stage__guide stage__guide--h" [style.top.%]="guideY * 100" aria-hidden="true"></div>
+      }
       @for (s of faceStickers; track s.id) {
         <div
           class="stage__sticker"

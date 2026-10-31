@@ -30,6 +30,42 @@ interface Grab {
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
+/** How close (in screen px) a dragged sticker must come to a line to snap to it. */
+const SNAP_PX = 7;
+/** The grid stickers snap to when no line is near: every 5 %. */
+const GRID = 20;
+
+/** The snap line nearest `value` within `reach`, or null. */
+function nearestLine(value: number, lines: number[], reach: number): number | null {
+  let best: number | null = null;
+  for (const line of lines) {
+    if (Math.abs(line - value) <= reach && (best === null || Math.abs(line - value) < Math.abs(best - value))) {
+      best = line;
+    }
+  }
+  return best;
+}
+
+/**
+ * Snaps a dragged sticker's centre: to the face's centre lines and the other
+ * stickers' centres (returned as guides to draw), else to a 5 % grid.
+ */
+export function snapPoint(
+  x: number,
+  y: number,
+  others: { x: number; y: number }[],
+  reachX: number,
+  reachY: number,
+): { x: number; y: number; guideX: number | null; guideY: number | null } {
+  const guideX = nearestLine(x, [0.5, ...others.map((o) => o.x)], reachX);
+  const guideY = nearestLine(y, [0.5, ...others.map((o) => o.y)], reachY);
+  const grid = (v: number, reach: number) => {
+    const g = Math.round(v * GRID) / GRID;
+    return Math.abs(g - v) <= reach ? g : v;
+  };
+  return { x: guideX ?? grid(x, reachX), y: guideY ?? grid(y, reachY), guideX, guideY };
+}
+
 /**
  * One printed piece at a size that fits the screen, with its stickers laid
  * over it. Editable, a sticker can be dropped in from the tray, dragged
@@ -53,6 +89,13 @@ export class EditorStageComponent {
   @Input() editable = false;
   /** Scale to fit this much of the window's height (editing); else fill the width. */
   @Input() fitHeight = false;
+  /** Snap while dragging (Alt held: free). */
+  @Input() snap = false;
+
+  /** Snap lines shown while a sticker is dragged onto them (fractions of the face). */
+  guideX: number | null = null;
+  guideY: number | null = null;
+  dragging = false;
 
   @Output() readonly add = new EventEmitter<StickerDrop>();
   @Output() readonly move = new EventEmitter<StickerMove>();
@@ -124,16 +167,25 @@ export class EditorStageComponent {
     if (!g || event.pointerId !== g.pointer) {
       return;
     }
-    this.move.emit({
-      id: g.id,
-      x: clamp01(g.x + (event.clientX - g.startX) / g.rect.width),
-      y: clamp01(g.y + (event.clientY - g.startY) / g.rect.height),
-    });
+    this.dragging = true;
+    let x = clamp01(g.x + (event.clientX - g.startX) / g.rect.width);
+    let y = clamp01(g.y + (event.clientY - g.startY) / g.rect.height);
+    this.guideX = this.guideY = null;
+    if (this.snap && !event.altKey) {
+      const others = this.faceStickers.filter((s) => s.id !== g.id);
+      const snapped = snapPoint(x, y, others, SNAP_PX / g.rect.width, SNAP_PX / g.rect.height);
+      ({ x, y } = snapped);
+      this.guideX = snapped.guideX;
+      this.guideY = snapped.guideY;
+    }
+    this.move.emit({ id: g.id, x, y });
   }
 
   onRelease(event: PointerEvent): void {
     if (this.grab?.pointer === event.pointerId) {
       this.grab = null;
+      this.dragging = false;
+      this.guideX = this.guideY = null;
     }
   }
 
