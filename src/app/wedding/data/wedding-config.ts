@@ -8,8 +8,9 @@ import { WeddingConfig } from './wedding.types';
  * below, then `npm run build` and commit the regenerated `docs/`.
  */
 export const WEDDING_CONFIG: WeddingConfig = {
-  groom: { short: 'Vũ', full: '' },
-  bride: { short: 'Thảo', full: '' },
+  // Tên in trên thiệp, bao thư, bìa…; chữ lồng V & T lấy chữ cái đầu của tên gọi (chữ cuối).
+  groom: { short: 'Tuấn Vũ', full: '' },
+  bride: { short: 'Nguyễn Thảo', full: '' },
   // Tên cha mẹ hai bên, in dưới "Nhà trai" / "Nhà gái" trên thiệp.
   parents: {
     groom: { father: 'Đặng Văn Quỳ', mother: 'Đoàn Thị Phương' },

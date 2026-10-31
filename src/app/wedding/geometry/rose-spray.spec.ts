@@ -27,6 +27,14 @@ describe('baby-rose sprays', () => {
     expect(Math.min(...right.map((p) => p.x))).toBeGreaterThan(ENV_W * 0.7);
   });
 
+  it('leaves the middle band free for "Tuấn Vũ ♡ Nguyễn Thảo" (24px, about 250px wide)', () => {
+    const band = (p: { y: number }) => p.y > 112 && p.y < 160;
+    const left = layers(roseSpray(ENV_W, false)).filter(band);
+    const right = layers(roseSpray(ENV_W, true)).filter(band);
+    expect(Math.max(...left.map((p) => p.x))).toBeLessThan(ENV_W / 2 - 126);
+    expect(Math.min(...right.map((p) => p.x))).toBeGreaterThan(ENV_W / 2 + 126);
+  });
+
   it('stays on the envelope and above the guest line', () => {
     const all = layers(envelopeRoses(ENV_W));
     expect(Math.min(...all.map((p) => p.x))).toBeGreaterThan(0);

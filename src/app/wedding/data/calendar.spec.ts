@@ -12,7 +12,7 @@ describe('calendar links', () => {
     const links = calendarLinks(WEDDING_CONFIG, 'vi', 'Sảnh Danube, Riverside Palace', 'Thiệp Cưới', 'https://x.test/wedding/a');
     const url = new URL(links.google);
     expect(url.hostname).toBe('calendar.google.com');
-    expect(url.searchParams.get('text')).toBe('Đám cưới Vũ & Thảo');
+    expect(url.searchParams.get('text')).toBe('Đám cưới Tuấn Vũ & Nguyễn Thảo');
     expect(url.searchParams.get('dates')).toBe('20270328T110000Z/20270328T140000Z');
     expect(url.searchParams.get('location')).toBe('Sảnh Danube, Riverside Palace');
     expect(url.searchParams.get('details')).toContain('https://x.test/wedding/a');
@@ -23,7 +23,7 @@ describe('calendar links', () => {
     expect(links.ics.startsWith('data:text/calendar;charset=utf-8,')).toBe(true);
     const ics = decodeURIComponent(links.ics.split(',').slice(1).join(','));
     expect(ics).toContain('BEGIN:VEVENT\r\n');
-    expect(ics).toContain("SUMMARY:Vũ & Thảo's wedding\r\n");
+    expect(ics).toContain("SUMMARY:Tuấn Vũ & Nguyễn Thảo's wedding\r\n");
     expect(ics).toContain('DTSTART:20270328T110000Z\r\nDTEND:20270328T140000Z\r\n');
     expect(ics).toContain('LOCATION:Danube Hall\\, Riverside Palace\\; D4\r\n');
     expect(ics).toContain('DESCRIPTION:Line 1\\nLine 2\r\n');

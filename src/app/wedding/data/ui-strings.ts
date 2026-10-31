@@ -97,8 +97,8 @@ export const GUEST_PARAM = 'khach';
 
 export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
   vi: {
-    docTitle: 'Thiệp Cưới — Vũ & Thảo',
-    detailTitleSuffix: 'Thiệp Cưới Vũ & Thảo',
+    docTitle: 'Thiệp Cưới — Tuấn Vũ & Nguyễn Thảo',
+    detailTitleSuffix: 'Thiệp Cưới Tuấn Vũ & Nguyễn Thảo',
     heroTitle: 'Chọn Mẫu Thiệp Cưới',
     heroSub:
       'Em chọn mẫu em thích nhất nhé — bấm vào thiệp để xem chi tiết và hướng dẫn đường đi cho khách mời. 💍',
@@ -164,8 +164,8 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     },
   },
   en: {
-    docTitle: 'Wedding Invitation — Vũ & Thảo',
-    detailTitleSuffix: 'Vũ & Thảo Wedding Invitation',
+    docTitle: 'Wedding Invitation — Tuấn Vũ & Nguyễn Thảo',
+    detailTitleSuffix: 'Tuấn Vũ & Nguyễn Thảo Wedding Invitation',
     heroTitle: 'Choose Our Wedding Invitation',
     heroSub:
       'Pick the design you love the most — tap a card for the details and the travel guide for our guests. 💍',
@@ -231,8 +231,8 @@ export const WEDDING_UI: Record<Lang, WeddingUiStrings> = {
     },
   },
   th: {
-    docTitle: 'การ์ดแต่งงาน — Vũ & Thảo',
-    detailTitleSuffix: 'การ์ดแต่งงาน Vũ & Thảo',
+    docTitle: 'การ์ดแต่งงาน — Tuấn Vũ & Nguyễn Thảo',
+    detailTitleSuffix: 'การ์ดแต่งงาน Tuấn Vũ & Nguyễn Thảo',
     heroTitle: 'เลือกแบบการ์ดแต่งงาน',
     heroSub: 'เลือกแบบที่คุณชอบที่สุด — แตะที่การ์ดเพื่อดูรายละเอียดและเส้นทางสำหรับแขก 💍',
     allLabel: 'ทั้งหมด',

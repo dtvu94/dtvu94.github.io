@@ -243,7 +243,8 @@ const SCENES: Record<PopupScene, (p: Palette) => PopLayer[]> = {
       foot: 296,
       height: 210,
       shapes: [{ d: heartPath({ x: 200, y: 122 }, 184), fill: p.primary }],
-      texts: [{ content: 'names', x: 200, y: 122, size: 30, fill: p.surface, font: 'accent' }],
+      // Two lines of names inside the heart.
+      texts: [{ content: 'names', x: 200, y: 118, size: 25, fill: p.surface, font: 'accent' }],
     },
     {
       foot: 318,

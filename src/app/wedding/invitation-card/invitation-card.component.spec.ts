@@ -45,8 +45,8 @@ describe('InvitationCardComponent', () => {
 
   it('places the names directly after the event line, completing the sentence', () => {
     const root = render('classic-ivory');
-    // "đến dự Lễ Thành Hôn của" must be immediately followed by "Vũ & Thảo".
-    expect(root.querySelector('.inv__event + .inv__couple')?.textContent).toContain('Vũ & Thảo');
+    // "đến dự Lễ Thành Hôn của" must be immediately followed by "Tuấn Vũ & Nguyễn Thảo".
+    expect(root.querySelector('.inv__event + .inv__couple')?.textContent).toContain('Tuấn Vũ & Nguyễn Thảo');
     const event = root.querySelector('.inv__event');
     expect(event?.textContent).toContain('đến dự Lễ Thành Hôn của');
     expect(event?.textContent).not.toContain('chúng tôi');
@@ -91,7 +91,7 @@ describe('InvitationCardComponent', () => {
   it('prints only the announcement on an "announce" face', () => {
     const root = render('vn-hong-phuc', 'announce');
     expect(root.querySelector('.inv__kicker')?.textContent).toContain('Lễ Thành Hôn');
-    expect(root.querySelector('.inv__couple--hero')?.textContent).toContain('Vũ & Thảo');
+    expect(root.querySelector('.inv__couple--hero')?.textContent).toContain('Tuấn Vũ & Nguyễn Thảo');
     expect(root.querySelector('.inv__short-date')?.textContent).toContain('28 · 03 · 2027');
     expect(root.querySelector('.inv__venue-short')?.textContent).toContain('Riverside Palace');
     expect(root.querySelector('.inv__headline')).toBeNull();
@@ -156,7 +156,7 @@ describe('InvitationCardComponent', () => {
       const card: HTMLElement | null = fixture.nativeElement.querySelector('.inv');
       expect(card?.className).toContain(`inv--${design.layout}`);
       const text = fixture.nativeElement.textContent;
-      expect(text).toContain('Vũ & Thảo');
+      expect(text).toContain('Tuấn Vũ & Nguyễn Thảo');
       expect(text).toContain('Trân trọng kính mời');
       expect(text).not.toContain('Ông / Bà');
       // The family writes the guest line by hand, "cùng gia đình" included.

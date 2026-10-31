@@ -192,6 +192,11 @@
 .pp__text--accent {
   font-family: var(--inv-font-accent);
 }
+.pp__text-names {
+  display: block;
+  text-align: center;
+  line-height: 1.1;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .pp__top,

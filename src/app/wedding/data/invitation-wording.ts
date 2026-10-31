@@ -100,6 +100,7 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
   const [year, month, day] = config.isoDate.split('-').map(Number);
   const shared = {
     coupleLine,
+    coupleNames: [config.groom.short, config.bride.short] as [string, string],
     monogram,
     rsvp,
     shortDate: formatShortDate(config.isoDate, lang),
@@ -128,7 +129,7 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
         ...shared,
         titleWord: 'Wedding Invitation',
         inviteHeadline: 'We cordially invite you',
-        // Rendered above the names: "to celebrate the wedding of — Vũ & Thảo".
+        // Rendered above the names: "to celebrate the wedding of — Tuấn Vũ & Nguyễn Thảo".
         eventLine: 'to celebrate the wedding of',
         dateLine: `At ${time}, ${weekday}, ${date}`,
         dateLines: [`At ${time}`, `${weekday}, ${date}`],
@@ -143,7 +144,7 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
         ...shared,
         titleWord: 'การ์ดแต่งงาน',
         inviteHeadline: 'ขอเรียนเชิญ',
-        // Rendered above the names: "ร่วมเป็นเกียรติในพิธีมงคลสมรสของ — Vũ & Thảo".
+        // Rendered above the names: "ร่วมเป็นเกียรติในพิธีมงคลสมรสของ — Tuấn Vũ & Nguyễn Thảo".
         eventLine: 'ร่วมเป็นเกียรติในพิธีมงคลสมรสของ',
         dateLine: `เวลา ${time} ${weekday}${date}`,
         dateLines: [`เวลา ${time}`, `${weekday}${date}`],
@@ -158,7 +159,7 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
         ...shared,
         titleWord: 'Thiệp Cưới',
         inviteHeadline: 'Trân trọng kính mời',
-        // Rendered above the names: "đến dự Lễ Thành Hôn của — Vũ & Thảo".
+        // Rendered above the names: "đến dự Lễ Thành Hôn của — Tuấn Vũ & Nguyễn Thảo".
         eventLine: 'đến dự Lễ Thành Hôn của',
         dateLine: `Vào lúc ${time}, ${weekday}, ${date}`,
         dateLines: [`Vào lúc ${time}`, `${weekday}, ${date}`],
@@ -190,6 +191,8 @@ function pad(value: number): string {
   return String(value).padStart(2, '0');
 }
 
+/** Initial of the given name: the last word of a Vietnamese name ("Tuấn Vũ" → "V"). */
 function initialOf(name: string): string {
-  return name.trim().charAt(0).toUpperCase();
+  const words = name.trim().split(/\s+/);
+  return words[words.length - 1].charAt(0).toUpperCase();
 }

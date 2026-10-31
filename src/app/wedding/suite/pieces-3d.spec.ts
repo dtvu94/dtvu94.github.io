@@ -139,12 +139,13 @@ describe('folded cards, pop-ups and passports', () => {
     it('shows the save-the-date cover when shut', () => {
       const root: HTMLElement = render('pop-hearts', { piece: 'popup' }).nativeElement;
       expect(root.querySelector('app-popup')?.classList).toContain('pp--closed');
-      expect(root.querySelector('.pp__face--out .pp__cover-names')?.textContent).toContain('Vũ & Thảo');
+      expect(root.querySelector('.pp__face--out .pp__cover-names')?.textContent).toContain('Tuấn Vũ & Nguyễn Thảo');
     });
   });
 
   describe('PassportComponent', () => {
     it('spells the couple machine-readable style', () => {
+      expect(mrzName('Tuấn Vũ & Nguyễn Thảo')).toBe('TUAN<VU<<NGUYEN<THAO');
       expect(mrzName('Vũ & Thảo')).toBe('VU<<THAO');
       expect(mrzName('Đức & Hà')).toBe('DUC<<HA');
     });
@@ -156,7 +157,7 @@ describe('folded cards, pop-ups and passports', () => {
       expect(root.querySelector('.ps__face--front .ps__monogram .vt-logo')?.getAttribute('aria-label')).toBe('V & T');
       expect(root.querySelector('.ps__title')?.textContent?.trim()).not.toBe('');
       const mrz = root.querySelector('.ps__mrz')?.textContent ?? '';
-      expect(mrz).toContain('VU<<THAO');
+      expect(mrz).toContain('P<VNMTUAN<VU<<NGUYEN<THAO<');
       expect(root.querySelector('.ps__band')?.textContent).toContain('V&T Airlines');
       expect(root.querySelector('.ps__ticket')?.textContent).toContain('Riverside Palace');
     });

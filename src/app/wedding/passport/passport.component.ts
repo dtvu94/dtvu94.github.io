@@ -14,7 +14,7 @@ export const PAGE_H = 424;
  */
 export type PassportPose = 'closed' | 'peek' | 'open';
 
-/** "Vũ & Thảo" → "VU<<THAO": machine-readable-zone style, ASCII only. */
+/** "Tuấn Vũ & Nguyễn Thảo" → "TUAN<VU<<NGUYEN<THAO": machine-readable-zone style, ASCII only. */
 export function mrzName(coupleLine: string): string {
   return coupleLine
     .normalize('NFD')

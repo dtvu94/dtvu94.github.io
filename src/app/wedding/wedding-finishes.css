@@ -297,6 +297,21 @@
 .inv.inv--laserBranch .inv__main {
   zoom: 0.88;
 }
+/* The names on two lines: the lace and lattice windows and the framed
+   border need the copy a little smaller too. */
+.inv:is(.inv--laserLace, .inv--laserLattice) .inv__main {
+  zoom: 0.88;
+}
+.inv.inv--framedBorder .inv__main {
+  zoom: 0.95;
+}
+/* English and Thai run longer: the arch and the side column need a touch more. */
+.inv.inv.inv--archFrame:is(:lang(en), :lang(th)) .inv__main {
+  zoom: 0.94;
+}
+.inv.inv.inv--splitVertical:lang(th) .inv__main {
+  zoom: 0.84;
+}
 /* Narrow columns (side panel, laser windows): smaller names, tighter gap. */
 .inv:is(.inv--splitVertical, .inv--laserCloud, .inv--laserBranch) .inv__parents {
   grid-template-columns: auto auto;
@@ -309,4 +324,21 @@
 .inv:is(.inv--splitVertical, .inv--laserCloud, .inv--laserBranch) .inv__parent-label {
   font-size: 8.5px;
   letter-spacing: 0.14em;
+}
+
+/* ── The couple's names ────────────────────────────────────────────────
+   "Tuấn Vũ & Nguyễn Thảo" is too long for one line of script on most
+   cards: it breaks only between the names, balanced into "Tuấn Vũ &" /
+   "Nguyễn Thảo", and never inside a name. */
+.inv .inv__couple {
+  text-wrap: balance;
+}
+/* Two lines of script: a little smaller than the one-line "Vũ & Thảo" was. */
+.inv .inv__couple:not(.inv__couple--hero) {
+  zoom: 0.86;
+}
+/* The lower pocket's card: both lines of names above the insert. */
+.inv.inv--top .inv__couple--hero {
+  font-size: 36px;
+  line-height: 1.05;
 }

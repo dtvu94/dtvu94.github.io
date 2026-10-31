@@ -1,6 +1,6 @@
 import { Component, HostBinding, Input } from '@angular/core';
 import { EnvelopeSpec, InvitationCopy, InvitationDesign } from '../data/wedding.types';
-import { cornerSpray, curlFrame, drawnBow, fern, lotusPrint, monogramCrest, waxSealPath } from '../geometry/envelope-art';
+import { HEART_FLOURISH_BOX, cornerSpray, curlFrame, drawnBow, fern, heartFlourish, lotusPrint, waxSealPath } from '../geometry/envelope-art';
 import { Motif, mergeMotifs } from '../geometry/motifs';
 import { linerBackground, STOCK_TEXTURE } from '../geometry/patterns';
 import { RoseSpray, envelopeRoses } from '../geometry/rose-spray';
@@ -26,7 +26,7 @@ export type EnvelopeLayer =
 const geometryCache = new Map<string, EnvelopeGeometry>();
 
 /** Where the print sits on the front, as fractions of the envelope height. */
-const PRINT_Y: Record<string, number> = { names: 0.44, monogram: 0.33, fern: 0.42, frame: 0.36, florals: 0.42, lotus: 0.32 };
+const PRINT_Y: Record<string, number> = { names: 0.44, namesHeart: 0.42, fern: 0.42, frame: 0.36, florals: 0.42, lotus: 0.32 };
 
 /**
  * One layer of a design's matching envelope, drawn at ENV_W × ENV_H design
@@ -35,6 +35,7 @@ const PRINT_Y: Record<string, number> = { names: 0.44, monogram: 0.33, fern: 0.4
  */
 /** Drawn once: every envelope front uses the same sprays. */
 const ROSES = envelopeRoses(ENV_W);
+const HEART = heartFlourish();
 
 @Component({
   selector: 'app-envelope',
@@ -53,6 +54,9 @@ export class EnvelopeComponent {
   readonly foilId = uniqueSvgId('env-foil');
   /** Baby-rose sprays for both sides of the front (same art on every envelope). */
   readonly roseArt: RoseSpray = ROSES;
+  /** The drawn heart between the names on a "namesHeart" front. */
+  readonly heartPath = HEART;
+  readonly heartBox = `0 0 ${HEART_FLOURISH_BOX.w} ${HEART_FLOURISH_BOX.h}`;
   readonly foilRef = svgRef(this.foilId);
   readonly waxId = uniqueSvgId('env-wax');
   readonly waxRef = svgRef(this.waxId);
@@ -119,8 +123,6 @@ export class EnvelopeComponent {
     const cx = ENV_W / 2;
     const y = this.printY;
     switch (this.spec.print) {
-      case 'monogram':
-        return monogramCrest({ x: cx, y }, 40);
       case 'fern':
         return mergeMotifs(fern({ x: ENV_W - 70, y: ENV_H - 14 }, -1.85, 150, 0.35), fern({ x: ENV_W - 58, y: ENV_H - 16 }, -1.45, 112, -0.3));
       case 'frame':
@@ -135,15 +137,17 @@ export class EnvelopeComponent {
   }
 
   get showsNames(): boolean {
-    return this.spec.print !== 'none' && this.spec.print !== 'fern';
+    return this.spec.print !== 'none' && this.spec.print !== 'fern' && this.spec.print !== 'namesHeart';
+  }
+
+  /** "28.03.2027" (Buddhist year in Thai), under the names on a "namesHeart" front. */
+  get dotDate(): string {
+    return this.copy.shortDate.split(' · ').join('.');
   }
 
   get namesY(): number {
     if (this.spec.print === 'lotus') {
       return ENV_H * 0.56;
-    }
-    if (this.spec.print === 'monogram') {
-      return ENV_H * 0.6;
     }
     return this.spec.print === 'frame' ? ENV_H * 0.45 : this.printY;
   }

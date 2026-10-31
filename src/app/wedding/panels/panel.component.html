@@ -24,7 +24,7 @@
       }
       @case ('photo') {
         <app-photo class="pn__photo" [frame]="photoFrame" [index]="photoIndex" [monogram]="copy.monogram" [caption]="copy.photoSoon" />
-        <p class="pn__names">{{ copy.coupleLine }}</p>
+        <p class="pn__names"><span class="couple-name">{{ copy.coupleNames[0] }}</span> &amp; <span class="couple-name">{{ copy.coupleNames[1] }}</span></p>
         <p class="pn__date">{{ copy.shortDate }}</p>
       }
       @case ('venue') {

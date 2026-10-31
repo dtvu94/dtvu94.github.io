@@ -9,9 +9,11 @@ describe('buildWording', () => {
     expect(copy.inviteHeadline).toBe('Trân trọng kính mời');
     // No "Ông / Bà": the family writes each guest's name on the line.
     expect(copy).not.toHaveProperty('guestPrefix');
-    expect(copy.coupleLine).toBe('Vũ & Thảo');
+    expect(copy.coupleLine).toBe('Tuấn Vũ & Nguyễn Thảo');
+    expect(copy.coupleNames).toEqual(['Tuấn Vũ', 'Nguyễn Thảo']);
+    // Initials of the given names, the last word of each name.
     expect(copy.monogram).toBe('V & T');
-    // The event line leads into the names: "đến dự Lễ Thành Hôn của — Vũ & Thảo".
+    // The event line leads into the names: "đến dự Lễ Thành Hôn của — Tuấn Vũ & Nguyễn Thảo".
     expect(copy.eventLine).toBe('đến dự Lễ Thành Hôn của');
     expect(copy.dateLine).toBe('Vào lúc 18h00, Chủ Nhật, ngày 28 tháng 03 năm 2027');
     // On the card: time, then the day, each on its own line.
@@ -43,7 +45,7 @@ describe('buildWording', () => {
       '360D Bến Vân Đồn, Vĩnh Hội Ward, District 4, Ho Chi Minh City',
     ]);
     // The couple's names stay Vietnamese in every language.
-    expect(copy.coupleLine).toBe('Vũ & Thảo');
+    expect(copy.coupleLine).toBe('Tuấn Vũ & Nguyễn Thảo');
   });
 
   it('builds the Thai copy with the Buddhist-era year', () => {
@@ -56,7 +58,7 @@ describe('buildWording', () => {
     expect(copy.dateLines).toEqual(['เวลา 18:00 น.', 'วันอาทิตย์ที่ 28 มีนาคม พ.ศ. 2570']);
     expect(copy.parents[1].names).toEqual(['นาย Nguyễn Đức Nam', 'นาง Đặng Thị Lan']);
     expect(copy.venueLines[0]).toBe('ห้องจัดเลี้ยง Danube');
-    expect(copy.coupleLine).toBe('Vũ & Thảo');
+    expect(copy.coupleLine).toBe('Tuấn Vũ & Nguyễn Thảo');
   });
 
   it('prints the banquet hall on the boarding pass, or a placeholder until one is chosen', () => {

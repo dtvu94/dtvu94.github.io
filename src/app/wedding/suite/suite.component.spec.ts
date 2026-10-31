@@ -54,7 +54,7 @@ describe('suite pieces', () => {
     it('addresses the guest on the front: "Kính mời" line, the couple and the print', () => {
       const front = render('modern-red', { piece: 'envelope', layer: 'front' });
       expect(front.querySelector('.env__guest')?.textContent).toContain('Kính mời:');
-      expect(front.querySelector('.env__names')?.textContent).toContain('Vũ & Thảo');
+      expect(front.querySelector('.env__names')?.textContent).toContain('Tuấn Vũ & Nguyễn Thảo');
       expect(front.querySelector('.env__front')).toBeTruthy();
     });
 
@@ -63,14 +63,22 @@ describe('suite pieces', () => {
         const back = render(id, { piece: 'envelope', layer: 'pocket' });
         expect(back.querySelector('.env__guest')).toBeNull();
         expect(back.querySelector('.env__names')).toBeNull();
-        expect(back.querySelector('.env__monogram')).toBeNull();
+        expect(back.querySelector('.env__hn')).toBeNull();
         expect((back.querySelector('.env__pocket') as HTMLElement).style.clipPath).toMatch(/^path\('M/);
       }
     });
 
-    it('prints a monogram crest, a fern or a framed title on the front as the design asks', () => {
+    it('prints names round a heart over the date, a fern or a framed title on the front as the design asks', () => {
       const front = (id: string) => render(id, { piece: 'envelope', layer: 'front' });
-      expect(front('press-cotton').querySelector('.env__monogram .vt-logo')?.getAttribute('aria-label')).toBe('V & T');
+      const hearted = front('press-cotton');
+      const names = hearted.querySelector('.env__hn-names');
+      expect(Array.from(names?.querySelectorAll('span') ?? []).map((span) => span.textContent)).toEqual(['Tuấn Vũ', 'Nguyễn Thảo']);
+      // Read aloud as one line: the heart stands for "&".
+      expect(names?.getAttribute('aria-label')).toBe('Tuấn Vũ & Nguyễn Thảo');
+      expect(hearted.querySelector('.env__hn-heart path')?.getAttribute('d')).toMatch(/^M/);
+      expect(hearted.querySelector('.env__hn-date')?.textContent).toBe('28.03.2027');
+      // The names are the print: no second names line under it.
+      expect(hearted.querySelector('.env__names')).toBeNull();
       expect(front('rustic-kraft').querySelector('.env__script')?.textContent).toContain('Thiệp Cưới');
       expect(front('vn-hy-do').querySelector('.env__frame-title')).toBeTruthy();
     });
@@ -120,7 +128,7 @@ describe('suite pieces', () => {
       expect(insert.querySelector('.inv__headline')).toBeTruthy();
       expect(insert.getAttribute('style')).toContain('--inv-surface:#fbf1df');
       expect(base.getAttribute('style')).toContain('--inv-surface:#b3161b');
-      expect(render('rustic-kraft', { piece: 'pocket' }).querySelector('.pk__band-names')?.textContent).toContain('Vũ & Thảo');
+      expect(render('rustic-kraft', { piece: 'pocket' }).querySelector('.pk__band-names')?.textContent).toContain('Tuấn Vũ & Nguyễn Thảo');
     });
 
     it('frames the couple’s photo in the window when the design asks', () => {

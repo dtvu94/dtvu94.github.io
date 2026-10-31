@@ -109,8 +109,12 @@
   font-size: 1.1em;
 }
 .ps__names {
+  /* Two balanced lines inside the cover's margins. */
+  padding-inline: 30px;
   font-family: var(--inv-font-accent);
   font-size: 32px;
+  line-height: 1.1;
+  text-wrap: balance;
 }
 .ps__chip {
   position: absolute;
@@ -174,6 +178,8 @@
 .ps__data-names {
   font-family: var(--inv-font-accent);
   font-size: 22px;
+  line-height: 1.15;
+  text-wrap: balance;
   color: var(--inv-primary);
   margin-bottom: 4px !important;
 }

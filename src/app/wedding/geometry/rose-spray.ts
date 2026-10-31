@@ -88,6 +88,14 @@ function breathSprig(from: Point, to: Point, rand: () => number, out: RoseSpray)
   }
 }
 
+/** Outer edge the spray is drawn in from, in envelope pixels. */
+const SPRAY_EDGE = 8;
+/**
+ * Spray layout squeezed towards the outer edge (positions only; flowers and
+ * leaves keep their size), so a line of names fits between the two sprays.
+ */
+const SPRAY_SQUEEZE = 0.8;
+
 /**
  * Spray for the left side of an envelope front (`flip` mirrors it onto the
  * right side, about x = `width` / 2), laid out in envelope pixels: roses at
@@ -96,7 +104,8 @@ function breathSprig(from: Point, to: Point, rand: () => number, out: RoseSpray)
 export function roseSpray(width: number, flip: boolean, seed = 7): RoseSpray {
   const rand = seededRandom(seed);
   const out: RoseSpray = { stems: '', leaves: '', petals: '', petalsInner: '', lines: '', buds: '', breath: '', breathStems: '' };
-  const X = (x: number) => (flip ? width - x : x);
+  const squeeze = (x: number) => SPRAY_EDGE + (x - SPRAY_EDGE) * SPRAY_SQUEEZE;
+  const X = (x: number) => (flip ? width - squeeze(x) : squeeze(x));
   const P = (x: number, y: number): Point => ({ x: X(x), y });
   const A = (a: number) => (flip ? Math.PI - a : a);
   const jitter = () => (rand() - 0.5) * 4;
@@ -122,7 +131,6 @@ export function roseSpray(width: number, flip: boolean, seed = 7): RoseSpray {
     [62, 88, 80, 80],
     [64, 70, 108, 66],
     [62, 76, 30, 70],
-    [60, 166, 120, 158],
   ];
   for (const [x1, y1, x2, y2] of twigs) {
     const mid = P((x1 + x2) / 2 + jitter(), (y1 + y2) / 2 - 6);
@@ -156,7 +164,6 @@ export function roseSpray(width: number, flip: boolean, seed = 7): RoseSpray {
     [70, 44, -1.55, 17],
     [108, 66, -0.95, 14],
     [30, 70, -2.2, 14],
-    [120, 158, -0.2, 13],
   ];
   for (const [x, y, angle, len] of buds) {
     out.buds += bud(P(x, y), A(angle), len);

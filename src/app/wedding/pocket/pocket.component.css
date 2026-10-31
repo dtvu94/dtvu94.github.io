@@ -147,7 +147,7 @@ app-invitation-card {
   left: 20px;
   top: 0;
   transform-origin: 0 0;
-  transform: translateY(282px) scale(0.9);
+  transform: translateY(290px) scale(0.9);
 }
 .pk__lower-kicker {
   position: absolute;

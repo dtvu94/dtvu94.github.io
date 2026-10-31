@@ -223,8 +223,8 @@ export type EnvelopePrint =
   | 'none'
   /** The couple's names in the display face. */
   | 'names'
-  /** Monogram inside a laurel crest. */
-  | 'monogram'
+  /** "Tuấn Vũ ♡ Nguyễn Thảo" with the date beneath, like a save-the-date. */
+  | 'namesHeart'
   /** Fern spray with a script title (kraft style). */
   | 'fern'
   /** Double-line frame with cloud-curl corners round the title (thiệp mời). */
@@ -406,7 +406,7 @@ export interface InvitationDesign {
 // ── wedding facts & copy ────────────────────────────────────────────────────
 
 export interface PersonName {
-  /** Short display name used on the big script line, e.g. "Vũ". */
+  /** Display name used on the big script line, e.g. "Tuấn Vũ". Its last word is the given name. */
   short: string;
   /** Full formal name — leave '' until decided; rendered only when set. */
   full: string;
@@ -476,6 +476,8 @@ export interface InvitationCopy {
   titleWord: string;
   inviteHeadline: string;
   coupleLine: string;
+  /** Groom's and bride's display names, for layouts that set them apart. */
+  coupleNames: [string, string];
   eventLine: string;
   /** Time and day on one line (calendar entries). */
   dateLine: string;

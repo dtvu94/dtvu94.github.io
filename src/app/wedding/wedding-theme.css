@@ -62,6 +62,12 @@
   }
 }
 
+/* One of the couple's names ("Tuấn Vũ", "Nguyễn Thảo"): a name line may
+   break between the two names, never inside one. */
+.couple-name {
+  white-space: nowrap;
+}
+
 /* ── The couple's V T logo ─────────────────────────────────────────────
    Used wherever a card, envelope, seal or cover carries the monogram.
    The mark is a mask, so it takes any paint: the element's text colour by

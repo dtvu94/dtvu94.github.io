@@ -59,7 +59,7 @@
         <app-ornament class="ps__laurel" ornament="laurel" [relief]="{ mode: 'raised', finish: 'foil' }" [palette]="emblemPalette" />
         <p class="ps__monogram"><span class="vt-logo" role="img" [attr.aria-label]="copy.monogram"></span></p>
       </div>
-      <p class="ps__names">{{ copy.coupleLine }}</p>
+      <p class="ps__names"><span class="couple-name">{{ copy.coupleNames[0] }}</span> &amp; <span class="couple-name">{{ copy.coupleNames[1] }}</span></p>
       <span class="ps__chip" aria-hidden="true"></span>
     </div>
     <div class="ps__face ps__face--back">
@@ -68,7 +68,7 @@
         <app-photo class="ps__photo" frame="rounded" [monogram]="copy.monogram" [caption]="copy.photoSoon" />
         <div class="ps__data-fields">
           <p class="ps__label">{{ copy.kicker }}</p>
-          <p class="ps__data-names">{{ copy.coupleLine }}</p>
+          <p class="ps__data-names"><span class="couple-name">{{ copy.coupleNames[0] }}</span> &amp; <span class="couple-name">{{ copy.coupleNames[1] }}</span></p>
           <p class="ps__label">{{ copy.passport.date }}</p>
           <p class="ps__value">{{ copy.shortDate }}</p>
           <p class="ps__label">{{ copy.passport.to }}</p>

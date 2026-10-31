@@ -117,6 +117,7 @@
   font-family: var(--inv-font-accent);
   font-size: 34px;
   line-height: 1.1;
+  text-wrap: balance;
   color: var(--inv-primary);
 }
 .pn__date {

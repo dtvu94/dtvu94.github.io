@@ -41,7 +41,7 @@ describe('WeddingGalleryComponent', () => {
   it('defaults to Vietnamese: hero, date and lang attribute', () => {
     const root: HTMLElement = create().nativeElement;
     expect(root.querySelector('main')?.getAttribute('lang')).toBe('vi');
-    expect(root.querySelector('.gallery__script')?.textContent).toContain('Vũ & Thảo');
+    expect(root.querySelector('.gallery__script')?.textContent).toContain('Tuấn Vũ & Nguyễn Thảo');
     expect(root.querySelector('.gallery__title')?.textContent).toContain('Chọn Mẫu Thiệp Cưới');
     expect(root.querySelector('.gallery__meta')?.textContent).toContain('28 tháng 03 năm 2027');
     expect(root.querySelector('.gallery__meta')?.textContent).toContain('Riverside Palace');

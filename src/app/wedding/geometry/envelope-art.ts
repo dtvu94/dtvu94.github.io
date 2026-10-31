@@ -1,4 +1,4 @@
-import { Motif, blossom, laurelWreath, leaf, lotusBloom } from './motifs';
+import { Motif, blossom, leaf, lotusBloom } from './motifs';
 import { Point, Track, circlePath, fmt, lensPath, polar, pt, roundedRectPath, seededRandom } from './path-kit';
 
 /**
@@ -73,8 +73,23 @@ export function lotusPrint(c: Point, size: number): Motif {
   };
 }
 
-export function monogramCrest(c: Point, r: number): Motif {
-  return laurelWreath(c, r, { leaves: 8, berries: true, seed: 3 });
+/** Box of `heartFlourish()`, in its own units (drawn 1em high beside the names). */
+export const HEART_FLOURISH_BOX = { w: 56, h: 30 } as const;
+
+/**
+ * Hand-drawn heart between the couple's names (tên ♡ tên): one stroke that
+ * comes in from the left along the baseline, draws the heart and sweeps
+ * out to the right, inside HEART_FLOURISH_BOX.
+ */
+export function heartFlourish(): string {
+  return (
+    'M1 21C9 22 20 24 28 25.5' + // in from the left, to the point
+    'C24 22 18 18 17.5 12.5' + // up the left side
+    'C17 7 20.5 4 23.5 4C26.5 4 28 6.5 28 9' + // left lobe, into the cleft
+    'C28 6.5 29.5 4 32.5 4C35.5 4 39 7 38.5 12.5' + // right lobe
+    'C38 18 32 22 28 25.5' + // down to the point
+    'C36 24 46 20 55 19' // and away to the right
+  );
 }
 
 /** Irregular wax seal outline (sáp niêm), radius ≈ r. */

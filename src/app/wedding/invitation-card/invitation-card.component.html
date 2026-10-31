@@ -56,7 +56,7 @@
           <ng-container *ngTemplateOutlet="crestTpl; context: { $implicit: crest }" />
         }
         <p class="inv__kicker">{{ copy.kicker }}</p>
-        <p class="inv__couple inv__couple--hero">{{ copy.coupleLine }}</p>
+        <p class="inv__couple inv__couple--hero"><span class="couple-name">{{ copy.coupleNames[0] }}</span> &amp; <span class="couple-name">{{ copy.coupleNames[1] }}</span></p>
         @if (dividerOrnament; as divider) {
           <app-ornament class="inv__divider" [ornament]="divider" [relief]="relief" [palette]="design.palette" aria-hidden="true" />
         } @else {
@@ -98,7 +98,7 @@
           }
         </p>
         <p class="inv__event">{{ copy.eventLine }}</p>
-        <p class="inv__couple">{{ copy.coupleLine }}</p>
+        <p class="inv__couple"><span class="couple-name">{{ copy.coupleNames[0] }}</span> &amp; <span class="couple-name">{{ copy.coupleNames[1] }}</span></p>
 
         @if (dividerOrnament; as divider) {
           <app-ornament class="inv__divider" [ornament]="divider" [relief]="relief" [palette]="design.palette" aria-hidden="true" />

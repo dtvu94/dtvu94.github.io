@@ -53,6 +53,9 @@
         >
           @if (text.content === 'monogram') {
             <span class="vt-logo" role="img" [attr.aria-label]="copy.monogram"></span>
+          } @else if (text.content === 'names') {
+            <!-- Two lines, so the names stay inside the shape that carries them. -->
+            <span class="pp__text-names">{{ copy.coupleNames[0] }} &amp;<br />{{ copy.coupleNames[1] }}</span>
           } @else {
             {{ textOf(text) }}
           }
