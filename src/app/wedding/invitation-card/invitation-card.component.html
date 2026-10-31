@@ -88,14 +88,14 @@
           }
         </div>
         <p class="inv__headline">{{ copy.inviteHeadline }}</p>
-        <!-- The family writes each guest's name on the dotted line. -->
+        <!-- The family writes the whole guest line by hand ("Anh Minh",
+             "Ông Bà … cùng gia đình"): only the dotted line is printed. -->
         <p class="inv__guest">
           @if (guest) {
             <span class="inv__guest-name">{{ guest }}</span>
           } @else {
             <span class="inv__guest-dots" aria-hidden="true"></span>
           }
-          <span>{{ copy.guestSuffix }}</span>
         </p>
         <p class="inv__event">{{ copy.eventLine }}</p>
         <p class="inv__couple">{{ copy.coupleLine }}</p>

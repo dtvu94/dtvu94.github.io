@@ -128,7 +128,6 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
         ...shared,
         titleWord: 'Wedding Invitation',
         inviteHeadline: 'We cordially invite you',
-        guestSuffix: '& family',
         // Rendered above the names: "to celebrate the wedding of — Vũ & Thảo".
         eventLine: 'to celebrate the wedding of',
         dateLine: `At ${time}, ${weekday}, ${date}`,
@@ -144,7 +143,6 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
         ...shared,
         titleWord: 'การ์ดแต่งงาน',
         inviteHeadline: 'ขอเรียนเชิญ',
-        guestSuffix: 'พร้อมครอบครัว',
         // Rendered above the names: "ร่วมเป็นเกียรติในพิธีมงคลสมรสของ — Vũ & Thảo".
         eventLine: 'ร่วมเป็นเกียรติในพิธีมงคลสมรสของ',
         dateLine: `เวลา ${time} ${weekday}${date}`,
@@ -160,7 +158,6 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
         ...shared,
         titleWord: 'Thiệp Cưới',
         inviteHeadline: 'Trân trọng kính mời',
-        guestSuffix: 'cùng gia đình',
         // Rendered above the names: "đến dự Lễ Thành Hôn của — Vũ & Thảo".
         eventLine: 'đến dự Lễ Thành Hôn của',
         dateLine: `Vào lúc ${time}, ${weekday}, ${date}`,

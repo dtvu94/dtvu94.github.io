@@ -129,7 +129,8 @@
   margin-bottom: 4px !important;
 }
 .pp__dots {
-  flex: 0 1 100px;
+  flex: 0 1 200px;
+  height: 1.1em;
   border-bottom: 1.5px dotted currentColor;
   opacity: 0.45;
 }

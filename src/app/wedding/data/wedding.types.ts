@@ -475,8 +475,6 @@ export interface ParentsSide {
 export interface InvitationCopy {
   titleWord: string;
   inviteHeadline: string;
-  /** After the line the family writes the guest's name on, e.g. "cùng gia đình" (with family). */
-  guestSuffix: string;
   coupleLine: string;
   eventLine: string;
   /** Time and day on one line (calendar entries). */

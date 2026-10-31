@@ -9,7 +9,6 @@ describe('buildWording', () => {
     expect(copy.inviteHeadline).toBe('Trân trọng kính mời');
     // No "Ông / Bà": the family writes each guest's name on the line.
     expect(copy).not.toHaveProperty('guestPrefix');
-    expect(copy.guestSuffix).toBe('cùng gia đình');
     expect(copy.coupleLine).toBe('Vũ & Thảo');
     expect(copy.monogram).toBe('V & T');
     // The event line leads into the names: "đến dự Lễ Thành Hôn của — Vũ & Thảo".
@@ -34,7 +33,6 @@ describe('buildWording', () => {
 
     expect(copy.titleWord).toBe('Wedding Invitation');
     expect(copy.inviteHeadline).toBe('We cordially invite you');
-    expect(copy.guestSuffix).toBe('& family');
     expect(copy.eventLine).toBe('to celebrate the wedding of');
     expect(copy.dateLine).toBe('At 6:00 PM, Sunday, March 28th, 2027');
     expect(copy.dateLines).toEqual(['At 6:00 PM', 'Sunday, March 28th, 2027']);
@@ -53,7 +51,6 @@ describe('buildWording', () => {
 
     expect(copy.titleWord).toBe('การ์ดแต่งงาน');
     expect(copy.inviteHeadline).toBe('ขอเรียนเชิญ');
-    expect(copy.guestSuffix).toBe('พร้อมครอบครัว');
     expect(copy.eventLine).toBe('ร่วมเป็นเกียรติในพิธีมงคลสมรสของ');
     expect(copy.dateLine).toBe('เวลา 18:00 น. วันอาทิตย์ที่ 28 มีนาคม พ.ศ. 2570');
     expect(copy.dateLines).toEqual(['เวลา 18:00 น.', 'วันอาทิตย์ที่ 28 มีนาคม พ.ศ. 2570']);

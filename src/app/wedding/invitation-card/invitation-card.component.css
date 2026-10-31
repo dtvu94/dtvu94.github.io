@@ -120,8 +120,9 @@
   margin-top: 2px;
 }
 
-/* "Ông / Bà: ……… cùng gia đình" — the guest's line. Larger than the body
-   copy and with clear space below it, out of respect for the invitee. */
+/* The guest's line: a dotted line the family writes on by hand (a name,
+   "… cùng gia đình" or not), or the name from the link. Larger than the
+   body copy and with clear space below it, out of respect for the invitee. */
 .inv__guest {
   display: flex;
   align-items: baseline;
@@ -134,7 +135,9 @@
   margin: 0 0 6px;
 }
 .inv__guest-dots {
-  flex: 0 1 120px;
+  flex: 0 1 220px;
+  /* One line high, so there is room to write above the dots. */
+  height: 1.2em;
   border-bottom: 1.5px dotted currentColor;
   opacity: 0.45;
 }

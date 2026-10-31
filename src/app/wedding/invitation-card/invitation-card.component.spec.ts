@@ -159,7 +159,9 @@ describe('InvitationCardComponent', () => {
       expect(text).toContain('Vũ & Thảo');
       expect(text).toContain('Trân trọng kính mời');
       expect(text).not.toContain('Ông / Bà');
-      expect(text).toContain('cùng gia đình');
+      // The family writes the guest line by hand, "cùng gia đình" included.
+      expect(text).not.toContain('cùng gia đình');
+      expect(fixture.nativeElement.querySelector('.inv__guest .inv__guest-dots')).toBeTruthy();
       expect(text).toContain('Ông Đặng Văn Quỳ');
       expect(text).toContain('Bà Đặng Thị Lan');
       expect(text).toContain('Riverside Palace');
