@@ -1,4 +1,4 @@
-import { CardShape, DirectionsShape, EnvelopeFlap, EnvelopeSize, EnvelopeSpec, PocketWindow } from '../data/wedding.types';
+import { CardShape, DirectionsShape, EnvelopeFlap, EnvelopeOpening, EnvelopeSize, EnvelopeSpec, PocketWindow } from '../data/wedding.types';
 import {
   Point,
   circlePath,
@@ -148,6 +148,7 @@ export const ENVELOPE_SIZES: Record<EnvelopeSize, { w: number; h: number }> = {
   standard: { w: ENV_W, h: ENV_H },
   square: { w: 400, h: 400 },
   long: { w: 500, h: 260 },
+  round: { w: 380, h: 380 },
 };
 
 export function envelopeSize(spec: Pick<EnvelopeSpec, 'size'>): { w: number; h: number } {
@@ -165,6 +166,94 @@ export interface EnvelopeGeometry {
   seams: string;
   /** Where the seal sits on the closed flap. */
   sealAt: Point;
+  /** Outline of the body when it is not a plain rectangle (round, notched sleeve). */
+  body?: string;
+  /** Sleeve: the thumb notch on the open side, where the card and its ribbon show. */
+  notch?: { x: number; y: number; r: number };
+}
+
+/** How an envelope opens, as drawn: a round body only has its round flap or an open mouth. */
+export function envelopeOpening(spec: Pick<EnvelopeSpec, 'size' | 'opening'>): EnvelopeOpening {
+  const opening = spec.opening ?? 'flap';
+  return spec.size === 'round' && opening === 'sleeve' ? 'flap' : opening;
+}
+
+/** A scooped mouth across the top: the open pocket shows its lining (and the card). */
+function scoopPocket(w: number, h: number): string {
+  const cx = w / 2;
+  const top = h * 0.06;
+  const deep = h * 0.36;
+  return (
+    `M0 ${fmt(top)}C${fmt(w * 0.3)} ${fmt(top)} ${fmt(w * 0.3)} ${fmt(deep)} ${fmt(cx)} ${fmt(deep)}` +
+    `C${fmt(w * 0.7)} ${fmt(deep)} ${fmt(w * 0.7)} ${fmt(top)} ${fmt(w)} ${fmt(top)}V${fmt(h)}H0Z`
+  );
+}
+
+/** Round envelope: a circle with a round flap over the top, or an open scoop. */
+function roundEnvelope(w: number, h: number, open: boolean): EnvelopeGeometry {
+  const cx = w / 2;
+  const cy = h / 2;
+  const r = w / 2;
+  const body = circlePath({ x: cx, y: cy }, r);
+  // The flap: the cap of the circle above a chord, its lower edge bowed down.
+  const chordY = h * 0.3;
+  const half = Math.sqrt(r * r - (cy - chordY) ** 2);
+  const x1 = cx - half;
+  const x2 = cx + half;
+  // A quadratic's lowest point is halfway to its control: the flap reaches `depth`.
+  const depth = h * 0.56;
+  const flap = `M${fmt(x1)} ${fmt(chordY)}A${fmt(r)} ${fmt(r)} 0 0 1 ${fmt(x2)} ${fmt(chordY)}Q${fmt(cx)} ${fmt(2 * depth - chordY)} ${fmt(x1)} ${fmt(chordY)}Z`;
+  // Front pocket seen from the back: the circle below a shallow mouth.
+  const mouthY = open ? h * 0.26 : chordY;
+  const mouthHalf = Math.sqrt(r * r - (cy - mouthY) ** 2);
+  const pocket =
+    `M${fmt(cx - mouthHalf)} ${fmt(mouthY)}Q${fmt(cx)} ${fmt(open ? h * 0.52 : mouthY + 26)} ${fmt(cx + mouthHalf)} ${fmt(mouthY)}` +
+    `A${fmt(r)} ${fmt(r)} 0 1 1 ${fmt(cx - mouthHalf)} ${fmt(mouthY)}Z`;
+  const seams = `M${fmt(cx - r * 0.72)} ${fmt(cy + r * 0.69)}Q${fmt(cx)} ${fmt(cy + r * 0.05)} ${fmt(cx + r * 0.72)} ${fmt(cy + r * 0.69)}`;
+  return {
+    flap: open ? '' : flap,
+    flapDepth: open ? 0 : depth,
+    pocket,
+    seams,
+    sealAt: { x: cx, y: open ? h * 0.7 : depth - 26 },
+    body,
+  };
+}
+
+/** Sleeve (bao thư kéo): no flap; a thumb notch on the right, open side. */
+function sleeveEnvelope(w: number, h: number): EnvelopeGeometry {
+  const cy = h / 2;
+  const r = Math.min(34, h * 0.12);
+  const body = `M0 0H${fmt(w)}V${fmt(cy - r)}A${fmt(r)} ${fmt(r)} 0 0 0 ${fmt(w)} ${fmt(cy + r)}V${fmt(h)}H0Z`;
+  return {
+    flap: '',
+    flapDepth: 0,
+    pocket: body,
+    // The glued seam of the sleeve, down the closed (left) side.
+    seams: `M${fmt(w * 0.07)} 0V${fmt(h)}`,
+    sealAt: { x: w * 0.5, y: cy },
+    body,
+    notch: { x: w, y: cy, r },
+  };
+}
+
+/** Geometry of a whole envelope spec: size, opening and flap together. */
+export function envelopeLayout(spec: Pick<EnvelopeSpec, 'flap' | 'size' | 'opening'>): EnvelopeGeometry {
+  const { w, h } = envelopeSize(spec);
+  const opening = envelopeOpening(spec);
+  if (spec.size === 'round') {
+    return roundEnvelope(w, h, opening === 'open');
+  }
+  if (opening === 'sleeve') {
+    return sleeveEnvelope(w, h);
+  }
+  const geo = envelopeGeometry(spec.flap, w, h);
+  if (opening !== 'open') {
+    return geo;
+  }
+  // Open pocket: the scooped mouth, and only the bottom flap's seam below it.
+  const seams = `M0 ${fmt(h)}Q${fmt(w / 2)} ${fmt(h * 0.42)} ${fmt(w)} ${fmt(h)}`;
+  return { ...geo, flap: '', flapDepth: 0, pocket: scoopPocket(w, h), seams, sealAt: { x: w / 2, y: h * 0.62 } };
 }
 
 export function envelopeGeometry(flap: EnvelopeFlap, w = ENV_W, h = ENV_H): EnvelopeGeometry {

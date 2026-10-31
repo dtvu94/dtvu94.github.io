@@ -6,6 +6,7 @@ import {
   EnvelopeFlap,
   EnvelopeLabel,
   EnvelopeLiner,
+  EnvelopeOpening,
   EnvelopeSeal,
   EnvelopeSize,
   FontFamilyKey,
@@ -13,11 +14,12 @@ import {
   OrnamentKey,
   Palette,
   PaperStock,
+  PhotoFrame,
   PrintFinish,
   ReliefSpec,
 } from '../data/wedding.types';
-import { CARD_H, CARD_W, cardSilhouette, directionsSilhouette, envelopeGeometry, envelopeSize } from '../geometry/shapes';
-import { EditorTab, ReliefChoice, RosesTone, StickerColor, StickerKind } from './editor-state';
+import { CARD_H, CARD_W, cardSilhouette, directionsSilhouette, envelopeGeometry, envelopeLayout, envelopeSize } from '../geometry/shapes';
+import { EditorTab, ReliefChoice, RosesTone, StickerColor, StickerFont, StickerKind } from './editor-state';
 
 /**
  * Everything the editor offers, with the Vietnamese labels it shows. The
@@ -129,11 +131,22 @@ export const FONTS: Choice<FontFamilyKey>[] = [
 
 // ── envelope ────────────────────────────────────────────────────────────────
 
-const SIZE_LABELS: Record<EnvelopeSize, string> = { standard: 'Chữ nhật', square: 'Vuông', long: 'Chữ nhật dài' };
+const SIZE_LABELS: Record<EnvelopeSize, string> = { standard: 'Chữ nhật', square: 'Vuông', long: 'Chữ nhật dài', round: 'Tròn' };
 
 export const ENVELOPE_SIZES: Choice<EnvelopeSize>[] = (Object.keys(SIZE_LABELS) as EnvelopeSize[]).map((size) => {
   const { w, h } = envelopeSize({ size });
-  return { value: size, label: SIZE_LABELS[size], thumb: { box: `0 0 ${w} ${h}`, d: `M0 0H${w}V${h}H0Z` } };
+  const d = size === 'round' ? `M0 ${h / 2}A${w / 2} ${h / 2} 0 1 1 ${w} ${h / 2}A${w / 2} ${h / 2} 0 1 1 0 ${h / 2}Z` : `M0 0H${w}V${h}H0Z`;
+  return { value: size, label: SIZE_LABELS[size], thumb: { box: `0 0 ${w} ${h}`, d } };
+});
+
+const OPENING_LABELS: Record<EnvelopeOpening, string> = { flap: 'Nắp gập', sleeve: 'Rút ngang (kéo)', open: 'Miệng mở' };
+
+export const OPENINGS: Choice<EnvelopeOpening>[] = (Object.keys(OPENING_LABELS) as EnvelopeOpening[]).map((opening) => {
+  const geo = envelopeLayout({ flap: 'pointed', opening });
+  const body = geo.body ?? 'M0 0H470V330H0Z';
+  // Flap: the flap cut out of the body; sleeve: its notched body; open: the pocket under its mouth.
+  const d = opening === 'flap' ? `${body}${geo.flap}` : opening === 'sleeve' ? body : geo.pocket;
+  return { value: opening, label: OPENING_LABELS[opening], thumb: { box: '0 0 470 330', d, evenOdd: opening === 'flap' } };
 });
 
 const FLAP_LABELS: Record<EnvelopeFlap, string> = {
@@ -164,6 +177,9 @@ export const LINERS: Choice<EnvelopeLiner>[] = [
 ];
 
 export const SEALS: Choice<EnvelopeSeal>[] = [c('wax', 'Sáp niêm'), c('sticker', 'Tem tròn'), c('bow', 'Nơ + sáp'), c('twine', 'Dây gai'), c('none', 'Không')];
+
+/** A sleeve has no flap to seal: its ribbon pulls the card out; twine can still tie it. */
+export const SLEEVE_SEALS: Choice<EnvelopeSeal>[] = [c('none', 'Chỉ ruy băng kéo'), c('twine', 'Thêm dây gai')];
 
 export const ARTS: Choice<EnvelopeArt>[] = [c('none', 'Không'), c('florals', 'Hoa hai góc'), c('lotus', 'Hoa sen'), c('fern', 'Dương xỉ'), c('frame', 'Khung mây')];
 
@@ -199,6 +215,12 @@ export const DIRECTION_FRAMES: Choice<NonNullable<DirectionsSpec['frame']>>[] = 
   c('none', 'Không viền'),
 ];
 
+export const MAPS: Choice<'sketch' | 'tiles' | 'image'>[] = [
+  c('sketch', 'Vẽ tay (Riverside Palace)'),
+  c('tiles', 'Bản đồ thật (OpenStreetMap)'),
+  c('image', 'Ảnh bản đồ tự tải'),
+];
+
 export const MAP_SIDES: Choice<NonNullable<DirectionsSpec['mapSide']>>[] = [c('left', 'Bản đồ bên trái'), c('right', 'Bản đồ bên phải')];
 
 // ── stickers ────────────────────────────────────────────────────────────────
@@ -213,7 +235,10 @@ export interface StickerMeta {
 }
 
 export const STICKERS: StickerMeta[] = [
+  { kind: 'photo', label: 'Ảnh cưới', aspect: 1.25, size: 150 },
+  { kind: 'text', label: 'Chữ', aspect: 0, size: 30 },
   { kind: 'logo', label: 'Logo V T', aspect: 339 / 569, size: 90 },
+  { kind: 'hy', label: 'Chữ Hỷ', aspect: 1, size: 80 },
   { kind: 'heart', label: 'Trái tim', aspect: 30 / 56, size: 70 },
   { kind: 'rings', label: 'Nhẫn cưới', aspect: 0.6, size: 70 },
   { kind: 'lotus', label: 'Hoa sen', aspect: 0.64, size: 80 },
@@ -223,7 +248,20 @@ export const STICKERS: StickerMeta[] = [
   { kind: 'botanicalSprig', label: 'Nhành lá', aspect: 1, size: 70 },
   { kind: 'artDecoFan', label: 'Quạt deco', aspect: 0.52, size: 80 },
   { kind: 'hairlineFlourish', label: 'Nét hoa văn', aspect: 0.1, size: 140 },
+  { kind: 'birds', label: 'Chim én', aspect: 46 / 128, size: 130 },
+  { kind: 'ribbon', label: 'Nơ ruy băng', aspect: 82 / 100, size: 80 },
+  { kind: 'blossom', label: 'Hoa mai', aspect: 1, size: 44 },
+  { kind: 'branch', label: 'Cành hoa', aspect: 1, size: 100 },
 ];
+
+export const STICKER_FONTS: Choice<StickerFont>[] = [c('script', 'Viết tay'), c('display', 'Tiêu đề'), c('body', 'Nội dung')];
+
+export const PHOTO_FRAMES: Choice<PhotoFrame>[] = [c('oval', 'Bầu dục'), c('arch', 'Vòm'), c('rounded', 'Bo góc'), c('circle', 'Tròn'), c('blob', 'Mềm mại')];
+
+/** Height over width of a photo frame. */
+export function photoAspect(frame: PhotoFrame): number {
+  return frame === 'circle' || frame === 'blob' ? 1 : frame === 'arch' ? 1.3 : 1.25;
+}
 
 export function stickerMeta(kind: StickerKind): StickerMeta {
   return STICKERS.find((s) => s.kind === kind) ?? STICKERS[0];

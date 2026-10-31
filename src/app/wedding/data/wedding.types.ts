@@ -234,8 +234,15 @@ export type EnvelopePrint =
   /** A lotus over the names. */
   | 'lotus';
 
-/** Envelope proportions: 470 × 330, 400 × 400 or a long 500 × 260 (see shapes.ts). */
-export type EnvelopeSize = 'standard' | 'square' | 'long';
+/** Envelope proportions: 470 × 330, 400 × 400, a long 500 × 260 or a round 380 (see shapes.ts). */
+export type EnvelopeSize = 'standard' | 'square' | 'long' | 'round';
+
+/**
+ * How the envelope opens: a folded flap (nắp gập), a sleeve the card slides
+ * out of sideways, pulled by a ribbon (bao thư kéo), or an open pocket with
+ * a scooped mouth and no flap (bao thư mở).
+ */
+export type EnvelopeOpening = 'flap' | 'sleeve' | 'open';
 
 /** Decoration printed on the envelope front, apart from any names or logo. */
 export type EnvelopeArt =
@@ -266,6 +273,8 @@ export interface EnvelopeSpec {
   flap: EnvelopeFlap;
   /** Defaults to 'standard'. */
   size?: EnvelopeSize;
+  /** Defaults to 'flap'. A round envelope always has its round flap or is open. */
+  opening?: EnvelopeOpening;
   paper: string;
   /** Translucent vellum (giấy can): the card shows through. */
   vellum?: boolean;
@@ -404,6 +413,17 @@ export interface DirectionsSpec {
   frame?: 'line' | 'double' | 'corners' | 'none';
   /** Which side the sketch map sits on; defaults to 'left'. */
   mapSide?: 'left' | 'right';
+  /**
+   * The map: the hand-drawn sketch of Riverside Palace (default), real
+   * OpenStreetMap tiles round a point, or an image (a map the couple chose).
+   */
+  map?: 'sketch' | 'tiles' | 'image';
+  /** Tiles: the venue's point and the zoom level. */
+  tiles?: { lat: number; lng: number; zoom: number };
+  /** Image: its URL. */
+  image?: string;
+  /** Where the QR code leads; defaults to the venue's Google Maps link. */
+  qrUrl?: string;
 }
 
 export interface PassportSpec {

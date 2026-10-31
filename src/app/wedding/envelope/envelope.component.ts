@@ -1,10 +1,10 @@
 import { Component, HostBinding, Input } from '@angular/core';
-import { EnvelopeArt, EnvelopeLabel, EnvelopePrint, EnvelopeSpec, InvitationCopy, InvitationDesign } from '../data/wedding.types';
+import { EnvelopeArt, EnvelopeLabel, EnvelopeOpening, EnvelopePrint, EnvelopeSpec, InvitationCopy, InvitationDesign } from '../data/wedding.types';
 import { HEART_FLOURISH_BOX, cornerSpray, curlFrame, drawnBow, fern, heartFlourish, lotusPrint, waxSealPath } from '../geometry/envelope-art';
 import { Motif, mergeMotifs } from '../geometry/motifs';
 import { linerBackground, STOCK_TEXTURE } from '../geometry/patterns';
 import { RoseSpray, roseSpray } from '../geometry/rose-spray';
-import { ENV_H, EnvelopeGeometry, envelopeGeometry, envelopeSize } from '../geometry/shapes';
+import { ENV_H, EnvelopeGeometry, envelopeLayout, envelopeOpening, envelopeSize } from '../geometry/shapes';
 import { svgRef, uniqueSvgId } from '../relief/svg-ref';
 import { invitationThemeStyle } from '../theme';
 
@@ -56,14 +56,21 @@ interface RoseSide {
 const roseCache = new Map<string, RoseSide[]>();
 
 /** Both sprays for a w × h front: sized for 330 px tall, scaled to fit shorter ones. */
-function roseSides(w: number, h: number): RoseSide[] {
-  const key = `${w}x${h}`;
+function roseSides(w: number, h: number, round: boolean): RoseSide[] {
+  const key = `${w}x${h}${round ? 'o' : ''}`;
   let sides = roseCache.get(key);
   if (!sides) {
     const k = Math.min(1, h / ENV_H);
     // Taller fronts keep the sprays at full size, a little lower down.
     const dy = h > ENV_H ? (h - ENV_H) * 0.35 : 0;
-    const at = (x: number) => (k === 1 && !dy ? null : `translate(${x} ${dy}) scale(${k}) translate(${-x} 0)`);
+    // A round front: smaller sprays, moved in from the edge to stay on the circle.
+    const cy = h / 2;
+    const at = (x: number) =>
+      round
+        ? `translate(${x === 0 ? 30 : w - 30} ${cy}) scale(0.72) translate(${-x} ${-cy})`
+        : k === 1 && !dy
+          ? null
+          : `translate(${x} ${dy}) scale(${k}) translate(${-x} 0)`;
     sides = [
       { key: 'left', art: roseSpray(w, false, 7), transform: at(0) },
       { key: 'right', art: roseSpray(w, true, 11), transform: at(w) },
@@ -133,14 +140,38 @@ export class EnvelopeComponent {
 
   /** Baby-rose sprays for both sides of the front. */
   get roseSides(): RoseSide[] {
-    return roseSides(this.w, this.h);
+    return roseSides(this.w, this.h, this.isRound);
+  }
+
+  get isRound(): boolean {
+    return this.spec.size === 'round';
+  }
+
+  get opening(): EnvelopeOpening {
+    return envelopeOpening(this.spec);
+  }
+
+  /** Sleeves and open pockets have no flap (and so no seal). */
+  get hasFlap(): boolean {
+    return !!this.geo.flap;
+  }
+
+  /** Clip for a body that is not a plain rectangle (round, notched sleeve). */
+  get bodyClip(): string | null {
+    return this.geo.body ? `path('${this.geo.body}')` : null;
+  }
+
+  /** Sleeve: the card (and its pull ribbon) seen through the thumb notch. */
+  get peek(): { left: number; top: number; width: number; height: number } | null {
+    const n = this.geo.notch;
+    return n ? { left: n.x - n.r - 8, top: n.y - n.r - 10, width: n.r + 8, height: 2 * n.r + 20 } : null;
   }
 
   get geo(): EnvelopeGeometry {
-    const key = `${this.spec.flap}|${this.w}x${this.h}`;
+    const key = `${this.spec.flap}|${this.spec.size ?? 'standard'}|${this.spec.opening ?? 'flap'}`;
     let geo = geometryCache.get(key);
     if (!geo) {
-      geo = envelopeGeometry(this.spec.flap, this.w, this.h);
+      geo = envelopeLayout(this.spec);
       geometryCache.set(key, geo);
     }
     return geo;
@@ -235,9 +266,9 @@ export class EnvelopeComponent {
     return this.front.label === 'logoNames' ? this.namesY - 58 : (this.labelSlot ?? 0.42) * this.h;
   }
 
-  /** A coloured edge band on the front, matching the flap's edge. */
+  /** A coloured edge band on the front, matching the flap's edge (drawn as a ring on a round one). */
   get edgeShadow(): string | null {
-    return this.spec.edge ? `inset 0 0 0 6px ${this.spec.edge}` : null;
+    return this.spec.edge && !this.isRound ? `inset 0 0 0 6px ${this.spec.edge}` : null;
   }
 
   get waxPath(): string {

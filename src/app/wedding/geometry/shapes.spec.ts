@@ -1,4 +1,4 @@
-import { CardShape, EnvelopeFlap, PocketWindow } from '../data/wedding.types';
+import { CardShape, EnvelopeFlap, EnvelopeOpening, EnvelopeSize, PocketWindow } from '../data/wedding.types';
 import { blossomBranch, laurelWreath, lotusRow, vine } from './motifs';
 import { Track, scallopDepth, seededRandom } from './path-kit';
 import { STOCK_TEXTURE, linerBackground } from './patterns';
@@ -13,6 +13,9 @@ import {
   cardSilhouette,
   clipPathCss,
   envelopeGeometry,
+  envelopeLayout,
+  envelopeOpening,
+  envelopeSize,
   lowerPocketPath,
   sleevePath,
   sleeveWindow,
@@ -167,6 +170,51 @@ describe('envelope geometry', () => {
       }
     },
   );
+});
+
+describe('envelope sizes and openings (editor)', () => {
+  const SIZES: EnvelopeSize[] = ['standard', 'square', 'long', 'round'];
+  const OPENINGS: EnvelopeOpening[] = ['flap', 'sleeve', 'open'];
+
+  it('keeps the ready-made envelopes as they were', () => {
+    for (const flap of FLAPS) {
+      expect(envelopeLayout({ flap })).toEqual(envelopeGeometry(flap));
+    }
+  });
+
+  it.each(SIZES.flatMap((size) => OPENINGS.map((opening) => [size, opening] as const)))('%s %s: pocket, seal and body fit', (size, opening) => {
+    const { w, h } = envelopeSize({ size });
+    const g = envelopeLayout({ flap: 'pointed', size, opening });
+    expectWellFormed(g.pocket);
+    const drawn = envelopeOpening({ size, opening });
+    // Only a folded flap has a flap (and a seal on it).
+    expect(!!g.flap).toBe(drawn === 'flap');
+    if (g.flap) {
+      expectWellFormed(g.flap);
+      expect(g.sealAt.y).toBeLessThan(g.flapDepth);
+    }
+    for (const [x, y] of vertices(g.pocket)) {
+      expect(x).toBeGreaterThanOrEqual(-0.5);
+      expect(x).toBeLessThanOrEqual(w + 0.5);
+      expect(y).toBeGreaterThanOrEqual(-0.5);
+      expect(y).toBeLessThanOrEqual(h + 0.5);
+    }
+    expect(!!g.body).toBe(size === 'round' || drawn === 'sleeve');
+  });
+
+  it('cuts the sleeve thumb notch into the open, right-hand side', () => {
+    const g = envelopeLayout({ flap: 'pointed', opening: 'sleeve' });
+    expect(g.notch?.x).toBe(ENV_W);
+    expect(g.notch?.y).toBeCloseTo(ENV_H / 2);
+    expect(g.body).toContain('A');
+  });
+
+  it('closes the round flap below its pocket mouth', () => {
+    const g = envelopeLayout({ flap: 'pointed', size: 'round' });
+    const { w } = envelopeSize({ size: 'round' });
+    const mouth = vertices(g.pocket).filter(([x]) => Math.abs(x - w / 2) > 1);
+    expect(g.flapDepth).toBeGreaterThan(Math.min(...mouth.map(([, y]) => y)));
+  });
 });
 
 describe('sleeves and pockets', () => {

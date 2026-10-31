@@ -13,6 +13,21 @@
   <!-- Labels are HTML over the SVG drawing: Chrome can keep SVG text at a
        stale scale inside a scaled frame (giant glyphs after navigation). -->
   <div class="dc__map" role="img" [attr.aria-label]="copy.mapCard.title">
+    @if (mapKind === 'tiles' && tiles; as view) {
+      <!-- Real map of a venue the sketch doesn't cover: OpenStreetMap tiles, toned to the paper. -->
+      <div class="dc__tiles">
+        @for (tile of view.tiles; track tile.url) {
+          <img class="dc__tile" [src]="tile.url" alt="" width="256" height="256" [style.left.px]="tile.left" [style.top.px]="tile.top" />
+        }
+      </div>
+      <svg class="dc__drawing" [attr.viewBox]="'0 0 ' + mapW + ' ' + mapH" aria-hidden="true">
+        <path class="dc__pin" [attr.d]="centrePin" />
+        <circle class="dc__pin-dot" [attr.cx]="mapW / 2" [attr.cy]="mapH / 2" r="3.4" />
+      </svg>
+      <span class="dc__osm">© OpenStreetMap</span>
+    } @else if (mapKind === 'image') {
+      <img class="dc__map-img" [src]="spec.image" alt="" />
+    } @else {
     <svg class="dc__drawing" [attr.viewBox]="'0 0 ' + mapW + ' ' + mapH" aria-hidden="true">
       <rect class="dc__ground" x="0" y="0" [attr.width]="mapW" [attr.height]="mapH" rx="10" />
       <path class="dc__canal" [attr.d]="map.canal" [attr.stroke-width]="map.canalWidth" />
@@ -31,6 +46,7 @@
         >{{ label.text }}</span
       >
     }
+    }
   </div>
 
   <div class="dc__copy">
@@ -46,6 +62,9 @@
       </svg>
       <p class="dc__scan">{{ copy.mapCard.scan }}</p>
     </div>
-    <p class="dc__sketch">{{ copy.mapCard.sketch }}</p>
+    @if (mapKind === 'sketch') {
+      <!-- "Not to scale": true of the hand-drawn sketch only. -->
+      <p class="dc__sketch">{{ copy.mapCard.sketch }}</p>
+    }
   </div>
 </article>

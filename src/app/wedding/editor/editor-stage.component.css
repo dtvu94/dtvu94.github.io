@@ -22,6 +22,9 @@
 .stage__layer--edit .stage__sticker:active {
   cursor: grabbing;
 }
+.stage__layer--edit .stage__sticker--locked {
+  cursor: default;
+}
 .stage__sticker:focus {
   outline: none;
 }

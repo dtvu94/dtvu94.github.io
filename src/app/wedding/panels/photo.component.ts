@@ -33,6 +33,8 @@ export class PhotoComponent {
   @Input() index = 0;
   @Input() monogram = '';
   @Input() caption = '';
+  /** A photo to show instead of the configured ones (the editor's uploads). */
+  @Input() image: string | null = null;
 
   @HostBinding('class')
   get hostClass(): string {
@@ -40,6 +42,9 @@ export class PhotoComponent {
   }
 
   get src(): string | null {
+    if (this.image) {
+      return this.image;
+    }
     const photos = WEDDING_CONFIG.photos;
     return photos[this.index] ?? photos[0] ?? null;
   }

@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { INVITATION_DESIGNS, getDesignById } from '../data/designs';
 import { buildWording } from '../data/invitation-wording';
 import { PaperPieceKind, WEDDING_UI } from '../data/ui-strings';
-import { DirectionsSpec, FontFamilyKey, FontPairing, Palette } from '../data/wedding.types';
+import { FontFamilyKey, FontPairing, Palette } from '../data/wedding.types';
 import { LanguageService } from '../language.service';
 import { PaperPiece, paperPieces } from '../paper/paper-suite.component';
 import * as OPT from './editor-options';
@@ -20,9 +20,11 @@ import {
   StickerColor,
   StickerFace,
   StickerKind,
+  EditorDirections,
   clearEditorState,
   defaultEditorState,
   editorConfig,
+  isDefaultVenue,
   loadEditorState,
   newStickerId,
   saveEditorState,
@@ -30,6 +32,8 @@ import {
   toDesign,
 } from './editor-state';
 import { STICKER_DRAG_TYPE, StickerDrop, StickerMove } from './editor-stage.component';
+import { EditorPhotoStore } from './photo-store';
+import { formatCoords, geocode } from '../geometry/osm';
 
 /** What the stage is showing, and which face its stickers belong to. */
 interface StageView {
@@ -65,6 +69,11 @@ export class WeddingEditorComponent implements OnInit, OnDestroy {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
   private readonly route = inject(ActivatedRoute);
+  private readonly photos = inject(EditorPhotoStore);
+
+  @ViewChild('photoInput') photoInput?: ElementRef<HTMLInputElement>;
+  /** Sticker whose photo is being replaced (null: a new photo sticker; '#map': the directions map). */
+  private photoTarget: string | null = null;
 
   readonly opt = OPT;
   readonly designs = INVITATION_DESIGNS;
@@ -75,7 +84,11 @@ export class WeddingEditorComponent implements OnInit, OnDestroy {
   readonly ui = computed(() => WEDDING_UI[this.lang()]);
   readonly config = computed(() => editorConfig(this.state().content));
   readonly copy = computed(() => buildWording(this.config(), this.lang()));
-  readonly design = computed(() => toDesign(this.state()));
+  readonly design = computed(() => toDesign(this.state(), this.photos.urls()));
+  /** A venue other than Riverside Palace: its hand-drawn map no longer applies. */
+  readonly newVenue = computed(() => !isDefaultVenue(this.state().content));
+  /** Result of the last address lookup. */
+  readonly geocodeStatus = signal('');
   readonly pieces = computed(() => paperPieces(this.design()));
 
   /** Tabs for the chosen kind: an online invitation has no envelope. */
@@ -124,6 +137,7 @@ export class WeddingEditorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.meta.updateTag({ name: 'robots', content: 'noindex' });
+    void this.photos.load();
     // /wedding/editor?from=<id>: start from that ready-made design.
     const from = this.route.snapshot.queryParamMap.get('from');
     const design = from ? getDesignById(from) : undefined;
@@ -189,14 +203,38 @@ export class WeddingEditorComponent implements OnInit, OnDestroy {
   setEnvelope<K extends keyof EditorEnvelope>(key: K, value: EditorEnvelope[K]): void {
     this.state.update((s) => {
       const envelope = { ...s.envelope, [key]: value };
-      // Choosing a seal or a liner shows the side it is on.
-      const face: EnvelopeFace = key === 'seal' ? 'envelopeBack' : key === 'liner' && value !== 'none' ? 'envelopeOpen' : s.envelopeFace;
+      // Choosing a seal or a liner shows the side it is on (an open pocket shows its lining from the back).
+      const inside: EnvelopeFace = envelope.opening === 'flap' && envelope.size !== 'round' ? 'envelopeOpen' : 'envelopeBack';
+      const face: EnvelopeFace = key === 'seal' ? 'envelopeBack' : key === 'liner' && value !== 'none' ? inside : s.envelopeFace;
       return { ...s, envelope, envelopeFace: key === 'seal' || key === 'liner' ? face : s.envelopeFace };
     });
   }
 
-  setDirections<K extends keyof DirectionsSpec>(key: K, value: NonNullable<DirectionsSpec[K]>): void {
+  setDirections<K extends keyof EditorDirections>(key: K, value: EditorDirections[K]): void {
     this.state.update((s) => ({ ...s, directions: { ...s.directions, [key]: value } }));
+  }
+
+  /** Finds the venue's point on OpenStreetMap from its name and address. */
+  async findOnMap(): Promise<void> {
+    const { venueName, address } = this.state().content;
+    const query = [venueName, address].filter((part) => part.trim()).join(', ');
+    if (!query) {
+      return;
+    }
+    this.geocodeStatus.set('Đang tìm trên OpenStreetMap…');
+    try {
+      // The full name first; failing that, the street address alone.
+      const hit = (await geocode(query)) ?? (address.trim() ? await geocode(address) : null);
+      if (!hit) {
+        this.geocodeStatus.set('Không tìm thấy. Thử địa chỉ ngắn hơn, hoặc dán tọa độ từ Google Maps (bấm giữ vào địa điểm để thấy tọa độ).');
+        return;
+      }
+      this.setContent('coords', formatCoords(hit.lat, hit.lng));
+      this.state.update((s) => (s.directions.map === 'sketch' ? { ...s, directions: { ...s.directions, map: 'tiles' } } : s));
+      this.geocodeStatus.set(`Đã tìm thấy: ${hit.label}`);
+    } catch {
+      this.geocodeStatus.set('Không kết nối được OpenStreetMap. Thử lại sau, hoặc dán tọa độ từ Google Maps.');
+    }
   }
 
   setPaletteColor(slot: keyof Palette, value: string): void {
@@ -239,8 +277,45 @@ export class WeddingEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  /** A click on the tray (phones, keyboards) drops the sticker in the middle of the face. */
-  addSticker(drop: StickerDrop): void {
+  /** A click on the tray (phones, keyboards) drops the sticker in the middle of the face; a photo asks for the file first. */
+  onTrayClick(kind: StickerKind): void {
+    if (kind === 'photo') {
+      this.pickPhoto(null);
+    } else {
+      this.addSticker({ kind, x: 0.5, y: 0.5 });
+    }
+  }
+
+  /** Width of a sticker's preview in the tray. */
+  traySize(kind: StickerKind): number {
+    return kind === 'text' ? 22 : kind === 'hairlineFlourish' || kind === 'birds' ? 60 : kind === 'photo' ? 30 : 34;
+  }
+
+  pickPhoto(stickerId: string | null): void {
+    this.photoTarget = stickerId;
+    const input = this.photoInput?.nativeElement;
+    if (input) {
+      input.value = '';
+      input.click();
+    }
+  }
+
+  async onPhotoChosen(event: Event): Promise<void> {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) {
+      return;
+    }
+    const photo = await this.photos.add(file);
+    if (this.photoTarget === '#map') {
+      this.state.update((s) => ({ ...s, directions: { ...s.directions, map: 'image', mapPhoto: photo } }));
+    } else if (this.photoTarget) {
+      this.updateSticker(this.photoTarget, { photo });
+    } else {
+      this.addSticker({ kind: 'photo', x: 0.5, y: 0.5 }, { photo });
+    }
+  }
+
+  addSticker(drop: StickerDrop, extra: Partial<Sticker> = {}): void {
     const face = this.stage().face;
     if (!face || this.state().overview) {
       return;
@@ -253,7 +328,10 @@ export class WeddingEditorComponent implements OnInit, OnDestroy {
       y: drop.y,
       size: OPT.stickerMeta(drop.kind).size,
       rotate: 0,
-      color: 'accent',
+      color: drop.kind === 'text' ? 'primary' : 'accent',
+      ...(drop.kind === 'text' ? { text: 'Thân mời', font: 'script' as const } : {}),
+      ...(drop.kind === 'photo' ? { frame: 'oval' as const } : {}),
+      ...extra,
     };
     this.state.update((s) => ({ ...s, stickers: [...s.stickers, sticker] }));
     this.selectedId.set(sticker.id);
@@ -263,7 +341,7 @@ export class WeddingEditorComponent implements OnInit, OnDestroy {
     this.updateSticker(move.id, { x: move.x, y: move.y });
   }
 
-  updateSticker(id: string, patch: Partial<Pick<Sticker, 'x' | 'y' | 'size' | 'rotate' | 'color'>>): void {
+  updateSticker(id: string, patch: Partial<Omit<Sticker, 'id' | 'face' | 'kind'>>): void {
     this.state.update((s) => ({ ...s, stickers: s.stickers.map((st) => (st.id === id ? { ...st, ...patch } : st)) }));
   }
 

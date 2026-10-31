@@ -292,6 +292,26 @@ app-language-toggle.ed__lang {
   display: flex;
   gap: 6px;
 }
+.ed__sel-text {
+  flex: 1 1 100%;
+}
+.ed__sel-text textarea {
+  min-height: 52px;
+  padding: 6px 10px;
+  border: 1px solid var(--ed-line);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  resize: vertical;
+}
+.ed__sel-wide {
+  flex: 1 1 100%;
+}
+/* The photo picker is opened from buttons. */
+.ed__file {
+  display: none;
+}
 .ed__swatch {
   width: 26px;
   height: 26px;
@@ -362,6 +382,21 @@ app-language-toggle.ed__lang {
   font-size: 12px;
   line-height: 1.5;
   color: var(--ed-muted);
+}
+.ed__warn {
+  margin: -4px 0 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fdf1df;
+  color: #8a5a12;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.ed__find {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  margin-top: 4px;
 }
 .ed__colors {
   display: flex;

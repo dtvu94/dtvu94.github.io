@@ -3,11 +3,13 @@ import { WEDDING_CONFIG } from '../data/wedding-config';
 import {
   AccentStyle,
   CardShape,
+  DirectionsShape,
   DirectionsSpec,
   EnvelopeArt,
   EnvelopeFlap,
   EnvelopeLabel,
   EnvelopeLiner,
+  EnvelopeOpening,
   EnvelopeRoses,
   EnvelopeSeal,
   EnvelopeSize,
@@ -17,12 +19,14 @@ import {
   OrnamentKey,
   Palette,
   PaperStock,
+  PhotoFrame,
   PrintFinish,
   ReliefMotif,
   ReliefSpec,
   WeddingConfig,
 } from '../data/wedding.types';
 import { envelopeFront } from '../envelope/envelope.component';
+import { formatCoords, googleMapsUrl, parseCoords } from '../geometry/osm';
 
 /**
  * Trình thiết kế (thử nghiệm): a suite assembled from separate pieces —
@@ -50,7 +54,19 @@ export type StickerKind =
   | 'leafyWreath'
   | 'laurel'
   | 'hairlineFlourish'
-  | 'artDecoFan';
+  | 'artDecoFan'
+  | 'hy'
+  | 'birds'
+  | 'ribbon'
+  | 'blossom'
+  | 'branch'
+  /** A line or two of text, typed in the editor. */
+  | 'text'
+  /** A wedding photo uploaded in the editor, cut to a frame. */
+  | 'photo';
+
+/** Face of a text sticker: the handwritten script, or the design's display or body face. */
+export type StickerFont = 'script' | 'display' | 'body';
 
 /** Sticker ink: one of the palette's inks, or white. */
 export type StickerColor = 'accent' | 'primary' | 'ink' | 'white';
@@ -63,11 +79,19 @@ export interface Sticker {
   /** Centre, 0..1 across and down the face. */
   x: number;
   y: number;
-  /** Width in design pixels. */
+  /** Width in design pixels (text: the font size). */
   size: number;
   /** Degrees, clockwise. */
   rotate: number;
   color: StickerColor;
+  /** Text stickers: the words (line breaks kept) and their face. */
+  text?: string;
+  font?: StickerFont;
+  /** Photo stickers: the uploaded image's id (IndexedDB) and its frame. */
+  photo?: string;
+  frame?: PhotoFrame;
+  /** Locked stickers stay put when dragged. */
+  locked?: boolean;
 }
 
 /** Baby roses on the envelope front: none, in the envelope's foil, or in colour. */
@@ -91,6 +115,7 @@ export interface EditorCard {
 
 export interface EditorEnvelope {
   size: EnvelopeSize;
+  opening: EnvelopeOpening;
   flap: EnvelopeFlap;
   paper: string;
   ink: string;
@@ -106,6 +131,18 @@ export interface EditorEnvelope {
   roses: RosesTone;
   /** Coloured edge band ('' for none). */
   edge: string;
+}
+
+/** The directions card: shape, frame, layout, and which map it prints. */
+export interface EditorDirections {
+  shape: DirectionsShape;
+  frame: NonNullable<DirectionsSpec['frame']>;
+  mapSide: NonNullable<DirectionsSpec['mapSide']>;
+  map: NonNullable<DirectionsSpec['map']>;
+  /** OpenStreetMap zoom level for the 'tiles' map. */
+  zoom: number;
+  /** Photo-store id of the map image for the 'image' map ('' for none). */
+  mapPhoto: string;
 }
 
 /** The wedding facts, typed once in Vietnamese; dates and times are localized from them. */
@@ -124,6 +161,8 @@ export interface EditorContent {
   venueShort: string;
   venueName: string;
   address: string;
+  /** The venue's point, "lat, lng" ('' when unknown). */
+  coords: string;
 }
 
 export interface EditorState {
@@ -139,7 +178,7 @@ export interface EditorState {
   fonts: FontPairing;
   card: EditorCard;
   envelope: EditorEnvelope;
-  directions: Required<DirectionsSpec>;
+  directions: EditorDirections;
   content: EditorContent;
   stickers: Sticker[];
 }
@@ -189,6 +228,7 @@ export function lookFromDesign(design: InvitationDesign): EditorLook {
     },
     envelope: {
       size: env.size ?? 'standard',
+      opening: env.opening ?? 'flap',
       flap: env.flap,
       paper: env.paper,
       ink: env.ink,
@@ -204,7 +244,14 @@ export function lookFromDesign(design: InvitationDesign): EditorLook {
       roses: rosesTone(env.roses),
       edge: env.edge ?? '',
     },
-    directions: { shape: 'rect', frame: 'line', mapSide: 'left', ...design.directions },
+    directions: {
+      shape: design.directions?.shape ?? 'rect',
+      frame: design.directions?.frame ?? 'line',
+      mapSide: design.directions?.mapSide ?? 'left',
+      map: 'sketch',
+      zoom: 16,
+      mapPhoto: '',
+    },
   };
 }
 
@@ -223,6 +270,7 @@ export function defaultContent(config: WeddingConfig = WEDDING_CONFIG): EditorCo
     venueShort: config.venue.shortName,
     venueName: config.venue.name.vi,
     address: config.venue.address.vi,
+    coords: formatCoords(config.venue.lat, config.venue.lng),
   };
 }
 
@@ -245,8 +293,17 @@ export function startFrom(state: EditorState, design: InvitationDesign): EditorS
   return { ...state, ...lookFromDesign(design) };
 }
 
-/** The editor's pieces as an InvitationDesign the existing renderers draw. */
-export function toDesign(state: EditorState): InvitationDesign {
+/** Whether the venue is still the configured one (its sketch map and share link apply). */
+export function isDefaultVenue(content: EditorContent, config: WeddingConfig = WEDDING_CONFIG): boolean {
+  const defaults = defaultContent(config);
+  return content.venueName.trim() === defaults.venueName && content.address.trim() === defaults.address && content.coords.trim() === defaults.coords;
+}
+
+/**
+ * The editor's pieces as an InvitationDesign the existing renderers draw.
+ * `photoUrls` resolves the photo-store ids (the directions card's map image).
+ */
+export function toDesign(state: EditorState, photoUrls: Record<string, string> = {}): InvitationDesign {
   const { card, envelope: env } = state;
   const relief: ReliefSpec | undefined =
     card.relief === 'off'
@@ -272,6 +329,7 @@ export function toDesign(state: EditorState): InvitationDesign {
     relief,
     envelope: {
       size: env.size,
+      opening: env.opening,
       flap: env.flap,
       paper: env.paper,
       ink: env.ink,
@@ -287,8 +345,25 @@ export function toDesign(state: EditorState): InvitationDesign {
       roses: env.roses === 'none' ? undefined : env.roses === 'foil' ? { kind: 'foil' } : ROSE_TONES[env.roses],
       edge: env.edge || undefined,
     },
-    directions: { ...state.directions },
+    directions: directionsSpec(state, photoUrls),
   };
+}
+
+function directionsSpec(state: EditorState, photoUrls: Record<string, string>): DirectionsSpec {
+  const d = state.directions;
+  const coords = parseCoords(state.content.coords);
+  const spec: DirectionsSpec = { shape: d.shape, frame: d.frame, mapSide: d.mapSide, map: d.map };
+  if (coords) {
+    spec.tiles = { lat: coords[0], lng: coords[1], zoom: d.zoom };
+  }
+  if (d.mapPhoto && photoUrls[d.mapPhoto]) {
+    spec.image = photoUrls[d.mapPhoto];
+  }
+  // A new venue: the QR opens it in Google Maps (by its point, else by its address).
+  if (!isDefaultVenue(state.content)) {
+    spec.qrUrl = googleMapsUrl(coords, `${state.content.venueName}, ${state.content.address}`);
+  }
+  return spec;
 }
 
 // ── wedding facts → WeddingConfig ───────────────────────────────────────────
@@ -340,6 +415,11 @@ function parseTime(hhmm: string): [number, number] | null {
   return [Number(m[1]), Number(m[2])];
 }
 
+function coordsOf(text: string): { lat: number; lng: number } | null {
+  const c = parseCoords(text);
+  return c ? { lat: c[0], lng: c[1] } : null;
+}
+
 /** The same text in every language, unless it is still the default (which has translations). */
 function localized(value: string, fallback: { vi: string; en: string; th: string }): { vi: string; en: string; th: string } {
   const text = value.trim();
@@ -361,6 +441,8 @@ export function editorConfig(content: EditorContent, base: WeddingConfig = WEDDI
     hall: content.hall.trim(),
     venue: {
       ...base.venue,
+      // A point typed or found for a new venue (the default stays exact).
+      ...(content.coords.trim() !== formatCoords(base.venue.lat, base.venue.lng) ? (coordsOf(content.coords) ?? {}) : {}),
       shortName: content.venueShort.trim() || base.venue.shortName,
       name: localized(content.venueName, base.venue.name),
       address: localized(content.address, base.venue.address),
@@ -400,7 +482,16 @@ const STICKER_KINDS: readonly StickerKind[] = [
   'laurel',
   'hairlineFlourish',
   'artDecoFan',
+  'hy',
+  'birds',
+  'ribbon',
+  'blossom',
+  'branch',
+  'text',
+  'photo',
 ];
+const STICKER_FONTS: readonly StickerFont[] = ['script', 'display', 'body'];
+const PHOTO_FRAMES: readonly PhotoFrame[] = ['oval', 'arch', 'rounded', 'circle', 'blob'];
 const STICKER_FACES: readonly StickerFace[] = ['envelopeFront', 'envelopeBack', 'card', 'directions'];
 const STICKER_COLORS: readonly StickerColor[] = ['accent', 'primary', 'ink', 'white'];
 
@@ -434,16 +525,30 @@ function validSticker(raw: unknown): Sticker | null {
   ) {
     return null;
   }
-  return {
+  const sticker: Sticker = {
     id: s.id,
     face: s.face as StickerFace,
     kind: s.kind as StickerKind,
     x: clamp(s.x, 0, 1),
     y: clamp(s.y, 0, 1),
-    size: clamp(typeof s.size === 'number' ? s.size : 60, 12, 320),
+    size: clamp(typeof s.size === 'number' ? s.size : 60, 8, 360),
     rotate: clamp(typeof s.rotate === 'number' ? s.rotate : 0, -180, 180),
     color: STICKER_COLORS.includes(s.color as StickerColor) ? (s.color as StickerColor) : 'accent',
   };
+  if (s.kind === 'text') {
+    sticker.text = typeof s.text === 'string' ? s.text.slice(0, 400) : '';
+    sticker.font = STICKER_FONTS.includes(s.font as StickerFont) ? (s.font as StickerFont) : 'script';
+  }
+  if (s.kind === 'photo') {
+    if (typeof s.photo === 'string') {
+      sticker.photo = s.photo;
+    }
+    sticker.frame = PHOTO_FRAMES.includes(s.frame as PhotoFrame) ? (s.frame as PhotoFrame) : 'oval';
+  }
+  if (s.locked === true) {
+    sticker.locked = true;
+  }
+  return sticker;
 }
 
 /** A saved state, checked field by field against the defaults (anything odd falls back). */

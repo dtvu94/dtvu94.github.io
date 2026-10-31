@@ -103,6 +103,10 @@ export class EditorStageComponent {
     event.preventDefault();
     event.stopPropagation();
     this.select.emit(sticker.id);
+    // A locked sticker can be picked (to unlock it) but not moved.
+    if (sticker.locked) {
+      return;
+    }
     (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
     this.grab = {
       id: sticker.id,
@@ -138,7 +142,7 @@ export class EditorStageComponent {
     const step = event.shiftKey ? 0.1 : 0.01;
     const moves: Record<string, [number, number]> = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
     const delta = moves[event.key];
-    if (delta) {
+    if (delta && !sticker.locked) {
       event.preventDefault();
       this.move.emit({ id: sticker.id, x: clamp01(sticker.x + delta[0]), y: clamp01(sticker.y + delta[1]) });
     } else if (event.key === 'Delete' || event.key === 'Backspace') {

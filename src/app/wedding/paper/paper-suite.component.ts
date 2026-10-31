@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { InvitationCopy, InvitationDesign } from '../data/wedding.types';
 import { PaperPieceKind } from '../data/ui-strings';
 import { foldBounds } from '../folded/fold-geometry';
-import { CARD_H, CARD_W, SLEEVE_H, SLEEVE_W, envelopeGeometry, envelopeSize } from '../geometry/shapes';
+import { CARD_H, CARD_W, SLEEVE_H, SLEEVE_W, envelopeLayout, envelopeOpening, envelopeSize } from '../geometry/shapes';
 import { pieceKind } from '../suite/piece-layout';
 import { DIRECTIONS_CARD_H, DIRECTIONS_CARD_W } from './directions-card.component';
 
@@ -22,8 +22,9 @@ const piece = (kind: PaperPieceKind, w: number, h: number, ox = 0, oy = 0): Pape
 export function paperPieces(design: InvitationDesign): PaperPiece[] {
   const { w: envW, h: envH } = envelopeSize(design.envelope);
   const pieces: PaperPiece[] = [piece('envelopeFront', envW, envH), piece('envelopeBack', envW, envH)];
-  if (design.envelope.liner !== 'none') {
-    const flap = envelopeGeometry(design.envelope.flap, envW, envH).flapDepth;
+  // The lining shows with the flap open; an open pocket shows it from the back already.
+  if (design.envelope.liner !== 'none' && envelopeOpening(design.envelope) === 'flap' && design.envelope.size !== 'round') {
+    const flap = envelopeLayout(design.envelope).flapDepth;
     pieces.push(piece('envelopeOpen', envW, envH + flap, 0, -flap));
   }
   switch (pieceKind(design)) {

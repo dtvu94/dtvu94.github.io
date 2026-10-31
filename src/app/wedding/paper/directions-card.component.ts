@@ -4,6 +4,7 @@ import { WEDDING_CONFIG } from '../data/wedding-config';
 import { STOCK_TEXTURE } from '../geometry/patterns';
 import { Silhouette, directionsSilhouette } from '../geometry/shapes';
 import { QrArt, qrArt } from '../geometry/qr';
+import { TileView, tileView } from '../geometry/osm';
 import { MAP_H, MAP_W, MapLabel, VenueMap, pinPath, venueMap } from '../geometry/venue-map';
 import { invitationThemeStyle } from '../theme';
 
@@ -41,8 +42,33 @@ export class DirectionsCardComponent {
   readonly mapH = MAP_H;
   readonly map: VenueMap = venueMap();
   readonly pin = pinPath(this.map.pin);
-  readonly mapsUrl = WEDDING_CONFIG.venue.mapsShareUrl;
-  readonly qr: QrArt = qrArt(WEDDING_CONFIG.venue.mapsShareUrl);
+
+  /** The QR code: the venue's Google Maps link, or the one the design gives. */
+  get qr(): QrArt {
+    return qrArt(this.spec.qrUrl ?? WEDDING_CONFIG.venue.mapsShareUrl);
+  }
+
+  get mapKind(): 'sketch' | 'tiles' | 'image' {
+    const map = this.spec.map ?? 'sketch';
+    return (map === 'tiles' && !this.spec.tiles) || (map === 'image' && !this.spec.image) ? 'sketch' : map;
+  }
+
+  /** OpenStreetMap tiles filling the map box round the venue's point. */
+  get tiles(): TileView | null {
+    const t = this.spec.tiles;
+    if (!t) {
+      return null;
+    }
+    const key = `${t.lat},${t.lng},${t.zoom}`;
+    if (this.tileCache?.key !== key) {
+      this.tileCache = { key, view: tileView(t.lat, t.lng, t.zoom, MAP_W, MAP_H) };
+    }
+    return this.tileCache.view;
+  }
+
+  /** The pin, drawn at the centre of the tiles. */
+  readonly centrePin = pinPath({ x: MAP_W / 2, y: MAP_H / 2 + 15 });
+  private tileCache?: { key: string; view: TileView };
 
   @HostBinding('attr.style')
   get hostStyle(): string {

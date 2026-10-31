@@ -1,10 +1,13 @@
 @switch (layer) {
   @case ('back') {
-    <div class="env__back" [style.background-image]="texture">
+    <div class="env__back" [style.background-image]="texture" [style.clip-path]="isRound ? bodyClip : null">
       @if (hasLiner) {
         <div class="env__back-liner" [style.background]="liner"></div>
       }
       <div class="env__back-shade"></div>
+      @if (peek; as pk) {
+        <ng-container *ngTemplateOutlet="peekTpl; context: { $implicit: pk }" />
+      }
     </div>
   }
 
@@ -25,7 +28,17 @@
 
   @case ('front') {
     <!-- Front of the envelope: what the guest sees first — their name line and the print. -->
-    <div class="env__front" [class.env__front--roses]="!!spec.roses" [style.background-image]="texture" [style.box-shadow]="edgeShadow">
+    @if (peek; as pk) {
+      <ng-container *ngTemplateOutlet="peekTpl; context: { $implicit: pk }" />
+    }
+    <div
+      class="env__front"
+      [class.env__front--roses]="!!spec.roses"
+      [class.env__front--round]="isRound"
+      [style.background-image]="texture"
+      [style.box-shadow]="edgeShadow"
+      [style.clip-path]="bodyClip"
+    >
       <svg class="env__art" [attr.viewBox]="'0 0 ' + w + ' ' + h" aria-hidden="true">
         @if (spec.foil || spec.roses?.kind === 'foil') {
           <defs>
@@ -69,6 +82,9 @@
         @if (spec.seal === 'twine') {
           <path class="env__twine" [attr.d]="'M0 ' + twineY + 'H' + w" />
         }
+        @if (isRound && spec.edge) {
+          <circle [attr.cx]="w / 2" [attr.cy]="h / 2" [attr.r]="w / 2 - 3" fill="none" [attr.stroke]="spec.edge" stroke-width="6" />
+        }
       </svg>
       @if (front.label === 'namesHeart') {
         <!-- "Tuấn Vũ ♡ Nguyễn Thảo" over the date: names and day at a glance. -->
@@ -103,6 +119,7 @@
   }
 
   @case ('flap') {
+    @if (hasFlap) {
     <div class="env__hinge" [class.env__hinge--open]="open">
       <div class="env__face env__face--shadow" [style.clip-path]="flapClip"></div>
       <div class="env__face env__face--out" [style.clip-path]="flapClip" [style.background-image]="texture">
@@ -155,5 +172,13 @@
         ></span>
       }
     </div>
+    }
   }
 }
+
+<!-- The card inside a sleeve, with its satin pull ribbon, seen through the notch. -->
+<ng-template #peekTpl let-pk>
+  <div class="env__peek" [style.left.px]="pk.left" [style.top.px]="pk.top" [style.width.px]="pk.width" [style.height.px]="pk.height">
+    <span class="env__ribbon" [style.background]="sealColor"></span>
+  </div>
+</ng-template>

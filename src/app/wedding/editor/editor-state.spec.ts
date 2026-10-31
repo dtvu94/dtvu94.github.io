@@ -89,7 +89,22 @@ describe('editor state', () => {
     expect(state.card.layout).toBe('archFrame');
     // Wrong type: the default stays.
     expect(state.card.shape).toBe(defaultEditorState().card.shape);
-    expect(state.stickers).toEqual([{ id: 'ok', face: 'card', kind: 'logo', x: 1, y: 0.2, size: 320, rotate: 10, color: 'accent' }]);
+    expect(state.stickers).toEqual([{ id: 'ok', face: 'card', kind: 'logo', x: 1, y: 0.2, size: 360, rotate: 10, color: 'accent' }]);
+  });
+
+  it('keeps text and photo stickers with their words, face and frame', () => {
+    const saved = {
+      ...defaultEditorState(),
+      stickers: [
+        { id: 't', face: 'card', kind: 'text', x: 0.5, y: 0.1, size: 30, rotate: 0, color: 'primary', text: 'Save the date', font: 'display', locked: true },
+        { id: 'p', face: 'card', kind: 'photo', x: 0.5, y: 0.5, size: 120, rotate: 0, color: 'accent', photo: 'abc', frame: 'square' },
+      ],
+    };
+    const [text, photo] = restoreEditorState(JSON.stringify(saved)).stickers;
+    expect(text).toEqual(expect.objectContaining({ text: 'Save the date', font: 'display', locked: true }));
+    // An unknown frame falls back to the oval.
+    expect(photo).toEqual(expect.objectContaining({ photo: 'abc', frame: 'oval' }));
+    expect(photo.text).toBeUndefined();
   });
 
   it('saves to and loads from localStorage', () => {

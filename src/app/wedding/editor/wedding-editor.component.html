@@ -39,8 +39,8 @@
               type="button"
               class="ed__face"
               [class.ed__face--on]="stage().piece.kind === 'envelopeOpen'"
-              [disabled]="s.envelope.liner === 'none'"
-              [attr.title]="s.envelope.liner === 'none' ? 'Chọn giấy lót để xem bên trong' : null"
+              [disabled]="s.envelope.liner === 'none' || s.envelope.opening !== 'flap' || s.envelope.size === 'round'"
+              [attr.title]="s.envelope.liner === 'none' ? 'Chọn giấy lót để xem bên trong' : s.envelope.opening !== 'flap' ? 'Giấy lót thấy ở mặt sau' : null"
               (click)="setEnvelopeFace('envelopeOpen')"
             >
               Bên trong
@@ -61,7 +61,18 @@
                   @for (st of s.stickers; track st.id) {
                     @if (st.face === 'card') {
                       <div class="ed__ov-sticker" [style.left.%]="st.x * 100" [style.top.%]="st.y * 100" [style.transform]="'translate(-50%, -50%) rotate(' + st.rotate + 'deg)'">
-                        <app-editor-sticker [kind]="st.kind" [palette]="d.palette" [color]="st.color" [size]="st.size" />
+                        <app-editor-sticker
+                          [kind]="st.kind"
+                          [palette]="d.palette"
+                          [color]="st.color"
+                          [size]="st.size"
+                          [text]="st.text ?? ''"
+                          [font]="st.font ?? 'script'"
+                          [fonts]="d.fonts"
+                          [photo]="st.photo ?? null"
+                          [frame]="st.frame ?? 'oval'"
+                          [monogram]="copy().monogram"
+                        />
                       </div>
                     }
                   }
@@ -109,36 +120,58 @@
                 draggable="true"
                 [attr.aria-label]="'Thêm ' + m.label"
                 (dragstart)="onTrayDragStart($event, m.kind)"
-                (click)="addSticker({ kind: m.kind, x: 0.5, y: 0.5 })"
+                (click)="onTrayClick(m.kind)"
               >
-                <app-editor-sticker class="ed__tray-art" [kind]="m.kind" [palette]="s.palette" [color]="'accent'" [size]="m.kind === 'hairlineFlourish' ? 60 : 34" />
+                <app-editor-sticker class="ed__tray-art" [kind]="m.kind" [palette]="s.palette" [color]="'accent'" [size]="traySize(m.kind)" [text]="'Aa'" [frame]="'oval'" />
                 <span>{{ m.label }}</span>
               </button>
             }
           </div>
           @if (selected(); as st) {
             <div class="ed__sel" aria-label="Hình dán đang chọn">
+              @if (st.kind === 'text') {
+                <label class="ed__field ed__sel-text">
+                  <span>Chữ (Enter để xuống dòng)</span>
+                  <textarea rows="2" [value]="st.text ?? ''" (input)="updateSticker(st.id, { text: valueOf($event) })"></textarea>
+                </label>
+                <app-editor-choices class="ed__sel-wide" legend="Kiểu chữ" [choices]="opt.STICKER_FONTS" [value]="st.font ?? 'script'" (pick)="updateSticker(st.id, { font: $event })" />
+              }
+              @if (st.kind === 'photo') {
+                <button type="button" class="ed__btn" (click)="pickPhoto(st.id)">{{ st.photo ? 'Đổi ảnh' : 'Chọn ảnh…' }}</button>
+                <app-editor-choices class="ed__sel-wide" legend="Khung ảnh" [choices]="opt.PHOTO_FRAMES" [value]="st.frame ?? 'oval'" (pick)="updateSticker(st.id, { frame: $event })" />
+              }
               <label class="ed__range">
-                Kích thước
-                <input type="range" min="16" max="320" [value]="st.size" (input)="updateSticker(st.id, { size: +valueOf($event) })" />
+                {{ st.kind === 'text' ? 'Cỡ chữ' : 'Kích thước' }}
+                <input
+                  type="range"
+                  [min]="st.kind === 'text' ? 8 : 16"
+                  [max]="st.kind === 'text' ? 120 : 360"
+                  [value]="st.size"
+                  (input)="updateSticker(st.id, { size: +valueOf($event) })"
+                />
               </label>
               <label class="ed__range">
                 Xoay
                 <input type="range" min="-180" max="180" [value]="st.rotate" (input)="updateSticker(st.id, { rotate: +valueOf($event) })" />
               </label>
-              <div class="ed__sel-colors" role="group" aria-label="Màu hình dán">
-                @for (col of opt.STICKER_COLORS; track col.value) {
-                  <button
-                    type="button"
-                    class="ed__swatch"
-                    [class.ed__swatch--on]="st.color === col.value"
-                    [style.background]="opt.stickerInk(col.value, s.palette)"
-                    [attr.aria-label]="col.label"
-                    [attr.title]="col.label"
-                    (click)="setStickerColor(col.value)"
-                  ></button>
-                }
-              </div>
+              @if (st.kind !== 'photo') {
+                <div class="ed__sel-colors" role="group" aria-label="Màu hình dán">
+                  @for (col of opt.STICKER_COLORS; track col.value) {
+                    <button
+                      type="button"
+                      class="ed__swatch"
+                      [class.ed__swatch--on]="st.color === col.value"
+                      [style.background]="opt.stickerInk(col.value, s.palette)"
+                      [attr.aria-label]="col.label"
+                      [attr.title]="col.label"
+                      (click)="setStickerColor(col.value)"
+                    ></button>
+                  }
+                </div>
+              }
+              <button type="button" class="ed__btn" [attr.aria-pressed]="!!st.locked" (click)="updateSticker(st.id, { locked: !st.locked })">
+                {{ st.locked ? '🔒 Đã khóa' : 'Khóa vị trí' }}
+              </button>
               <button type="button" class="ed__btn" (click)="duplicateSticker()">Nhân bản</button>
               <button type="button" class="ed__btn ed__btn--danger" (click)="removeSticker()">Xóa</button>
             </div>
@@ -177,7 +210,13 @@
           <section class="ed__sec">
             <h2>Kiểu dáng</h2>
             <app-editor-choices legend="Khổ bao thư" [choices]="opt.ENVELOPE_SIZES" [value]="s.envelope.size" (pick)="setEnvelope('size', $event)" />
-            <app-editor-choices legend="Nắp" [choices]="opt.FLAPS" [value]="s.envelope.flap" (pick)="setEnvelope('flap', $event)" />
+            <app-editor-choices legend="Kiểu mở" [choices]="opt.OPENINGS" [value]="s.envelope.opening" (pick)="setEnvelope('opening', $event)" />
+            @if (s.envelope.opening === 'flap' && s.envelope.size !== 'round') {
+              <app-editor-choices legend="Nắp" [choices]="opt.FLAPS" [value]="s.envelope.flap" (pick)="setEnvelope('flap', $event)" />
+            }
+            @if (s.envelope.size === 'round' && s.envelope.opening === 'sleeve') {
+              <p class="ed__hint">Bao thư tròn không rút ngang được: dùng nắp tròn.</p>
+            }
           </section>
           <section class="ed__sec">
             <h2>Màu & giấy</h2>
@@ -202,10 +241,25 @@
           </section>
           <section class="ed__sec">
             <h2>Mặt sau & bên trong</h2>
-            <app-editor-choices legend="Niêm phong" [choices]="opt.SEALS" [value]="s.envelope.seal" (pick)="setEnvelope('seal', $event)" />
-            <label class="ed__color ed__color--inline"><input type="color" [value]="s.envelope.sealColor" (input)="setEnvelope('sealColor', valueOf($event))" />Màu sáp / tem</label>
-            <app-editor-choices legend="Giấy lót bên trong" [choices]="opt.LINERS" [value]="s.envelope.liner" (pick)="setEnvelope('liner', $event)" />
-            @if (s.envelope.liner !== 'none') {
+            @if (s.envelope.opening === 'open') {
+              <p class="ed__hint">Bao thư miệng mở không có nắp nên không niêm phong; giấy lót thấy ở mặt sau.</p>
+            } @else {
+              <app-editor-choices
+                legend="Niêm phong"
+                [choices]="s.envelope.opening === 'sleeve' ? opt.SLEEVE_SEALS : opt.SEALS"
+                [value]="s.envelope.seal"
+                (pick)="setEnvelope('seal', $event)"
+              />
+            }
+            <label class="ed__color ed__color--inline"
+              ><input type="color" [value]="s.envelope.sealColor" (input)="setEnvelope('sealColor', valueOf($event))" />{{
+                s.envelope.opening === 'sleeve' ? 'Màu ruy băng kéo' : 'Màu sáp / tem'
+              }}</label
+            >
+            @if (s.envelope.opening !== 'sleeve') {
+              <app-editor-choices legend="Giấy lót bên trong" [choices]="opt.LINERS" [value]="s.envelope.liner" (pick)="setEnvelope('liner', $event)" />
+            }
+            @if (s.envelope.liner !== 'none' && s.envelope.opening !== 'sleeve') {
               <div class="ed__colors">
                 <label class="ed__color"><input type="color" [value]="s.envelope.linerBg" (input)="setEnvelope('linerBg', valueOf($event))" />Nền lót</label>
                 <label class="ed__color"><input type="color" [value]="s.envelope.linerInk" (input)="setEnvelope('linerInk', valueOf($event))" />Hoa văn lót</label>
@@ -289,6 +343,27 @@
             <app-editor-choices legend="Khung" [choices]="opt.DIRECTION_FRAMES" [value]="s.directions.frame" (pick)="setDirections('frame', $event)" />
             <app-editor-choices legend="Bố cục" [choices]="opt.MAP_SIDES" [value]="s.directions.mapSide" (pick)="setDirections('mapSide', $event)" />
           </section>
+          <section class="ed__sec">
+            <h2>Bản đồ & mã QR</h2>
+            <app-editor-choices legend="Bản đồ trên thiệp" [choices]="opt.MAPS" [value]="s.directions.map" (pick)="setDirections('map', $event)" />
+            @if (s.directions.map === 'sketch' && newVenue()) {
+              <p class="ed__warn">Bản đồ vẽ tay là của Riverside Palace. Địa điểm mới nên dùng “Bản đồ thật” hoặc ảnh bản đồ.</p>
+            }
+            @if (s.directions.map === 'tiles') {
+              <label class="ed__range">
+                Độ phóng ({{ s.directions.zoom }})
+                <input type="range" min="13" max="18" [value]="s.directions.zoom" (input)="setDirections('zoom', +valueOf($event))" />
+              </label>
+              <p class="ed__hint">Vị trí lấy từ tọa độ ở tab Nội dung: {{ s.content.coords || 'chưa có' }}. Bản đồ © OpenStreetMap.</p>
+            }
+            @if (s.directions.map === 'image') {
+              <button type="button" class="ed__btn" (click)="pickPhoto('#map')">{{ s.directions.mapPhoto ? 'Đổi ảnh bản đồ' : 'Chọn ảnh bản đồ…' }}</button>
+              <p class="ed__hint">Ví dụ ảnh chụp màn hình Google Maps, hoặc sơ đồ nhà hàng gửi.</p>
+            }
+            <p class="ed__hint">
+              Mã QR mở {{ newVenue() ? 'địa điểm mới trên Google Maps (theo tọa độ, hoặc theo địa chỉ khi chưa có tọa độ)' : 'Riverside Palace trên Google Maps' }}.
+            </p>
+          </section>
         }
 
         @case ('content') {
@@ -319,13 +394,24 @@
               <label class="ed__field"><span>Tên ngắn nhà hàng</span><input [value]="s.content.venueShort" (input)="setContent('venueShort', valueOf($event))" /></label>
               <label class="ed__field ed__field--wide"><span>Tên đầy đủ</span><input [value]="s.content.venueName" (input)="setContent('venueName', valueOf($event))" /></label>
               <label class="ed__field ed__field--wide"><span>Địa chỉ</span><input [value]="s.content.address" (input)="setContent('address', valueOf($event))" /></label>
+              <label class="ed__field ed__field--wide">
+                <span>Tọa độ (vĩ độ, kinh độ) — cho bản đồ và mã QR</span>
+                <input [value]="s.content.coords" placeholder="10.755730, 106.690372" (input)="setContent('coords', valueOf($event))" />
+              </label>
+            </div>
+            <div class="ed__find">
+              <button type="button" class="ed__btn" (click)="findOnMap()">📍 Tìm tọa độ theo địa chỉ</button>
+              @if (geocodeStatus()) {
+                <p class="ed__hint" role="status">{{ geocodeStatus() }}</p>
+              }
             </div>
             <p class="ed__hint">
-              Ngày giờ tự viết ra tiếng Anh và tiếng Thái (đổi ngôn ngữ thiệp ở đầu trang). Tên nhà hàng và địa chỉ mới giữ nguyên chữ đã gõ ở mọi ngôn ngữ; bản đồ vẽ tay vẫn là Riverside Palace.
+              Ngày giờ tự viết ra tiếng Anh và tiếng Thái (đổi ngôn ngữ thiệp ở đầu trang). Tên nhà hàng và địa chỉ mới giữ nguyên chữ đã gõ ở mọi ngôn ngữ. Với địa điểm mới, chọn bản đồ ở tab Đường đi.
             </p>
           </section>
         }
       }
     </aside>
   </div>
+  <input #photoInput class="ed__file" type="file" accept="image/*" (change)="onPhotoChosen($event)" />
 </main>

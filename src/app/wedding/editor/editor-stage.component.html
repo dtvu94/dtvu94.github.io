@@ -15,6 +15,7 @@
         <div
           class="stage__sticker"
           [class.stage__sticker--on]="editable && s.id === selectedId"
+          [class.stage__sticker--locked]="editable && s.locked"
           [style.left.%]="s.x * 100"
           [style.top.%]="s.y * 100"
           [style.transform]="'translate(-50%, -50%) rotate(' + s.rotate + 'deg)'"
@@ -28,7 +29,7 @@
           (focus)="editable && select.emit(s.id)"
           (keydown)="editable && onKey($event, s)"
         >
-          <app-editor-sticker [kind]="s.kind" [palette]="design.palette" [color]="s.color" [size]="s.size" />
+          <app-editor-sticker [kind]="s.kind" [palette]="design.palette" [color]="s.color" [size]="s.size" [text]="s.text ?? ''" [font]="s.font ?? 'script'" [fonts]="design.fonts" [photo]="s.photo ?? null" [frame]="s.frame ?? 'oval'" [monogram]="copy.monogram" />
         </div>
       }
     </div>

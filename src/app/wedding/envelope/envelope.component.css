@@ -186,6 +186,28 @@
   font-family: var(--inv-font-accent);
   font-size: 20px;
 }
+/* Sleeve: the card inside and its satin pull ribbon, seen through the notch. */
+.env__peek {
+  position: absolute;
+  background: var(--inv-surface);
+  border-radius: 4px 0 0 4px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.18);
+}
+.env__ribbon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 12px;
+  transform: translateY(-50%);
+  box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.25);
+}
+/* A round front: the guest line stays on the circle. */
+.env__front--round .env__guest {
+  left: 64px;
+  right: 64px;
+  top: 72%;
+}
 /* Coloured rose sprays sit on the paper with a soft shadow. */
 .env__roses {
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.18));
