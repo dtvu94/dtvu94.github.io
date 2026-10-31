@@ -100,7 +100,7 @@ describe('InvitationCardComponent', () => {
 
   it('prints the invitation without title or crest on an "invite" face', () => {
     const root = render('vn-hong-phuc', 'invite');
-    expect(root.querySelector('.inv__headline')?.textContent).toContain('TRÂN TRỌNG KÍNH MỜI');
+    expect(root.querySelector('.inv__headline')?.textContent).toContain('Trân trọng kính mời');
     expect(root.querySelector('.inv__title')).toBeNull();
     expect(root.querySelector('.inv__crest')).toBeNull();
   });
@@ -157,9 +157,11 @@ describe('InvitationCardComponent', () => {
       expect(card?.className).toContain(`inv--${design.layout}`);
       const text = fixture.nativeElement.textContent;
       expect(text).toContain('Vũ & Thảo');
-      expect(text).toContain('TRÂN TRỌNG KÍNH MỜI');
-      expect(text).toContain('Ông / Bà:');
+      expect(text).toContain('Trân trọng kính mời');
+      expect(text).not.toContain('Ông / Bà');
       expect(text).toContain('cùng gia đình');
+      expect(text).toContain('Ông Đặng Văn Quỳ');
+      expect(text).toContain('Bà Đặng Thị Lan');
       expect(text).toContain('Riverside Palace');
       fixture.destroy();
     }

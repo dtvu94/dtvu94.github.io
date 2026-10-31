@@ -6,14 +6,21 @@ describe('buildWording', () => {
     const copy = buildWording(WEDDING_CONFIG);
 
     expect(copy.titleWord).toBe('Thiệp Cưới');
-    expect(copy.inviteHeadline).toBe('TRÂN TRỌNG KÍNH MỜI');
-    expect(copy.guestPrefix).toBe('Ông / Bà:');
+    expect(copy.inviteHeadline).toBe('Trân trọng kính mời');
+    // No "Ông / Bà": the family writes each guest's name on the line.
+    expect(copy).not.toHaveProperty('guestPrefix');
     expect(copy.guestSuffix).toBe('cùng gia đình');
     expect(copy.coupleLine).toBe('Vũ & Thảo');
     expect(copy.monogram).toBe('V & T');
     // The event line leads into the names: "đến dự Lễ Thành Hôn của — Vũ & Thảo".
     expect(copy.eventLine).toBe('đến dự Lễ Thành Hôn của');
-    expect(copy.dateLine).toBe('Vào lúc 18 giờ 00, Chủ Nhật, ngày 28 tháng 03 năm 2027');
+    expect(copy.dateLine).toBe('Vào lúc 18h00, Chủ Nhật, ngày 28 tháng 03 năm 2027');
+    // On the card: time, then the day, each on its own line.
+    expect(copy.dateLines).toEqual(['Vào lúc 18h00', 'Chủ Nhật, ngày 28 tháng 03 năm 2027']);
+    expect(copy.parents).toEqual([
+      { label: 'Nhà trai', names: ['Ông Đặng Văn Quỳ', 'Bà Đoàn Thị Phương'] },
+      { label: 'Nhà gái', names: ['Ông Nguyễn Đức Nam', 'Bà Đặng Thị Lan'] },
+    ]);
     expect(copy.venueLines).toEqual([
       'Tại Sảnh Danube',
       'Trung Tâm Hội Nghị – Tiệc Cưới Riverside Palace',
@@ -26,11 +33,12 @@ describe('buildWording', () => {
     const copy = buildWording(WEDDING_CONFIG, 'en');
 
     expect(copy.titleWord).toBe('Wedding Invitation');
-    expect(copy.inviteHeadline).toBe('WE CORDIALLY INVITE YOU');
-    expect(copy.guestPrefix).toBe('Mr / Ms / Mrs');
+    expect(copy.inviteHeadline).toBe('We cordially invite you');
     expect(copy.guestSuffix).toBe('& family');
     expect(copy.eventLine).toBe('to celebrate the wedding of');
     expect(copy.dateLine).toBe('At 6:00 PM, Sunday, March 28th, 2027');
+    expect(copy.dateLines).toEqual(['At 6:00 PM', 'Sunday, March 28th, 2027']);
+    expect(copy.parents[0]).toEqual({ label: "Groom's family", names: ['Mr Đặng Văn Quỳ', 'Mrs Đoàn Thị Phương'] });
     expect(copy.venueLines).toEqual([
       'Danube Hall',
       'Riverside Palace Convention & Wedding Center',
@@ -45,10 +53,11 @@ describe('buildWording', () => {
 
     expect(copy.titleWord).toBe('การ์ดแต่งงาน');
     expect(copy.inviteHeadline).toBe('ขอเรียนเชิญ');
-    expect(copy.guestPrefix).toBe('คุณ');
     expect(copy.guestSuffix).toBe('พร้อมครอบครัว');
     expect(copy.eventLine).toBe('ร่วมเป็นเกียรติในพิธีมงคลสมรสของ');
     expect(copy.dateLine).toBe('เวลา 18:00 น. วันอาทิตย์ที่ 28 มีนาคม พ.ศ. 2570');
+    expect(copy.dateLines).toEqual(['เวลา 18:00 น.', 'วันอาทิตย์ที่ 28 มีนาคม พ.ศ. 2570']);
+    expect(copy.parents[1].names).toEqual(['นาย Nguyễn Đức Nam', 'นาง Đặng Thị Lan']);
     expect(copy.venueLines[0]).toBe('ห้องจัดเลี้ยง Danube');
     expect(copy.coupleLine).toBe('Vũ & Thảo');
   });
@@ -68,7 +77,7 @@ describe('buildWording', () => {
     const vi = buildWording(WEDDING_CONFIG);
     expect(vi.kicker).toBe('Lễ Thành Hôn');
     expect(vi.shortDate).toBe('28 · 03 · 2027');
-    expect(vi.timeWeekday).toBe('18 giờ 00 · Chủ Nhật');
+    expect(vi.timeWeekday).toBe('18h00 · Chủ Nhật');
     expect(vi.venueShort).toBe('Riverside Palace');
     expect(vi.guestLabel).toBe('Kính mời');
 

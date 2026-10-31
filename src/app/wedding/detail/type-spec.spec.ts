@@ -61,4 +61,25 @@ describe('type spec', () => {
       root.remove();
     }
   });
+
+  it('reports the printed size inside a zoomed frame', () => {
+    const root = document.createElement('div');
+    root.innerHTML = piece(
+      'card',
+      `<div class="zoomed"><p style="font-family: 'Alex Brush'; font-size: 33px; letter-spacing: 3.3px">Vũ &amp; Thảo</p>
+       <span class="vt-logo" style="height: 30px"></span></div>`,
+    );
+    document.body.appendChild(root);
+    const setZoom = (el: Element, zoom: number) => Object.defineProperty(el, 'currentCSSZoom', { value: zoom, configurable: true });
+    setZoom(root.querySelector('app-paper-art')!, 1);
+    setZoom(root.querySelector('p')!, 0.84);
+    setZoom(root.querySelector('.vt-logo')!, 0.84);
+    try {
+      const [card] = measureTypography(root);
+      expect(card.rows[0]).toEqual(expect.objectContaining({ sample: 'Vũ & Thảo', px: 27.7, tracking: 0.1 }));
+      expect(card.rows[1]).toEqual(expect.objectContaining({ logo: true, px: 25.2 }));
+    } finally {
+      root.remove();
+    }
+  });
 });

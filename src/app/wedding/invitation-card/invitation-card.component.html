@@ -77,9 +77,19 @@
           }
         }
 
+        <div class="inv__parents">
+          @for (side of copy.parents; track side.label) {
+            <div class="inv__parent">
+              <p class="inv__parent-label">{{ side.label }}</p>
+              @for (name of side.names; track $index) {
+                <p class="inv__parent-name">{{ name }}</p>
+              }
+            </div>
+          }
+        </div>
         <p class="inv__headline">{{ copy.inviteHeadline }}</p>
+        <!-- The family writes each guest's name on the dotted line. -->
         <p class="inv__guest">
-          <span>{{ copy.guestPrefix }}</span>
           @if (guest) {
             <span class="inv__guest-name">{{ guest }}</span>
           } @else {
@@ -96,7 +106,8 @@
           <div class="inv__rule" aria-hidden="true"></div>
         }
 
-        <p class="inv__date">{{ copy.dateLine }}</p>
+        <p class="inv__date">{{ copy.dateLines[0] }}</p>
+        <p class="inv__date inv__date--day">{{ copy.dateLines[1] }}</p>
         @if (copy.lunarLine) {
           <p class="inv__lunar">{{ copy.lunarLine }}</p>
         }

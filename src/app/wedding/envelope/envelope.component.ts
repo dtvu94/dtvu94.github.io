@@ -3,6 +3,7 @@ import { EnvelopeSpec, InvitationCopy, InvitationDesign } from '../data/wedding.
 import { cornerSpray, curlFrame, drawnBow, fern, lotusPrint, monogramCrest, waxSealPath } from '../geometry/envelope-art';
 import { Motif, mergeMotifs } from '../geometry/motifs';
 import { linerBackground, STOCK_TEXTURE } from '../geometry/patterns';
+import { RoseSpray, envelopeRoses } from '../geometry/rose-spray';
 import { ENV_H, ENV_W, EnvelopeGeometry, envelopeGeometry } from '../geometry/shapes';
 import { svgRef, uniqueSvgId } from '../relief/svg-ref';
 import { invitationThemeStyle } from '../theme';
@@ -32,6 +33,9 @@ const PRINT_Y: Record<string, number> = { names: 0.44, monogram: 0.33, fern: 0.4
  * pixels. Shapes come from geometry/shapes.ts as clip-paths over textured
  * paper; art is inline SVG; the flap swings open in 3-D.
  */
+/** Drawn once: every envelope front uses the same sprays. */
+const ROSES = envelopeRoses(ENV_W);
+
 @Component({
   selector: 'app-envelope',
   templateUrl: './envelope.component.html',
@@ -47,6 +51,8 @@ export class EnvelopeComponent {
   readonly w = ENV_W;
   readonly h = ENV_H;
   readonly foilId = uniqueSvgId('env-foil');
+  /** Baby-rose sprays for both sides of the front (same art on every envelope). */
+  readonly roseArt: RoseSpray = ROSES;
   readonly foilRef = svgRef(this.foilId);
   readonly waxId = uniqueSvgId('env-wax');
   readonly waxRef = svgRef(this.waxId);

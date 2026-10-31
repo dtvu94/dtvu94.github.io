@@ -92,6 +92,11 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
   const coupleLine = `${config.groom.short} & ${config.bride.short}`;
   const monogram = `${initialOf(config.groom.short)} & ${initialOf(config.bride.short)}`;
   const rsvp = config.rsvpNote[lang];
+  const { groom: groomParents, bride: brideParents } = config.parents;
+  const sides = (labels: [string, string], father: string, mother: string) => [
+    { label: labels[0], names: [`${father} ${groomParents.father}`, `${mother} ${groomParents.mother}`] },
+    { label: labels[1], names: [`${father} ${brideParents.father}`, `${mother} ${brideParents.mother}`] },
+  ];
   const [year, month, day] = config.isoDate.split('-').map(Number);
   const shared = {
     coupleLine,
@@ -122,12 +127,13 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
       return {
         ...shared,
         titleWord: 'Wedding Invitation',
-        inviteHeadline: 'WE CORDIALLY INVITE YOU',
-        guestPrefix: 'Mr / Ms / Mrs',
+        inviteHeadline: 'We cordially invite you',
         guestSuffix: '& family',
         // Rendered above the names: "to celebrate the wedding of — Vũ & Thảo".
         eventLine: 'to celebrate the wedding of',
         dateLine: `At ${time}, ${weekday}, ${date}`,
+        dateLines: [`At ${time}`, `${weekday}, ${date}`],
+        parents: sides(["Groom's family", "Bride's family"], 'Mr', 'Mrs'),
         venueLines: [hall, venueName, address],
         closing: "Your presence will be our family's greatest joy and honor.",
         kicker: 'The Wedding of',
@@ -138,11 +144,12 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
         ...shared,
         titleWord: 'การ์ดแต่งงาน',
         inviteHeadline: 'ขอเรียนเชิญ',
-        guestPrefix: 'คุณ',
         guestSuffix: 'พร้อมครอบครัว',
         // Rendered above the names: "ร่วมเป็นเกียรติในพิธีมงคลสมรสของ — Vũ & Thảo".
         eventLine: 'ร่วมเป็นเกียรติในพิธีมงคลสมรสของ',
         dateLine: `เวลา ${time} ${weekday}${date}`,
+        dateLines: [`เวลา ${time}`, `${weekday}${date}`],
+        parents: sides(['บิดามารดาฝ่ายเจ้าบ่าว', 'บิดามารดาฝ่ายเจ้าสาว'], 'นาย', 'นาง'),
         venueLines: [hall, venueName, address],
         closing: 'การมาร่วมงานของท่านถือเป็นเกียรติอันยิ่งใหญ่ของครอบครัวเรา',
         kicker: 'พิธีมงคลสมรส',
@@ -152,12 +159,13 @@ export function buildWording(config: WeddingConfig, lang: Lang = 'vi'): Invitati
       return {
         ...shared,
         titleWord: 'Thiệp Cưới',
-        inviteHeadline: 'TRÂN TRỌNG KÍNH MỜI',
-        guestPrefix: 'Ông / Bà:',
+        inviteHeadline: 'Trân trọng kính mời',
         guestSuffix: 'cùng gia đình',
         // Rendered above the names: "đến dự Lễ Thành Hôn của — Vũ & Thảo".
         eventLine: 'đến dự Lễ Thành Hôn của',
         dateLine: `Vào lúc ${time}, ${weekday}, ${date}`,
+        dateLines: [`Vào lúc ${time}`, `${weekday}, ${date}`],
+        parents: sides(['Nhà trai', 'Nhà gái'], 'Ông', 'Bà'),
         lunarLine: config.lunarDateText ? `(${config.lunarDateText})` : undefined,
         venueLines: [`Tại ${hall}`, venueName, address],
         closing: 'Sự hiện diện của quý khách là niềm vinh hạnh cho gia đình chúng tôi.',

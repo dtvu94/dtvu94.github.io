@@ -126,9 +126,8 @@ app-invitation-card {
   border-radius: 9px;
   background: var(--inv-surface);
   color: var(--inv-ink);
-  font-family: var(--inv-font-body);
-  font-size: 12px;
-  font-style: italic;
+  font-family: var(--inv-font-accent);
+  font-size: 17px;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 .pk__guest-line {

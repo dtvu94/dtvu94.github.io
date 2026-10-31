@@ -146,10 +146,59 @@
   padding: 50px 50px;
 }
 .inv.inv--laserArch .inv__content {
-  padding: 72px 56px 46px;
+  padding: 64px 56px 62px;
 }
 .inv.inv--laserCloud .inv__content {
-  padding: 112px 76px 92px;
+  padding: 90px 56px 88px;
+}
+/* The rounded window narrows at top and foot: tighter, smaller copy there. */
+.inv.inv--laserCloud .inv__main {
+  gap: 5px;
+  /* The copy as a whole, smaller, to sit inside the window in every language. */
+  zoom: 0.84;
+}
+.inv.inv--laserCloud .inv__content :is(.inv__date, .inv__venue-line, .inv__closing, .inv__event, .inv__rsvp) {
+  max-width: 236px;
+  margin-inline: auto;
+}
+.inv.inv--laserCloud .inv__content .inv__guest {
+  width: 100%;
+  max-width: 252px;
+  margin-inline: auto;
+  font-size: 18px;
+}
+.inv.inv--laserCloud .inv__content .inv__title {
+  font-size: 24px;
+}
+.inv.inv--laserCloud .inv__content .inv__date {
+  max-width: 270px;
+  font-size: 13px;
+}
+.inv.inv--laserCloud .inv__content .inv__closing {
+  max-width: 204px;
+  font-size: 14px;
+}
+.inv.inv--laserCloud .inv__content .inv__rsvp {
+  max-width: 210px;
+}
+/* English and Thai copy runs longer (venue, parents): a touch smaller still. */
+.inv.inv.inv--laserCloud:is(:lang(en), :lang(th)) .inv__main {
+  zoom: 0.78;
+}
+/* Thai runs taller: smaller title, tighter lines in the window. */
+.inv.inv.inv--laserCloud:lang(th) .inv__content .inv__title {
+  font-size: 21px;
+}
+.inv.inv.inv--laserCloud:lang(th) .inv__content :is(.inv__venue-line, .inv__closing, .inv__event, .inv__date) {
+  line-height: 1.38;
+}
+.inv.inv.inv--laserCloud:lang(th) .inv__content .inv__rsvp {
+  letter-spacing: 0;
+  font-size: 15px;
+  line-height: 1.3;
+}
+.inv.inv.inv--laserCloud:lang(th) .inv__content {
+  padding-bottom: 100px;
 }
 .inv.inv--laserBranch {
   text-align: left;
@@ -170,9 +219,15 @@
   font-size: 39px;
 }
 .inv:is(.inv--laserCloud, .inv--laserBranch) .inv__couple {
-  font-size: 34px;
+  font-size: 33px;
 }
-.inv:is(.inv--laserCloud, .inv--laserBranch) :is(.inv__headline, .inv__venue-line, .inv__closing) {
+.inv:is(.inv--laserCloud, .inv--laserBranch) .inv__headline {
+  font-size: 18px;
+}
+.inv:is(.inv--laserCloud, .inv--laserBranch) .inv__closing {
+  font-size: 14px;
+}
+.inv:is(.inv--laserCloud, .inv--laserBranch) .inv__venue-line {
   letter-spacing: 0.08em;
   font-size: 10.5px;
 }
@@ -197,4 +252,61 @@
 .inv.inv--laserCloud .inv__crest {
   width: 70px;
   height: 46px;
+}
+
+/* ── Parents (Nhà trai | Nhà gái) ─────────────────────────────────────────
+   Both sets of parents side by side above the invitation. Kept here: the
+   card's own stylesheet is at its size budget. */
+.inv .inv__parents {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 0 0 2px;
+}
+.inv .inv__parent > p {
+  margin: 0;
+}
+.inv .inv__parent-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--inv-accent);
+}
+.inv .inv__parent-name {
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.inv:lang(th) .inv__parent-label {
+  letter-spacing: 0;
+  font-size: 10.5px;
+}
+/* With the parents' names the copy runs longer: scale it to stay inside
+   arched windows, the side panel and the banded header. zoom (unlike
+   transform) shrinks the layout too, so lines re-wrap to fit. */
+.inv.inv--laserArch .inv__main {
+  zoom: 0.9;
+}
+.inv.inv--splitVertical .inv__main {
+  zoom: 0.88;
+}
+.inv.inv--bandedHeader .inv__main {
+  zoom: 0.95;
+}
+.inv.inv--laserBranch .inv__main {
+  zoom: 0.88;
+}
+/* Narrow columns (side panel, laser windows): smaller names, tighter gap. */
+.inv:is(.inv--splitVertical, .inv--laserCloud, .inv--laserBranch) .inv__parents {
+  grid-template-columns: auto auto;
+  justify-content: center;
+  gap: 12px;
+}
+.inv:is(.inv--splitVertical, .inv--laserCloud, .inv--laserBranch) .inv__parent-name {
+  font-size: 10px;
+}
+.inv:is(.inv--splitVertical, .inv--laserCloud, .inv--laserBranch) .inv__parent-label {
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
 }

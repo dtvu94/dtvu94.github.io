@@ -98,14 +98,16 @@ describe('LASER_SHAPES', () => {
     expect(LASER_SHAPES.arch.motifs.every(outsideArchWindow)).toBe(true);
   });
 
-  it('keeps the cloud motifs clear of the oval window', () => {
-    const { cx, cy, rx, ry } = CLOUD_WINDOW;
+  it('keeps the cloud motifs clear of the window and its ring of pearls', () => {
+    const { cx, cy, rx, ry, n } = CLOUD_WINDOW;
     for (const motif of LASER_SHAPES.cloud.motifs) {
+      // Pearls (dots, r 2.4) ring the window 14 px out; clouds keep clear of them too.
+      const pearl = motif.a.x === motif.b.x && motif.a.y === motif.b.y && motif.radius <= 2.4;
       for (const p of [motif.a, motif.b]) {
-        // Grow the window by the motif radius and require the point outside it.
-        const nx = (p.x - cx) / (rx + motif.radius);
-        const ny = (p.y - cy) / (ry + motif.radius);
-        expect(nx * nx + ny * ny).toBeGreaterThan(1);
+        const grow = motif.radius + (pearl ? 0 : 14 + 2.4);
+        const nx = Math.abs((p.x - cx) / (rx + grow));
+        const ny = Math.abs((p.y - cy) / (ry + grow));
+        expect(nx ** n + ny ** n).toBeGreaterThan(1);
       }
     }
   });

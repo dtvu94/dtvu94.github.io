@@ -10,13 +10,18 @@ import { WeddingConfig } from './wedding.types';
 export const WEDDING_CONFIG: WeddingConfig = {
   groom: { short: 'Vũ', full: '' },
   bride: { short: 'Thảo', full: '' },
+  // Tên cha mẹ hai bên, in dưới "Nhà trai" / "Nhà gái" trên thiệp.
+  parents: {
+    groom: { father: 'Đặng Văn Quỳ', mother: 'Đoàn Thị Phương' },
+    bride: { father: 'Nguyễn Đức Nam', mother: 'Đặng Thị Lan' },
+  },
   isoDate: '2027-03-28',
   // Giờ dùng cho nút "Lưu vào lịch" của thiệp online (giờ Việt Nam).
   startTime: '18:00',
   endTime: '21:00',
   utcOffset: '+07:00',
   timeText: {
-    vi: '18 giờ 00',
+    vi: '18h00',
     en: '6:00 PM',
     th: '18:00 น.',
   },

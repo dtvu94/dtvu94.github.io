@@ -91,7 +91,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 7px;
+  gap: 5px;
 }
 .inv__main > p {
   margin: 0;
@@ -106,15 +106,18 @@
 .inv__title {
   font-family: var(--inv-font-accent);
   color: var(--inv-accent);
-  font-size: 28px;
-  line-height: 1.25;
+  font-size: 26px;
+  line-height: 1.2;
 }
 
+/* The invitation's own words — headline, guest line, event line, closing —
+   are handwritten (Alex Brush; Charm for Thai), like the names. Date, time
+   and address stay in the body face, easy to read at a glance. */
 .inv__headline {
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  margin-top: 6px;
+  font-family: var(--inv-font-accent);
+  font-size: 19px;
+  line-height: 1.2;
+  margin-top: 2px;
 }
 
 /* "Ông / Bà: ……… cùng gia đình" — the guest's line. Larger than the body
@@ -124,10 +127,11 @@
   align-items: baseline;
   justify-content: center;
   gap: 7px;
-  font-size: 14px;
-  font-weight: 500;
+  font-family: var(--inv-font-accent);
+  font-size: 18px;
+  line-height: 1.2;
   color: var(--inv-primary);
-  margin: 2px 0 12px;
+  margin: 0 0 6px;
 }
 .inv__guest-dots {
   flex: 0 1 120px;
@@ -136,7 +140,7 @@
 }
 .inv__guest-name {
   font-family: var(--inv-font-accent);
-  font-size: 1.45em;
+  font-size: 1.25em;
   line-height: 1;
   color: var(--inv-primary);
   max-width: 62%;
@@ -148,18 +152,19 @@
 .inv__couple {
   font-family: var(--inv-font-accent);
   color: var(--inv-primary);
-  font-size: 46px;
-  line-height: 1.2;
+  font-size: 42px;
+  line-height: 1.15;
   overflow-wrap: anywhere;
 }
 
 .inv__event {
-  font-size: 13px;
-  font-style: italic;
+  font-family: var(--inv-font-accent);
+  font-size: 17px;
+  line-height: 1.2;
 }
 
 .inv__date {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--inv-primary);
 }
@@ -185,16 +190,17 @@
 }
 
 .inv__closing {
-  font-size: 10.5px;
-  font-style: italic;
-  opacity: 0.8;
-  margin-top: 7px;
+  font-family: var(--inv-font-accent);
+  font-size: 14px;
+  line-height: 1.25;
+  opacity: 0.85;
+  margin-top: 3px;
 }
 
 .inv__rsvp {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-family: var(--inv-font-accent);
+  font-size: 17px;
+  line-height: 1.2;
   color: var(--inv-accent);
 }
 
@@ -353,7 +359,7 @@
   height: 88px;
 }
 .inv--archFrame .inv__couple {
-  font-size: 42px;
+  font-size: 40px;
 }
 
 /* ── layout: editorialAsym (left-aligned, oversized names) ──────────── */
@@ -371,7 +377,7 @@
   opacity: 0.8;
 }
 .inv--editorialAsym .inv__couple {
-  font-size: 52px;
+  font-size: 48px;
   line-height: 1.05;
   margin: 4px 0 2px;
 }
@@ -447,17 +453,18 @@
 
 /* ── Thai readability (taller glyphs, no fake italics, no wide tracking) ── */
 .inv:lang(th) .inv__headline {
-  letter-spacing: 0.12em;
-  font-size: 12px;
+  font-size: 18px;
 }
-.inv:lang(th) .inv__event,
+.inv:lang(th) :is(.inv__guest, .inv__event, .inv__rsvp) {
+  font-size: 16px;
+}
 .inv:lang(th) .inv__closing {
-  font-style: normal;
+  font-size: 13.5px;
 }
 .inv:lang(th) .inv__event,
 .inv:lang(th) .inv__venue-line,
 .inv:lang(th) .inv__closing {
-  line-height: 1.65;
+  line-height: 1.6;
 }
 .inv:lang(th) .inv__venue-line {
   font-size: 13px;
@@ -483,7 +490,7 @@
   padding-right: 56px;
 }
 .inv--vine-frame .inv__main {
-  zoom: 0.9;
+  zoom: 0.85;
 }
 
 /* Corner sprays sit level with the closing lines: keep those narrower. */

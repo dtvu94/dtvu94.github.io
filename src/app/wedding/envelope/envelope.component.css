@@ -122,15 +122,17 @@
 .env__guest {
   left: 44px;
   right: 44px;
-  top: 80%;
+  top: 78%;
   display: flex;
   gap: 8px;
   align-items: baseline;
-  font-family: var(--inv-font-body);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  /* "Kính mời: ……" handwritten, like the card's guest line. */
+  font-family: var(--inv-font-accent);
+  font-size: 20px;
+}
+/* Coloured rose sprays sit on the paper with a soft shadow. */
+.env__roses {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.18));
 }
 .env__guest-line {
   flex: 1;

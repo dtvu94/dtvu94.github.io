@@ -81,6 +81,13 @@ describe('suite pieces', () => {
       expect(render('press-cotton', { piece: 'envelope', layer: 'flap' }).querySelector('.env__flap-liner')).toBeTruthy();
     });
 
+    it('dresses some fronts with baby-rose sprays, in foil or in colour', () => {
+      const front = (id: string) => render(id, { piece: 'envelope', layer: 'front' });
+      expect(front('press-cotton').querySelector('.env__roses')).toBeTruthy();
+      expect(front('press-red-foil').querySelectorAll('g[filter] path').length).toBeGreaterThan(2);
+      expect(front('rustic-kraft').querySelector('.env__roses')).toBeNull();
+    });
+
     it('opens the flap and seals it with wax, a sticker, twine or nothing', () => {
       const closed = render('press-cotton', { piece: 'envelope', layer: 'flap' });
       expect(closed.querySelector('.env__hinge--open')).toBeNull();

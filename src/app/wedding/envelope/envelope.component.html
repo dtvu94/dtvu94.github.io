@@ -27,7 +27,7 @@
     <!-- Front of the envelope: what the guest sees first — their name line and the print. -->
     <div class="env__front" [style.background-image]="texture" [style.box-shadow]="edgeShadow">
       <svg class="env__art" [attr.viewBox]="'0 0 ' + w + ' ' + h" aria-hidden="true">
-        @if (spec.foil) {
+        @if (spec.foil || spec.roses?.kind === 'foil') {
           <defs>
             <filter appReliefFilter [attr.id]="foilId" finish="foil" [metal]="spec.ink" [scale]="0.7" />
           </defs>
@@ -39,6 +39,30 @@
               <path [attr.d]="art.stroke" fill="none" [attr.stroke-width]="art.strokeWidth" stroke-linecap="round" />
             }
           </g>
+        }
+        @if (spec.roses; as roses) {
+          <!-- Hoa hồng baby on both sides of the crest. -->
+          @if (roses.kind === 'foil') {
+            <g [attr.filter]="foilRef" [attr.fill]="spec.ink" [attr.stroke]="spec.ink">
+              <path [attr.d]="roseArt.stems" fill="none" stroke-width="1.6" stroke-linecap="round" />
+              <path [attr.d]="roseArt.breathStems" fill="none" stroke-width="0.6" stroke-linecap="round" />
+              <path [attr.d]="roseArt.leaves" stroke="none" />
+              <path [attr.d]="roseArt.lines" fill="none" stroke-width="1.15" stroke-linecap="round" />
+              <path [attr.d]="roseArt.buds" stroke="none" />
+              <path [attr.d]="roseArt.breath" stroke="none" />
+            </g>
+          } @else {
+            <g class="env__roses">
+              <path [attr.d]="roseArt.stems" fill="none" [attr.stroke]="roses.leaf" stroke-width="1.5" stroke-linecap="round" />
+              <path [attr.d]="roseArt.breathStems" fill="none" [attr.stroke]="roses.leaf" stroke-width="0.6" stroke-linecap="round" />
+              <path [attr.d]="roseArt.leaves" [attr.fill]="roses.leaf" />
+              <path [attr.d]="roseArt.petals" [attr.fill]="roses.petal" />
+              <path [attr.d]="roseArt.petalsInner" [attr.fill]="roses.petalInner" />
+              <path [attr.d]="roseArt.lines" fill="none" [attr.stroke]="roses.line" stroke-width="0.8" stroke-linecap="round" />
+              <path [attr.d]="roseArt.buds" [attr.fill]="roses.petalInner" />
+              <path [attr.d]="roseArt.breath" [attr.fill]="roses.breath" />
+            </g>
+          }
         }
         @if (spec.seal === 'twine') {
           <path class="env__twine" [attr.d]="'M0 ' + twineY + 'H' + w" />

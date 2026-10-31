@@ -72,6 +72,20 @@ function visible(el: Element): boolean {
   return typeof check === 'function' ? check.call(el, { opacityProperty: true, visibilityProperty: true }) : true;
 }
 
+/**
+ * CSS zoom between an element and its piece: some frames shrink their copy
+ * with `zoom` to fit a window, and computed sizes ignore it. Browsers without
+ * `currentCSSZoom` (and jsdom) count as unzoomed.
+ */
+function zoomWithin(el: Element, art: Element): number {
+  const zoom = (node: Element) => (node as Element & { currentCSSZoom?: number }).currentCSSZoom;
+  const own = zoom(el);
+  const base = zoom(art);
+  return typeof own === 'number' && typeof base === 'number' && own > 0 && base > 0 ? own / base : 1;
+}
+
+const round1 = (value: number) => Math.round(value * 10) / 10;
+
 function trackingEm(style: CSSStyleDeclaration, px: number): number {
   const spacing = parseFloat(style.letterSpacing);
   return Number.isFinite(spacing) && px > 0 ? Math.round((spacing / px) * 100) / 100 : 0;
@@ -112,7 +126,7 @@ export function measureTypography(root: HTMLElement): TypeSpecPiece[] {
       const node = walker.currentNode;
       if (node instanceof view.HTMLElement && node.classList.contains('vt-logo')) {
         if ((!skipInside || !node.closest(skipInside)) && visible(node)) {
-          const height = Math.round(parseFloat(view.getComputedStyle(node).height) * 10) / 10;
+          const height = round1(parseFloat(view.getComputedStyle(node).height) * zoomWithin(node, art));
           if (height > 0) {
             add(`logo|${height}`, { sample: '', font: '', stack: '', px: height, weight: 400, italic: false, upper: false, tracking: 0, logo: true }, '');
           }
@@ -128,12 +142,15 @@ export function measureTypography(root: HTMLElement): TypeSpecPiece[] {
         continue;
       }
       const style = view.getComputedStyle(el);
-      const px = Math.round(parseFloat(style.fontSize) * 10) / 10;
+      const size = parseFloat(style.fontSize);
+      // Printed size: what the copy is drawn at once the frame's zoom applies.
+      const px = round1(size * zoomWithin(el, art));
       const weight = parseInt(style.fontWeight, 10) || 400;
       const italic = style.fontStyle === 'italic';
       // Thai has no letter case.
       const upper = style.textTransform === 'uppercase' && /[A-Za-zÀ-ỹ]/.test(text);
-      const tracking = trackingEm(style, px);
+      // Letter-spacing and font-size are both unzoomed: their ratio holds.
+      const tracking = trackingEm(style, size);
       const font = faceFor(style.fontFamily, text);
       const key = [font, px, weight, italic, upper, tracking].join('|');
       add(key, { sample: '', font, stack: style.fontFamily, px, weight, italic, upper, tracking }, text);

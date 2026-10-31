@@ -49,8 +49,38 @@ export const LACE_WINDOW_INSET = 32;
 export const LATTICE_WINDOW_INSET = 36;
 /** laserArch: arched window — straight sides from `spring` down to `base`. */
 export const ARCH_WINDOW = { left: 36, right: 364, centerX: 200, spring: 206, radius: 164, base: 528 } as const;
-/** laserCloud: oval window (scallops bulge further in). */
-export const CLOUD_WINDOW = { cx: 200, cy: 292, rx: 134, ry: 198 } as const;
+/**
+ * laserCloud: rounded window, a superellipse |x/rx|^n + |y/ry|^n = 1 — an
+ * oval with fuller shoulders, so the copy's long lines fit (scallops bulge
+ * further in).
+ */
+export const CLOUD_WINDOW = { cx: 200, cy: 290, rx: 152, ry: 212, n: 3 } as const;
+
+/** `count` points evenly spaced (by length) round a superellipse. */
+export function superellipsePoints(cx: number, cy: number, rx: number, ry: number, exp: number, count: number, offset = 0): Point[] {
+  const dense = Array.from({ length: 720 }, (_, i) => {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / 720;
+    const c = Math.cos(a);
+    const s = Math.sin(a);
+    return { x: cx + rx * Math.sign(c) * Math.abs(c) ** (2 / exp), y: cy + ry * Math.sign(s) * Math.abs(s) ** (2 / exp) };
+  });
+  const lengths = [0];
+  for (let i = 1; i <= dense.length; i++) {
+    const a = dense[i - 1];
+    const b = dense[i % dense.length];
+    lengths.push(lengths[i - 1] + Math.hypot(b.x - a.x, b.y - a.y));
+  }
+  const total = lengths[lengths.length - 1];
+  return Array.from({ length: count }, (_, k) => {
+    const target = ((k + offset) / count) * total;
+    let i = 1;
+    while (lengths[i] < target) i++;
+    const a = dense[i - 1];
+    const b = dense[i % dense.length];
+    const t = (target - lengths[i - 1]) / (lengths[i] - lengths[i - 1] || 1);
+    return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+  });
+}
 /** laserBranch: the jacket's cut edge never reaches right of this x. */
 export const BRANCH_EDGE_MAX_X = 196;
 
@@ -479,17 +509,14 @@ function buildBranch(): LaserShape {
   return cut.shape(`0 0 ${CARD_W} ${CARD_H}`, art.fill);
 }
 
-/** Mây lành — clouds and pearls cut round a scalloped oval window. */
+/** Mây lành — clouds and pearls cut round a scalloped, rounded window. */
 function buildCloud(): LaserShape {
-  const { cx, cy, rx, ry } = CLOUD_WINDOW;
+  const { cx, cy, rx, ry, n: exp } = CLOUD_WINDOW;
   const cut = new Cutter();
   cut.raw(rectPath(0, 0, CARD_W, CARD_H));
-  // Window: points round the ellipse, scallops bulging into the opening.
-  const count = 44;
-  const ring = Array.from({ length: count }, (_, i) => {
-    const a = -Math.PI / 2 + (i * 2 * Math.PI) / count;
-    return { x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) };
-  });
+  // Window: points round the superellipse, scallops bulging into the opening.
+  const count = 48;
+  const ring = superellipsePoints(cx, cy, rx, ry, exp, count);
   let window = moveTo(ring[0]);
   for (let i = 1; i <= count; i++) {
     const a = ring[i - 1];
@@ -499,21 +526,16 @@ function buildCloud(): LaserShape {
   }
   cut.raw(`${window}Z`);
   // Pearl ring just outside the window.
-  for (let i = 0; i < 40; i++) {
-    const a = -Math.PI / 2 + ((i + 0.5) * 2 * Math.PI) / 40;
-    cut.dot({ x: cx + (rx + 16) * Math.cos(a), y: cy + (ry + 16) * Math.sin(a) }, 2.4);
+  for (const p of superellipsePoints(cx, cy, rx + 14, ry + 14, exp, 44, 0.5)) {
+    cut.dot(p, 2.4);
   }
-  // Clouds: two per corner, one at each side's waist.
-  cut.cloud({ x: 62, y: 56 }, 84);
-  cut.cloud({ x: 338, y: 56 }, 84, true);
-  cut.cloud({ x: 62, y: 520 }, 84);
-  cut.cloud({ x: 338, y: 520 }, 84, true);
-  cut.cloud({ x: 46, y: 140 }, 52);
-  cut.cloud({ x: 354, y: 140 }, 52, true);
-  cut.cloud({ x: 44, y: 430 }, 52);
-  cut.cloud({ x: 356, y: 430 }, 52, true);
-  cut.cloud({ x: 200, y: 34 }, 64);
-  cut.cloud({ x: 200, y: 532 }, 64, true);
+  // Clouds: one in each corner, one above and one below the window.
+  cut.cloud({ x: 58, y: 42 }, 76);
+  cut.cloud({ x: 342, y: 42 }, 76, true);
+  cut.cloud({ x: 58, y: 532 }, 76);
+  cut.cloud({ x: 342, y: 532 }, 76, true);
+  cut.cloud({ x: 200, y: 30 }, 60);
+  cut.cloud({ x: 200, y: 538 }, 54, true);
   return cut.shape(`0 0 ${CARD_W} ${CARD_H}`);
 }
 

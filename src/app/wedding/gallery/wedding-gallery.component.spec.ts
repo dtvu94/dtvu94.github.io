@@ -45,7 +45,7 @@ describe('WeddingGalleryComponent', () => {
     expect(root.querySelector('.gallery__title')?.textContent).toContain('Chọn Mẫu Thiệp Cưới');
     expect(root.querySelector('.gallery__meta')?.textContent).toContain('28 tháng 03 năm 2027');
     expect(root.querySelector('.gallery__meta')?.textContent).toContain('Riverside Palace');
-    expect(root.textContent).toContain('TRÂN TRỌNG KÍNH MỜI');
+    expect(root.textContent).toContain('Trân trọng kính mời');
     expect(root.textContent).toContain('Kiểu thiệp');
     expect(root.textContent).toContain('Phong cách');
   });
@@ -58,7 +58,7 @@ describe('WeddingGalleryComponent', () => {
     expect(root.querySelector('main')?.getAttribute('lang')).toBe('en');
     expect(root.querySelector('.gallery__title')?.textContent).toContain('Choose Our Wedding Invitation');
     expect(root.querySelector('.gallery__meta')?.textContent).toContain('March 28th, 2027');
-    expect(root.textContent).toContain('WE CORDIALLY INVITE YOU');
+    expect(root.textContent).toContain('We cordially invite you');
     expect(root.querySelector('button[data-form="letterpress"]')?.textContent).toContain('Letterpress & Emboss');
 
     click(fixture, 'button[data-lang="th"]');

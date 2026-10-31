@@ -44,6 +44,7 @@ const CORE_DESIGNS: InvitationDesign[] = [
       sealColor: '#24304d',
       print: 'monogram',
       ink: '#2e3a5a',
+      roses: { kind: 'color', petal: '#f6d3d6', petalInner: '#e8a2ad', line: '#c06c7b', leaf: '#8ea488', breath: '#fffdf8' },
     },
   },
   {
@@ -108,6 +109,7 @@ const CORE_DESIGNS: InvitationDesign[] = [
       print: 'monogram',
       ink: '#e2b84f',
       foil: true,
+      roses: { kind: 'foil' },
     },
   },
   {
@@ -455,6 +457,7 @@ const CORE_DESIGNS: InvitationDesign[] = [
       print: 'monogram',
       ink: '#d4af37',
       foil: true,
+      roses: { kind: 'color', petal: '#f8f1e7', petalInner: '#ead7c3', line: '#b4926c', leaf: '#c9a24a', breath: '#ffffff' },
     },
   },
   {

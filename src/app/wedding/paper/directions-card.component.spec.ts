@@ -34,7 +34,7 @@ describe('directions card', () => {
     expect(root.querySelector('.dc__venue')?.textContent).toContain('Riverside Palace');
     expect(root.querySelector('.dc__hall')?.textContent).toContain('Tại Sảnh Danube');
     expect(root.querySelector('.dc__address')?.textContent).toContain('360D Bến Vân Đồn');
-    expect(root.querySelector('.dc__time')?.textContent).toContain('18 giờ 00 · Chủ Nhật · 28 · 03 · 2027');
+    expect(root.querySelector('.dc__time')?.textContent).toContain('18h00 · Chủ Nhật · 28 · 03 · 2027');
     expect(render('en').querySelector('.dc__hall')?.textContent).toContain('Danube Hall');
   });
 

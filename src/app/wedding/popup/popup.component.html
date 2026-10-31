@@ -3,11 +3,11 @@
     <div class="pp__copy">
       <p class="pp__headline">{{ copy.inviteHeadline }}</p>
       <p class="pp__guest">
-        <span>{{ copy.guestPrefix }}</span>
         <span class="pp__dots"></span>
         <span>{{ copy.guestSuffix }}</span>
       </p>
-      <p class="pp__date">{{ copy.dateLine }}</p>
+      <p class="pp__date">{{ copy.dateLines[0] }}</p>
+      <p class="pp__date">{{ copy.dateLines[1] }}</p>
       @for (line of copy.venueLines; track line) {
         <p class="pp__venue">{{ line }}</p>
       }

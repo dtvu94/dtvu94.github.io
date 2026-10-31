@@ -252,7 +252,24 @@ export interface EnvelopeSpec {
   ink: string;
   /** Print the envelope art in metallic foil. */
   foil?: boolean;
+  /** Sprays of baby roses (hoa hồng baby) on both sides of the front. */
+  roses?: EnvelopeRoses;
 }
+
+/** Baby-rose sprays in the envelope's foil ink, or in their own colours. */
+export type EnvelopeRoses =
+  | { kind: 'foil' }
+  | {
+      kind: 'color';
+      /** Outer petals, inner petals and buds, petal edges and hearts. */
+      petal: string;
+      petalInner: string;
+      line: string;
+      /** Leaves and stems. */
+      leaf: string;
+      /** Baby's breath florets. */
+      breath: string;
+    };
 
 // ── pockets & sliders ───────────────────────────────────────────────────────
 
@@ -407,9 +424,17 @@ export interface VenueInfo {
 }
 
 /** Single edit point for all wedding facts — see wedding-config.ts. */
+/** A couple's parents, as printed under "Nhà trai" / "Nhà gái". */
+export interface ParentNames {
+  father: string;
+  mother: string;
+}
+
 export interface WeddingConfig {
   groom: PersonName;
   bride: PersonName;
+  /** Parents of the groom and of the bride, full names. */
+  parents: { groom: ParentNames; bride: ParentNames };
   /** Calendar date of the reception, ISO "YYYY-MM-DD" — drives short dates. */
   isoDate: string;
   /** Party start and end, local time "HH:mm" (for calendar invites). */
@@ -417,7 +442,7 @@ export interface WeddingConfig {
   endTime: string;
   /** Venue's UTC offset, e.g. "+07:00". */
   utcOffset: string;
-  /** e.g. vi "18 giờ 00" / en "6:00 PM" / th "18:00 น." */
+  /** e.g. vi "18h00" / en "6:00 PM" / th "18:00 น." */
   timeText: LocalizedText;
   /** e.g. vi "Chủ Nhật" / en "Sunday" / th "วันอาทิตย์" */
   weekdayText: LocalizedText;
@@ -440,17 +465,26 @@ export interface WeddingConfig {
   photos: string[];
 }
 
+/** One family's heading and its parents' names, ready to print. */
+export interface ParentsSide {
+  label: string;
+  names: string[];
+}
+
 /** Computed invitation copy (already in one language) handed to the card. */
 export interface InvitationCopy {
   titleWord: string;
   inviteHeadline: string;
-  /** Salutation before the handwritten guest name — guests are unknown, e.g. "Ông / Bà:". */
-  guestPrefix: string;
-  /** Suffix after the guest name line, e.g. "cùng gia đình" (with family). */
+  /** After the line the family writes the guest's name on, e.g. "cùng gia đình" (with family). */
   guestSuffix: string;
   coupleLine: string;
   eventLine: string;
+  /** Time and day on one line (calendar entries). */
   dateLine: string;
+  /** Time and day as printed on the card: ["Vào lúc 18h00", "Chủ Nhật, ngày 28 tháng 03 năm 2027"]. */
+  dateLines: [string, string];
+  /** Groom's side then bride's side: "Nhà trai" + "Ông …", "Bà …". */
+  parents: ParentsSide[];
   lunarLine?: string;
   venueLines: string[];
   closing: string;
